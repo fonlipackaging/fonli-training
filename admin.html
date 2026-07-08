@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>管理后台 | Fonli Admin</title>
+  <title>管理后台 | Fonli Packaging Admin</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -14,9 +14,11 @@
     <div style="display:flex;align-items:center;gap:.75rem;">
       <button class="hamburger" id="hamburger">☰</button>
       <div class="navbar-brand">
-        <div class="brand-mark"><span>FL</span></div>
+        <div class="brand-mark" style="background:transparent;overflow:hidden;">
+          <img src="logo.png" alt="FL" onerror="this.parentElement.style.background='var(--gold)';this.outerHTML='<span>FL</span>'" style="width:36px;height:36px;object-fit:contain;">
+        </div>
         <div>
-          <div class="brand-name">芳力包装</div>
+          <div class="brand-name">菲利包装</div>
           <div class="brand-sub">管理后台 Admin</div>
         </div>
       </div>

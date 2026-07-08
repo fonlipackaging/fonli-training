@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>培训系统 | Fonli Training</title>
+  <title>菲利培训系统 | Fonli Training</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -14,9 +14,11 @@
     <div style="display:flex;align-items:center;gap:.75rem;">
       <button class="hamburger" id="hamburger">☰</button>
       <div class="navbar-brand">
-        <div class="brand-mark"><span>FL</span></div>
+        <div class="brand-mark" style="background:transparent;overflow:hidden;">
+          <img src="logo.png" alt="FL" onerror="this.parentElement.style.background='var(--gold)';this.outerHTML='<span>FL</span>'" style="width:36px;height:36px;object-fit:contain;">
+        </div>
         <div>
-          <div class="brand-name" data-zh="芳力包装" data-en="Fonli Packaging">芳力包装</div>
+          <div class="brand-name" data-zh="菲利包装" data-en="Fonli Packaging">菲利包装</div>
           <div class="brand-sub" data-zh="培训系统" data-en="Training System">培训系统</div>
         </div>
       </div>
@@ -100,7 +102,7 @@
 
     <!-- ── Chapter Reader ── -->
     <div class="view hidden" id="view-reader">
-      <button onclick="navigate('learn')" style="margin-bottom:1rem;background:none;border:none;color:var(--mid-blue);font-size:.9rem;cursor:pointer;display:flex;align-items:center;gap:.4rem;">
+      <button onclick="navigate('learn')" style="margin-bottom:1rem;background:none;border:none;color:var(--mid-blue);font-size:.9rem;cursor:pointer;display:flex;align-items:center;gap:.4rem;" class="back-btn">
         ← <span data-zh="返回章节列表" data-en="Back to chapters">返回章节列表</span>
       </button>
       <div class="reader-header" id="readerHeader"></div>

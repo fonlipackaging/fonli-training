@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>芳力包装培训系统 | Fonli Training</title>
+  <title>菲利包装培训系统 | Fonli Training</title>
   <link rel="stylesheet" href="css/style.css">
   <style>
     .auth-footer { text-align:center; margin-top:1.5rem; font-size:.78rem; color:var(--dark-gray); }
     .loading-screen {
-      position:fixed; inset:0; background:linear-gradient(135deg,var(--dark-blue),var(--mid-blue));
+      position:fixed; inset:0; background:linear-gradient(135deg,var(--dark-blue) 0%,var(--mid-blue) 100%);
       display:flex; align-items:center; justify-content:center; z-index:9999; flex-direction:column; gap:1rem;
     }
     .loading-screen .spinner { border-color:rgba(255,255,255,.3); border-top-color:#fff; width:44px; height:44px; }
@@ -31,8 +31,10 @@
 <div class="auth-page">
   <div class="auth-card">
     <div class="auth-logo">
-      <div class="logo-mark"><span>芳力</span></div>
-      <h1 data-zh="芳力包装" data-en="Fonli Packaging">芳力包装</h1>
+      <div class="logo-mark" id="authLogoMark" style="background:transparent;">
+        <img src="logo.png" alt="菲利包装" onerror="this.parentElement.style.background='var(--dark-blue)';this.outerHTML='<span>FL</span>'" style="width:64px;height:64px;border-radius:14px;object-fit:contain;">
+      </div>
+      <h1 data-zh="菲利包装" data-en="Fonli Packaging">菲利包装</h1>
       <p data-zh="销售培训与考核系统" data-en="Sales Training & Assessment System">销售培训与考核系统</p>
     </div>
 
