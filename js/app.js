@@ -23,6 +23,7 @@ let currentUser  = null;
 let userProfile  = null;
 let userProgress = null;   // { completedChapters: [], quizScores: {} }
 let examAttempts = [];     // array of attempt docs
+let appChapters  = [];     // loaded from Firestore (fallback: appChapters in data.js)
 
 let sessionMode       = null;  // 'quiz'|'mock'|'exam'
 let sessionQuestions  = [];
@@ -42,7 +43,23 @@ auth.onAuthStateChanged(async user => {
   applyI18n();
 });
 
+// ── Load chapters from Firestore (with data.js fallback) ─
+async function loadChapters() {
+  try {
+    const snap = await db.collection('chapters').orderBy('order').get();
+    if (!snap.empty) {
+      appChapters = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    } else {
+      appChapters = CHAPTERS; // fallback: static data in data.js
+    }
+  } catch(e) {
+    appChapters = CHAPTERS;  // fallback on error
+  }
+}
+
 async function loadUserData() {
+  await loadChapters();
+
   const [profDoc, progDoc] = await Promise.all([
     db.collection('users').doc(currentUser.uid).get(),
     db.collection('progress').doc(currentUser.uid).get()
@@ -105,7 +122,7 @@ function currentActiveView() {
 
 // ── Dashboard ─────────────────────────────────────────
 function renderDashboard() {
-  const total    = CHAPTERS.length;
+  const total    = appChapters.length;
   const done     = (userProgress.completedChapters || []).length;
   const pct      = Math.round(done / total * 100);
   const bestExam = examAttempts.length ? Math.max(...examAttempts.map(a => a.score)) : null;
@@ -179,9 +196,9 @@ function renderDashboard() {
 function renderLearnList() {
   const done = userProgress.completedChapters || [];
   let html = '';
-  CHAPTERS.forEach((ch, i) => {
+  appChapters.forEach((ch, i) => {
     const isComplete = done.includes(ch.id);
-    const isLocked   = i > 0 && !done.includes(CHAPTERS[i-1].id);
+    const isLocked   = i > 0 && !done.includes(appChapters[i-1].id);
     html += `
       <div class="chapter-item ${isComplete ? 'completed' : ''} ${isLocked ? 'locked' : ''}"
            onclick="${isLocked ? '' : `openChapter('${ch.id}')`}">
@@ -198,22 +215,22 @@ function renderLearnList() {
 
 function openChapter(chapterId) {
   currentChapterId  = chapterId;
-  currentChapterIdx = CHAPTERS.findIndex(c => c.id === chapterId);
+  currentChapterIdx = appChapters.findIndex(c => c.id === chapterId);
   renderReader();
   showView('view-reader');
   setActiveNav('nav-learn');
 }
 
 function renderReader() {
-  const ch = CHAPTERS[currentChapterIdx];
+  const ch = appChapters[currentChapterIdx];
   const lang = getLang();
   document.getElementById('readerHeader').innerHTML = `
     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;">
       <div>
         <h2>${lang==='zh' ? ch.titleZh : ch.titleEn}</h2>
-        <p>${t('章节','Chapter')} ${ch.order} / ${CHAPTERS.length} · ${t('约','~')}${ch.estimatedMinutes}${t('分钟阅读','min read')}</p>
+        <p>${t('章节','Chapter')} ${ch.order} / ${appChapters.length} · ${t('约','~')}${ch.estimatedMinutes}${t('分钟阅读','min read')}</p>
       </div>
-      <span class="tag tag-blue">${ch.order} / ${CHAPTERS.length}</span>
+      <span class="tag tag-blue">${ch.order} / ${appChapters.length}</span>
     </div>`;
 
   let body = '';
@@ -229,7 +246,7 @@ function renderReader() {
 
   // Prev/Next btn state
   document.getElementById('prevChapterBtn').style.visibility = currentChapterIdx === 0 ? 'hidden' : 'visible';
-  const isLast = currentChapterIdx === CHAPTERS.length - 1;
+  const isLast = currentChapterIdx === appChapters.length - 1;
   const nextBtn = document.getElementById('nextChapterBtn');
   nextBtn.textContent = isLast ? t('完成学习', 'Finish') : t('下一章 →', 'Next →');
   document.getElementById('markReadBtn').textContent =
@@ -237,7 +254,7 @@ function renderReader() {
 }
 
 async function markChapterRead() {
-  const ch = CHAPTERS[currentChapterIdx];
+  const ch = appChapters[currentChapterIdx];
   const done = userProgress.completedChapters || [];
   if (!done.includes(ch.id)) {
     done.push(ch.id);
@@ -245,9 +262,9 @@ async function markChapterRead() {
     await db.collection('progress').doc(currentUser.uid).set(userProgress, { merge: true });
   }
   // Go to next chapter or back to list
-  if (currentChapterIdx < CHAPTERS.length - 1) {
+  if (currentChapterIdx < appChapters.length - 1) {
     currentChapterIdx++;
-    currentChapterId = CHAPTERS[currentChapterIdx].id;
+    currentChapterId = appChapters[currentChapterIdx].id;
     renderReader();
   } else {
     toast(t('🎉 全部章节学习完成！', '🎉 All chapters completed!'), 'success');
@@ -257,9 +274,9 @@ async function markChapterRead() {
 
 function navigateChapter(dir) {
   const newIdx = currentChapterIdx + dir;
-  if (newIdx < 0 || newIdx >= CHAPTERS.length) return;
+  if (newIdx < 0 || newIdx >= appChapters.length) return;
   currentChapterIdx = newIdx;
-  currentChapterId  = CHAPTERS[newIdx].id;
+  currentChapterId  = appChapters[newIdx].id;
   renderReader();
   window.scrollTo(0, 0);
 }
@@ -269,7 +286,7 @@ function renderQuizChapterList() {
   const done  = userProgress.completedChapters || [];
   const scores = userProgress.quizScores || {};
   let html = '';
-  CHAPTERS.forEach(ch => {
+  appChapters.forEach(ch => {
     const isAvail = done.includes(ch.id);
     const score   = scores[ch.id];
     html += `
@@ -300,7 +317,7 @@ function renderQuizSession() {
   const q     = sessionQuestions[currentQIndex];
   const total = sessionQuestions.length;
   const lang  = getLang();
-  const ch    = CHAPTERS.find(c => c.id === currentChapterId);
+  const ch    = appChapters.find(c => c.id === currentChapterId);
 
   let html = `
     <div style="margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;">
@@ -400,9 +417,9 @@ async function finishQuiz() {
 // ── Mock Exam ─────────────────────────────────────────
 function renderMockLanding() {
   const done = (userProgress.completedChapters || []).length;
-  const locked = done < CHAPTERS.length;
+  const locked = done < appChapters.length;
   document.getElementById('mockDesc').textContent =
-    locked ? t(`请先完成全部${CHAPTERS.length}个章节的学习（当前已完成${done}章）`, `Complete all ${CHAPTERS.length} chapters first (${done} done)`)
+    locked ? t(`请先完成全部${appChapters.length}个章节的学习（当前已完成${done}章）`, `Complete all ${appChapters.length} chapters first (${done} done)`)
            : t('完整模拟正式考试环境，帮助你评估准备程度。', 'Simulate the real exam to assess your readiness.');
   document.getElementById('startMockBtn').disabled = locked;
 }
@@ -421,7 +438,7 @@ function startMock() {
 // ── Final Exam ────────────────────────────────────────
 function renderExamLanding() {
   const done     = (userProgress.completedChapters || []).length;
-  const allDone  = done >= CHAPTERS.length;
+  const allDone  = done >= appChapters.length;
   const attempts = examAttempts.length;
   const maxAtt   = EXAM_CONFIG.exam.maxAttempts;
   const canTake  = allDone && attempts < maxAtt;
@@ -454,7 +471,7 @@ function renderExamLanding() {
 
   let btnHtml = '';
   if (!allDone) {
-    btnHtml = `<div class="alert alert-info">${t(`请先完成全部${CHAPTERS.length}章节的学习`, `Please complete all ${CHAPTERS.length} chapters first`)}</div>`;
+    btnHtml = `<div class="alert alert-info">${t(`请先完成全部${appChapters.length}章节的学习`, `Please complete all ${appChapters.length} chapters first`)}</div>`;
   } else if (attempts >= maxAtt) {
     const passed = examAttempts.some(a => a.score >= EXAM_CONFIG.exam.passingScore);
     btnHtml = `<div class="alert ${passed ? 'alert-success' : 'alert-danger'}">
