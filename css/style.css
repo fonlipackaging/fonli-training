@@ -725,3 +725,95 @@ table.list-table .badge-pending { background: var(--gray); color: var(--dark-gra
   font-size: .85em;
   font-family: monospace;
 }
+
+/* ══════════════════════════════════════════════
+   WYSIWYG VISUAL EDITOR
+   ══════════════════════════════════════════════ */
+
+/* Toolbar */
+.wysiwyg-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .2rem;
+  padding: .35rem .5rem;
+  background: #F8F9FA;
+  border: 1px solid var(--mid-gray);
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
+}
+.wt-group { display: flex; gap: .15rem; align-items: center; }
+.wt-sep { width: 1px; height: 18px; background: var(--mid-gray); margin: 0 .2rem; }
+.wt-btn {
+  border: 1px solid transparent;
+  background: transparent;
+  border-radius: 4px;
+  padding: .2rem .4rem;
+  font-size: .78rem;
+  cursor: pointer;
+  line-height: 1;
+  color: var(--text);
+  display: inline-flex; align-items: center; gap: .2rem;
+  white-space: nowrap;
+}
+.wt-btn:hover { background: #E5E7EB; border-color: var(--mid-gray); }
+.wt-btn-icon { font-size: .75rem; }
+
+/* Mode toggle buttons */
+.wt-mode-btn {
+  border: 1px solid var(--mid-gray);
+  background: #fff;
+  border-radius: 4px;
+  padding: .15rem .45rem;
+  font-size: .72rem;
+  cursor: pointer;
+  color: var(--dark-gray);
+  display: inline-flex; align-items: center; gap: .2rem;
+}
+.wt-mode-btn:hover { background: var(--pale-blue); border-color: var(--mid-blue); color: var(--mid-blue); }
+.wt-mode-btn.active-tab {
+  background: var(--mid-blue);
+  color: #fff;
+  border-color: var(--mid-blue);
+}
+
+/* Visual editor area */
+.wysiwyg-editor {
+  min-height: 160px;
+  border: 1px solid var(--mid-gray);
+  border-radius: 0 0 6px 6px;
+  padding: .75rem;
+  background: #fff;
+  outline: none;
+  font-size: .88rem;
+  line-height: 1.7;
+  cursor: text;
+  overflow-y: auto;
+}
+.wysiwyg-editor:focus {
+  border-color: var(--mid-blue);
+  box-shadow: 0 0 0 2px rgba(232,96,60,.15);
+}
+.wysiwyg-editor[contenteditable="false"] {
+  cursor: default;
+  background: #FAFAFA;
+}
+
+/* Table editing in WYSIWYG */
+.wysiwyg-editor table { width: 100%; border-collapse: collapse; margin: .5rem 0; }
+.wysiwyg-editor td, .wysiwyg-editor th {
+  border: 1px solid #CBD5E1;
+  padding: .4rem .6rem;
+  min-width: 60px;
+  vertical-align: top;
+}
+.wysiwyg-editor th { background: #F1F5F9; font-weight: 600; }
+.wysiwyg-editor td:focus, .wysiwyg-editor th:focus { outline: 2px solid var(--mid-blue); }
+
+/* Apply kc-* styles inside editor for live preview */
+.wysiwyg-editor .kc-intro { background: var(--pale-blue); border-left: 4px solid var(--mid-blue); padding: .5rem .75rem; border-radius: 0 6px 6px 0; margin: .4rem 0; font-size: .88rem; }
+.wysiwyg-editor .kc-tip { background: #FEF9C3; border: 1px solid #FDE047; border-radius: 6px; padding: .5rem .75rem; margin: .4rem 0; font-size: .85rem; }
+.wysiwyg-editor .kc-warning { background: #FEF2F2; border: 1px solid #FECACA; border-radius: 6px; padding: .5rem .75rem; margin: .4rem 0; font-size: .85rem; color: #991B1B; }
+.wysiwyg-editor img { max-width: 160px; height: auto; border-radius: 6px; border: 1px solid #eee; vertical-align: middle; }
+.wysiwyg-editor figure { display: inline-block; text-align: center; margin: .25rem; vertical-align: top; }
+.wysiwyg-editor figcaption { font-size: .72rem; color: #666; margin-top: .2rem; }
