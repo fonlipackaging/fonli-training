@@ -726,34 +726,63 @@ function buildSectionHtml(idx, sec) {
       </div>
     </div>
 
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;">
-      ${buildEditorPanel(idx,'Zh',t('中文内容','Chinese Content'))}
-      ${buildEditorPanel(idx,'En','English Content')}
+    <!-- Language Tab switcher -->
+    <div style="display:flex;border-bottom:2px solid var(--mid-gray);margin-bottom:.75rem;gap:0;">
+      <button type="button" id="sec-${idx}-tabZh"
+        onclick="switchLangTab(${idx},'Zh')"
+        style="padding:.4rem 1.1rem;border:none;border-bottom:2px solid var(--orange);margin-bottom:-2px;
+               background:none;cursor:pointer;font-size:.82rem;font-weight:700;color:var(--orange);">
+        🇨🇳 ${t('中文内容','中文')}
+      </button>
+      <button type="button" id="sec-${idx}-tabEn"
+        onclick="switchLangTab(${idx},'En')"
+        style="padding:.4rem 1.1rem;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;
+               background:none;cursor:pointer;font-size:.82rem;font-weight:600;color:var(--dark-gray);">
+        🇬🇧 English
+      </button>
+    </div>
+
+    <div id="sec-${idx}-panelZh" style="display:block;">
+      ${buildEditorPanel(idx,'Zh')}
+    </div>
+    <div id="sec-${idx}-panelEn" style="display:none;">
+      ${buildEditorPanel(idx,'En')}
     </div>
   </div>`;
 }
 
-function buildEditorPanel(idx, lang, label) {
+function switchLangTab(idx, lang) {
+  const isZh = lang === 'Zh';
+  document.getElementById(`sec-${idx}-panelZh`).style.display = isZh ? 'block' : 'none';
+  document.getElementById(`sec-${idx}-panelEn`).style.display = isZh ? 'none' : 'block';
+  const tabZh = document.getElementById(`sec-${idx}-tabZh`);
+  const tabEn = document.getElementById(`sec-${idx}-tabEn`);
+  tabZh.style.color = isZh ? 'var(--orange)' : 'var(--dark-gray)';
+  tabZh.style.fontWeight = isZh ? '700' : '600';
+  tabZh.style.borderBottomColor = isZh ? 'var(--orange)' : 'transparent';
+  tabEn.style.color = isZh ? 'var(--dark-gray)' : 'var(--orange)';
+  tabEn.style.fontWeight = isZh ? '600' : '700';
+  tabEn.style.borderBottomColor = isZh ? 'transparent' : 'var(--orange)';
+}
+
+function buildEditorPanel(idx, lang) {
   return `
   <div class="form-group" style="margin:0;">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.35rem;">
-      <label class="form-label" style="font-size:.78rem;margin:0;">${label}</label>
-      <div style="display:flex;gap:.2rem;">
-        <button type="button" id="sec-${idx}-btnV${lang}" class="wt-mode-btn active-tab"
-          onmousedown="event.preventDefault();wSetMode(${idx},'${lang}','visual')">
-          <i class="ti ti-eye"></i> ${t('可视化','Visual')}
-        </button>
-        <button type="button" id="sec-${idx}-btnH${lang}" class="wt-mode-btn"
-          onmousedown="event.preventDefault();wSetMode(${idx},'${lang}','html')">
-          &lt;/&gt; HTML
-        </button>
-      </div>
+    <div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:.35rem;gap:.2rem;">
+      <button type="button" id="sec-${idx}-btnV${lang}" class="wt-mode-btn active-tab"
+        onmousedown="event.preventDefault();wSetMode(${idx},'${lang}','visual')">
+        <i class="ti ti-eye"></i> ${t('可视化','Visual')}
+      </button>
+      <button type="button" id="sec-${idx}-btnH${lang}" class="wt-mode-btn"
+        onmousedown="event.preventDefault();wSetMode(${idx},'${lang}','html')">
+        &lt;/&gt; HTML
+      </button>
     </div>
     ${wysiwyg_toolbar(idx, lang)}
     <div class="wysiwyg-editor reader-body" id="sec-${idx}-vis${lang}" contenteditable="false"
-      style="display:block;min-height:120px;"></div>
-    <textarea class="form-input" id="sec-${idx}-src${lang}" rows="8"
-      style="display:none;font-family:monospace;font-size:.73rem;resize:vertical;"></textarea>
+      style="display:block;min-height:280px;"></div>
+    <textarea class="form-input" id="sec-${idx}-src${lang}" rows="12"
+      style="display:none;font-family:monospace;font-size:.73rem;resize:vertical;min-height:280px;"></textarea>
   </div>`;
 }
 
