@@ -1078,5 +1078,333 @@ const QUESTIONS = [
       {zh:'30,000 pcs',en:'30,000 pcs'}
     ], answer:3,
     explanationZh:'中套标准金/银色 MOQ 为 10,000 pcs；完全定制颜色 MOQ 更高，为 30,000 pcs。',
-    explanationEn:'Collar standard gold/silver MOQ is 10,000 pcs; fully custom color MOQ is higher at 30,000 pcs.' }
+    explanationEn:'Collar standard gold/silver MOQ is 10,000 pcs; fully custom color MOQ is higher at 30,000 pcs.' },
+
+  // ── CH01 补充题 ───────────────────────────────────────
+  { id:'q021', chapterId:'ch01', type:'single', difficulty:'easy',
+    questionZh:'菲利包装的价格定位是？',
+    questionEn:'How is Fonli Packaging positioned in terms of pricing?',
+    options:[
+      {zh:'低价大众市场',en:'Low-price mass market'},
+      {zh:'中高端，强调设计与工艺价值，非价格战',en:'Mid-to-high end, emphasizing design & craft value, not price war'},
+      {zh:'超奢侈品专用',en:'Ultra-luxury only'},
+      {zh:'只服务国内品牌',en:'Domestic brands only'}
+    ], answer:1,
+    explanationZh:'菲利包装定位中高端，核心竞争力在于设计能力与工艺水平，而非低价竞争。',
+    explanationEn:'Fonli Packaging is positioned mid-to-high end. Core competitiveness lies in design capability and craftsmanship, not price competition.' },
+
+  { id:'q022', chapterId:'ch01', type:'single', difficulty:'easy',
+    questionZh:'菲利包装的主要目标市场包括？',
+    questionEn:'Which markets does Fonli Packaging primarily target?',
+    options:[
+      {zh:'仅中国国内市场',en:'China domestic market only'},
+      {zh:'欧洲、美国、中东、亚洲',en:'Europe, USA, Middle East, Asia'},
+      {zh:'仅欧洲和北美',en:'Europe and North America only'},
+      {zh:'仅东南亚',en:'Southeast Asia only'}
+    ], answer:1,
+    explanationZh:'菲利包装的主要目标市场为欧洲、美国、中东和亚洲，覆盖全球高端香水市场。',
+    explanationEn:'Fonli\'s primary target markets are Europe, USA, Middle East, and Asia — covering global premium perfume markets.' },
+
+  // ── CH02 补充题 ───────────────────────────────────────
+  { id:'q023', chapterId:'ch02', type:'single', difficulty:'easy',
+    questionZh:'定制项目流程共分几个步骤？',
+    questionEn:'How many steps are there in the custom project process?',
+    options:[
+      {zh:'4步',en:'4 steps'},
+      {zh:'5步',en:'5 steps'},
+      {zh:'6步',en:'6 steps'},
+      {zh:'8步',en:'8 steps'}
+    ], answer:2,
+    explanationZh:'定制流程共6步：01设计构思 → 02原型渲染 → 03 3D打样 → 04报价确认 → 05模具与样品 → 06大货生产。',
+    explanationEn:'The custom process has 6 steps: 01 Design Brief → 02 Prototype Rendering → 03 3D Mockup → 04 Cost & Quotation → 05 Mould & Sample → 06 Mass Production.' },
+
+  { id:'q024', chapterId:'ch02', type:'single', difficulty:'easy',
+    questionZh:'"模具开制与样品确认"是定制流程的第几步？',
+    questionEn:'"Mould & Sample Confirmation" is which step of the custom process?',
+    options:[{zh:'第3步',en:'Step 3'},{zh:'第4步',en:'Step 4'},{zh:'第5步',en:'Step 5'},{zh:'第6步',en:'Step 6'}],
+    answer:2,
+    explanationZh:'第5步是模具开制与样品确认。大货生产前必须完成此步骤并获得客户书面确认。',
+    explanationEn:'Step 5 is Mould & Sample Confirmation. This must be completed with written client approval before mass production.' },
+
+  { id:'q025', chapterId:'ch02', type:'single', difficulty:'medium',
+    questionZh:'定制流程第一步"设计构思/客户简报"最重要的收集内容是？',
+    questionEn:'In Step 1 "Design Brief", what is the most important information to collect?',
+    options:[
+      {zh:'客户的手机号码',en:'Client\'s phone number'},
+      {zh:'品牌风格、目标市场、容量、预算等需求信息',en:'Brand style, target market, volume, budget and other requirements'},
+      {zh:'客户过去合作的工厂名单',en:'List of client\'s past supplier factories'},
+      {zh:'竞争对手的产品价格',en:'Competitor product prices'}
+    ], answer:1,
+    explanationZh:'设计简报阶段需收集：品牌调性、目标市场、容量规格、预算范围、时间节点等关键需求，才能准确报价和设计。',
+    explanationEn:'Design brief stage: collect brand style, target market, volume specs, budget range, timeline — key info for accurate quotation and design.' },
+
+  { id:'q026', chapterId:'ch02', type:'single', difficulty:'medium',
+    questionZh:'"公模现货"和"私模定制"最大的区别是？',
+    questionEn:'What is the biggest difference between "stock mold" and "custom private mold"?',
+    options:[
+      {zh:'公模颜色更多',en:'Stock mold has more colors'},
+      {zh:'私模需要开模费用和更高 MOQ，但外形完全专属',en:'Private mold requires tooling fee and higher MOQ, but shape is fully exclusive'},
+      {zh:'公模只能做圆瓶',en:'Stock mold is only for round bottles'},
+      {zh:'私模交期更短',en:'Private mold has shorter lead time'}
+    ], answer:1,
+    explanationZh:'私模（定制开模）需支付一次性开模费，MOQ 通常为 20,000–30,000 pcs，但瓶型完全属于客户专属。公模现货 MOQ 低（10,000 pcs），但瓶型与其他品牌共用。',
+    explanationEn:'Private mold requires one-time tooling fee, MOQ 20,000–30,000 pcs, but the shape is fully exclusive to the client. Stock mold has lower MOQ (10,000 pcs) but shared shapes.' },
+
+  { id:'q027', chapterId:'ch02', type:'single', difficulty:'hard',
+    questionZh:'客户要求"大货与样品完全一致"，以下哪项操作最重要？',
+    questionEn:'A client requires "mass production to exactly match the approved sample." Which action is most critical?',
+    options:[
+      {zh:'提高报价',en:'Increase the quotation'},
+      {zh:'要求客户提供更多图片',en:'Ask the client for more photos'},
+      {zh:'在样品确认单上注明关键参数并获取客户书面签字',en:'Note key parameters on sample approval form and get client written sign-off'},
+      {zh:'加快大货生产速度',en:'Speed up mass production'}
+    ], answer:2,
+    explanationZh:'样品确认单需包含关键参数（颜色、工艺、尺寸、重量），客户书面确认后，大货按此标准执行，有争议时有据可查。',
+    explanationEn:'Sample approval form must include key specs (color, finish, dimensions, weight). Written client sign-off is essential — it becomes the binding standard for mass production.' },
+
+  // ── CH04 补充题 ───────────────────────────────────────
+  { id:'q028', chapterId:'ch04', type:'single', difficulty:'easy',
+    questionZh:'PP（聚丙烯）盖主要适用于什么场景？',
+    questionEn:'PP (Polypropylene) caps are most suitable for which scenario?',
+    options:[
+      {zh:'超高端奢侈品',en:'Ultra-luxury products'},
+      {zh:'成本敏感/大批量/日化类产品',en:'Cost-sensitive / high-volume / daily cosmetic products'},
+      {zh:'中东礼品装',en:'Middle East gift sets'},
+      {zh:'欧美小众香水',en:'European niche perfumery'}
+    ], answer:1,
+    explanationZh:'PP 盖成本低、工艺简单，适合大批量日化产品。高端香水通常选用 Zamak、Surlyn 或木盖。',
+    explanationEn:'PP caps are low-cost and simple to produce, ideal for high-volume daily cosmetics. Premium perfumes typically use Zamak, Surlyn, or wood caps.' },
+
+  { id:'q029', chapterId:'ch04', type:'single', difficulty:'medium',
+    questionZh:'Surlyn（沙林）盖的最大优势是？',
+    questionEn:'What is the biggest advantage of Surlyn caps?',
+    options:[
+      {zh:'重量感强，代表高端质感',en:'Heavy weight, representing premium quality'},
+      {zh:'透明度高，可做渐变色/内嵌装饰，欧美市场常见',en:'High transparency, can do gradient colors/inlay, popular in European/US market'},
+      {zh:'价格最低，适合低端市场',en:'Lowest cost, for budget market'},
+      {zh:'防水性最好',en:'Best waterproof performance'}
+    ], answer:1,
+    explanationZh:'Surlyn（杜邦沙林树脂）透明感好，可做渐变色和内嵌装饰效果，是欧美市场中高端香水的常见选择。',
+    explanationEn:'Surlyn (DuPont resin) offers excellent transparency, gradient colors, and inlay decoration — a popular choice for mid-to-high end European/US perfume brands.' },
+
+  { id:'q030', chapterId:'ch04', type:'single', difficulty:'medium',
+    questionZh:'木盖（Wood Cap）最常搭配哪类市场产品？',
+    questionEn:'Wood caps are most commonly used with which type of market product?',
+    options:[
+      {zh:'低价日用品',en:'Low-price daily-use products'},
+      {zh:'天然/有机/东方风格高端香水',en:'Natural / organic / oriental-style premium perfume'},
+      {zh:'运动类香水',en:'Sports fragrance'},
+      {zh:'儿童香水',en:'Children\'s fragrance'}
+    ], answer:1,
+    explanationZh:'木盖给人天然、有机、东方美学的感觉，常用于天然香氛或东方风格的高端香水产品。',
+    explanationEn:'Wood caps convey a natural, organic, oriental aesthetic — commonly used for natural fragrance or oriental-style premium perfume products.' },
+
+  // ── CH05 补充题 ───────────────────────────────────────
+  { id:'q031', chapterId:'ch05', type:'single', difficulty:'easy',
+    questionZh:'中套（Collar）安装在瓶子的哪个部位？',
+    questionEn:'Where is a Collar installed on the perfume bottle?',
+    options:[
+      {zh:'瓶底',en:'Bottle bottom'},
+      {zh:'瓶身正面',en:'Bottle front'},
+      {zh:'瓶口连接喷头与瓶身之间',en:'Between the pump and the bottle neck'},
+      {zh:'瓶盖内部',en:'Inside the cap'}
+    ], answer:2,
+    explanationZh:'中套（Collar）套在瓶口处，连接喷头与瓶身，起到美化连接处、遮盖喷头底部金属件的作用。',
+    explanationEn:'The Collar fits around the bottle neck, connecting the pump to the bottle body, concealing the pump base and beautifying the transition area.' },
+
+  { id:'q032', chapterId:'ch05', type:'single', difficulty:'medium',
+    questionZh:'喷头的标准出液量（Dosage）通常是多少？',
+    questionEn:'What is the standard dosage (output per actuation) for a spray pump?',
+    options:[
+      {zh:'0.05 ml/次',en:'0.05 ml per press'},
+      {zh:'0.10–0.12 ml/次',en:'0.10–0.12 ml per press'},
+      {zh:'0.50 ml/次',en:'0.50 ml per press'},
+      {zh:'1.00 ml/次',en:'1.00 ml per press'}
+    ], answer:1,
+    explanationZh:'标准香水喷头出液量为 0.10–0.12 ml/次，若客户有特殊需求（如旅行装节省用量）可定制更低出液量。',
+    explanationEn:'Standard perfume pump dosage is 0.10–0.12 ml per actuation. Custom lower dosage is possible for travel size or economical use cases.' },
+
+  { id:'q033', chapterId:'ch05', type:'single', difficulty:'hard',
+    questionZh:'真空泵（Airless Pump）与普通喷泵的主要区别是？',
+    questionEn:'What is the main difference between an Airless Pump and a standard spray pump?',
+    options:[
+      {zh:'真空泵只能用于玻璃瓶',en:'Airless pumps can only be used with glass bottles'},
+      {zh:'真空泵完全隔绝空气，防止内容物氧化变质',en:'Airless pumps completely isolate contents from air, preventing oxidation'},
+      {zh:'真空泵出液量更大',en:'Airless pumps dispense more per press'},
+      {zh:'两者没有区别',en:'There is no difference between them'}
+    ], answer:1,
+    explanationZh:'真空泵通过活塞结构使内容物与空气完全隔绝，防止氧化变质，适合高端精华类护肤品或需要长保质期的产品。',
+    explanationEn:'Airless pumps use a piston mechanism to fully isolate contents from air, preventing oxidation — ideal for premium serums or products requiring long shelf life.' },
+
+  // ── CH06 补充题（全新，原来为0题）──────────────────────
+  { id:'q034', chapterId:'ch06', type:'single', difficulty:'easy',
+    questionZh:'香水铝牌（Name Plate）通常安装在瓶子的哪个位置？',
+    questionEn:'Where is a perfume Name Plate typically installed?',
+    options:[
+      {zh:'瓶盖顶部',en:'Top of the cap'},
+      {zh:'瓶子正面瓶身',en:'Front of the bottle body'},
+      {zh:'瓶底',en:'Bottom of the bottle'},
+      {zh:'喷头上方',en:'Above the pump'}
+    ], answer:1,
+    explanationZh:'香水铝牌（Name Plate）通常粘贴或嵌入在瓶子正面，展示品牌名称、Logo 或装饰图案。',
+    explanationEn:'Perfume name plates are typically adhered or inlaid on the front of the bottle, displaying the brand name, logo, or decorative pattern.' },
+
+  { id:'q035', chapterId:'ch06', type:'single', difficulty:'easy',
+    questionZh:'铝牌最常见的表面工艺是？',
+    questionEn:'What are the most common surface treatments for name plates?',
+    options:[
+      {zh:'喷涂 + 磨沙',en:'Spray coating + frosting'},
+      {zh:'丝印（Silk Screen）、激光雕刻（Laser Engraving）、电镀（Plating）',en:'Silk Screen, Laser Engraving, Plating'},
+      {zh:'植绒 + 烤漆',en:'Flocking + baking varnish'},
+      {zh:'UV打印 + 转印',en:'UV printing + transfer'}
+    ], answer:1,
+    explanationZh:'铝牌常见工艺：丝印（印刷品牌文字/图案）、激光雕刻（精细Logo刻线）、电镀（金银色调）。可组合使用。',
+    explanationEn:'Name plate common processes: Silk Screen (print brand text/pattern), Laser Engraving (fine logo lines), Plating (gold/silver tones) — can be combined.' },
+
+  { id:'q036', chapterId:'ch06', type:'single', difficulty:'medium',
+    questionZh:'"激光雕刻"（Laser Engraving）工艺的特点是？',
+    questionEn:'What are the characteristics of the Laser Engraving process?',
+    options:[
+      {zh:'只能做直线图案',en:'Can only create straight-line patterns'},
+      {zh:'精度高，无需油墨，适合精细 Logo 和文字',en:'High precision, no ink required, ideal for detailed logos and text'},
+      {zh:'成本最低，适合大批量',en:'Lowest cost, ideal for large volumes'},
+      {zh:'必须配合喷涂才能显色',en:'Must be combined with spray coating to show color'}
+    ], answer:1,
+    explanationZh:'激光雕刻通过激光束直接在铝牌表面刻出图案，精度极高，无油墨脱落风险，适合品牌 Logo、精细纹样。',
+    explanationEn:'Laser engraving uses a laser beam to directly etch patterns on the plate surface — ultra-high precision, no ink to fade, ideal for brand logos and fine patterns.' },
+
+  { id:'q037', chapterId:'ch06', type:'single', difficulty:'medium',
+    questionZh:'铝牌的标准打样周期通常是多少天？',
+    questionEn:'What is the standard sampling lead time for name plates?',
+    options:[
+      {zh:'1–3 天',en:'1–3 days'},
+      {zh:'7–14 天',en:'7–14 days'},
+      {zh:'30–45 天',en:'30–45 days'},
+      {zh:'60 天以上',en:'60+ days'}
+    ], answer:1,
+    explanationZh:'铝牌打样周期通常为 7–14 天，含图稿确认、制版和样品制作。复杂工艺（如多色丝印+激光）可能更长。',
+    explanationEn:'Name plate sampling typically takes 7–14 days, including artwork confirmation, plate making, and sample production. Complex processes (multi-color + laser) may take longer.' },
+
+  { id:'q038', chapterId:'ch06', type:'single', difficulty:'hard',
+    questionZh:'以下哪种情况需要重新开版（制版）？',
+    questionEn:'Which situation requires creating a new printing plate?',
+    options:[
+      {zh:'客户只改变了订购数量',en:'Client only changes the order quantity'},
+      {zh:'客户更换了付款方式',en:'Client changes the payment method'},
+      {zh:'客户修改了 Logo 字体或图案内容',en:'Client modifies the logo font or pattern content'},
+      {zh:'客户提前了交期',en:'Client moves up the delivery date'}
+    ], answer:2,
+    explanationZh:'丝印版（制版）与图案内容直接绑定。任何字体、图案、颜色的修改都需要重新制版，会产生额外费用和时间。',
+    explanationEn:'Silk screen plates are directly tied to the artwork content. Any change to font, pattern, or color requires a new plate, incurring additional cost and time.' },
+
+  // ── CH07 补充题 ───────────────────────────────────────
+  { id:'q039', chapterId:'ch07', type:'single', difficulty:'easy',
+    questionZh:'精品硬盒（Rigid Box）和折叠卡盒（Folding Box）的主要区别是？',
+    questionEn:'What is the main difference between a Rigid Box and a Folding Box?',
+    options:[
+      {zh:'精品盒有盖子，折叠盒没有',en:'Rigid box has a lid, folding box does not'},
+      {zh:'精品盒有硬质板材衬里，不可折叠；折叠卡盒轻薄可折叠运输',en:'Rigid box has stiff board lining, cannot fold; Folding box is lightweight and foldable for shipping'},
+      {zh:'精品盒只能做黑色',en:'Rigid box can only be black'},
+      {zh:'折叠盒不可印刷',en:'Folding box cannot be printed'}
+    ], answer:1,
+    explanationZh:'精品硬盒（Rigid Box）内含硬质灰板，结构稳固、档次高，不可折叠。折叠卡盒成本低，可平铺运输节省物流费用。',
+    explanationEn:'Rigid box has a stiff greyboard interior — sturdy, premium, non-collapsible. Folding box is lower cost and ships flat, saving on freight.' },
+
+  { id:'q040', chapterId:'ch07', type:'single', difficulty:'easy',
+    questionZh:'抽屉盒（Drawer Box）的主要特点是？',
+    questionEn:'What is the key characteristic of a Drawer Box?',
+    options:[
+      {zh:'成本最低，适合大批量零售',en:'Lowest cost, suitable for high-volume retail'},
+      {zh:'开合体验独特，适合礼盒套装，提升品牌感',en:'Unique opening experience, ideal for gift sets, enhances brand feel'},
+      {zh:'不能加内托',en:'Cannot include inner tray'},
+      {zh:'只适合圆形产品',en:'Only suitable for round products'}
+    ], answer:1,
+    explanationZh:'抽屉盒采用推拉设计，开合体验感强，适合礼品套装，能有效提升品牌档次和馈赠仪式感。',
+    explanationEn:'Drawer box uses a push-pull design with a distinctive opening experience — ideal for gift sets, effectively elevating brand prestige and gifting ritual.' },
+
+  { id:'q041', chapterId:'ch07', type:'single', difficulty:'medium',
+    questionZh:'香水外盒通常需要印刷哪些法规要求信息？',
+    questionEn:'What regulatory information is typically required on a perfume outer box?',
+    options:[
+      {zh:'仅品牌名称',en:'Brand name only'},
+      {zh:'品牌名、容量（ml/oz）、成分表、条形码、原产地',en:'Brand name, volume (ml/oz), ingredient list, barcode, country of origin'},
+      {zh:'只需印制价格',en:'Price only'},
+      {zh:'生产工厂地址即可',en:'Factory address only'}
+    ], answer:1,
+    explanationZh:'各国法规要求香水外盒须包含：品牌名、净含量（ml/oz）、成分表（INCI）、条形码、原产地、批次号等信息。',
+    explanationEn:'Regulations require perfume boxes to include: brand name, net content (ml/oz), ingredient list (INCI), barcode, country of origin, batch number, etc.' },
+
+  { id:'q042', chapterId:'ch07', type:'single', difficulty:'hard',
+    questionZh:'外盒内托（Insert）最常见的材质是？',
+    questionEn:'What is the most common material for box inserts (inner tray)?',
+    options:[
+      {zh:'金属铝片',en:'Aluminum sheet'},
+      {zh:'EVA泡棉 / 植绒内托 / 纸板内托',en:'EVA foam / flocked tray / paperboard tray'},
+      {zh:'玻璃纤维',en:'Fiberglass'},
+      {zh:'硅胶',en:'Silicone'}
+    ], answer:1,
+    explanationZh:'外盒内托常见材质：EVA 泡棉（保护性好）、植绒内托（高档感）、纸板内托（成本低）。根据产品定位和预算选择。',
+    explanationEn:'Common insert materials: EVA foam (good protection), flocked tray (premium feel), paperboard tray (low cost). Choice depends on product positioning and budget.' },
+
+  // ── CH08 补充题 ───────────────────────────────────────
+  { id:'q043', chapterId:'ch08', type:'single', difficulty:'medium',
+    questionZh:'"FOB" 报价包含哪些内容？',
+    questionEn:'What does an "FOB" quotation include?',
+    options:[
+      {zh:'仅产品成本',en:'Product cost only'},
+      {zh:'产品 + 国内货代 + 至出口港装船费，不含国际运费',en:'Product + domestic forwarder + loading at export port, excludes international freight'},
+      {zh:'全包：产品 + 国际运费 + 目的地关税',en:'All-inclusive: product + international freight + destination duties'},
+      {zh:'产品 + 国际运费，不含关税',en:'Product + international freight, excluding duties'}
+    ], answer:1,
+    explanationZh:'FOB（Free On Board）= 产品成本 + 国内货代费 + 出口港装船费。国际运费和目的地费用由买方承担。',
+    explanationEn:'FOB (Free On Board) = product cost + domestic forwarder + loading at export port. International freight and destination costs are the buyer\'s responsibility.' },
+
+  // ── CH09 补充题 ───────────────────────────────────────
+  { id:'q044', chapterId:'ch09', type:'single', difficulty:'easy',
+    questionZh:'"MOQ" 的全称是什么？',
+    questionEn:'What does "MOQ" stand for?',
+    options:[
+      {zh:'Maximum Order Quantity（最大订购量）',en:'Maximum Order Quantity'},
+      {zh:'Minimum Order Quantity（最低起订量）',en:'Minimum Order Quantity'},
+      {zh:'Monthly Order Quota（月度订单配额）',en:'Monthly Order Quota'},
+      {zh:'Multiple Order Quantity（倍数起订量）',en:'Multiple Order Quantity'}
+    ], answer:1,
+    explanationZh:'MOQ = Minimum Order Quantity（最低起订量），是供应商接受单次订单的最小数量。',
+    explanationEn:'MOQ = Minimum Order Quantity — the minimum number of units a supplier will accept in a single order.' },
+
+  { id:'q045', chapterId:'ch09', type:'single', difficulty:'easy',
+    questionZh:'"Zamak" 中文是什么？',
+    questionEn:'What is the Chinese term for "Zamak"?',
+    options:[
+      {zh:'铝合金',en:'Aluminum alloy'},
+      {zh:'不锈钢',en:'Stainless steel'},
+      {zh:'锌合金',en:'Zinc alloy'},
+      {zh:'铜合金',en:'Copper alloy'}
+    ], answer:2,
+    explanationZh:'Zamak 是锌合金（Zinc Alloy）的商品名，常用于制作高档香水盖，重量感好，电镀效果出色。',
+    explanationEn:'Zamak is the trade name for Zinc Alloy, commonly used for premium perfume caps — excellent weight feel and plating quality.' },
+
+  { id:'q046', chapterId:'ch09', type:'single', difficulty:'medium',
+    questionZh:'"Crimp" 和 "Screw" 分别对应什么结构？',
+    questionEn:'What structures do "Crimp" and "Screw" refer to?',
+    options:[
+      {zh:'Crimp = 压制瓶盖；Screw = 螺旋瓶盖',en:'Crimp = press-on cap; Screw = screw cap'},
+      {zh:'Crimp = 卡口（压接）封口；Screw = 螺口封口',en:'Crimp = crimp-sealed neck; Screw = screw-thread neck'},
+      {zh:'两者都指喷头类型',en:'Both refer to pump types'},
+      {zh:'Crimp = 进口材料；Screw = 国产材料',en:'Crimp = imported; Screw = domestic'}
+    ], answer:1,
+    explanationZh:'Crimp（卡口）指用机器压接固定喷头的封口方式；Screw（螺口）指喷头与瓶口通过螺纹连接。两者不可互换，下单前必须与客户确认。',
+    explanationEn:'Crimp = machine-crimped pump seal; Screw = thread-connected pump neck. They are NOT interchangeable — always confirm with client before ordering.' },
+
+  { id:'q047', chapterId:'ch09', type:'single', difficulty:'medium',
+    questionZh:'"OEM" 和 "ODM" 的区别是？',
+    questionEn:'What is the difference between "OEM" and "ODM"?',
+    options:[
+      {zh:'两者完全相同，可以互换使用',en:'They are identical and interchangeable'},
+      {zh:'OEM = 按客户设计生产；ODM = 由供应商提供设计并生产',en:'OEM = manufacture per client design; ODM = supplier provides design + manufacture'},
+      {zh:'OEM 比 ODM 更贵',en:'OEM is more expensive than ODM'},
+      {zh:'ODM 不能使用客户品牌',en:'ODM cannot use the client\'s brand'}
+    ], answer:1,
+    explanationZh:'OEM（原始设备制造）：按客户提供的设计和规格生产，贴客户品牌。ODM（原始设计制造）：供应商自主设计，客户选择方案后贴自己品牌。',
+    explanationEn:'OEM: manufacture products per client\'s design/specs, with client\'s branding. ODM: supplier provides their own design, client selects and applies their own brand.' }
 ];

@@ -143,3 +143,91 @@ function setActiveNav(id) {
   const el = document.getElementById(id);
   if (el) el.classList.add('active');
 }
+
+// ── Quiz / Exam engine ────────────────────────────────
+
+// Fisher-Yates shuffle (returns new array)
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// Build question set for a single chapter quiz
+function buildChapterQuizSet(chapterId) {
+  const pool = (typeof QUESTIONS !== 'undefined' ? QUESTIONS : [])
+    .filter(q => q.chapterId === chapterId);
+  const shuffled = shuffle(pool);
+  return shuffled.slice(0, EXAM_CONFIG.quiz.questionsPerChapter);
+}
+
+// Build mock exam question set (evenly distributed across chapters)
+function buildMockSet() {
+  const allQ    = typeof QUESTIONS !== 'undefined' ? QUESTIONS : [];
+  const target  = EXAM_CONFIG.mock.questionCount;
+  // Group by chapter
+  const byChapter = {};
+  allQ.forEach(q => {
+    if (!byChapter[q.chapterId]) byChapter[q.chapterId] = [];
+    byChapter[q.chapterId].push(q);
+  });
+  const chapters = Object.keys(byChapter);
+  const perChap  = Math.ceil(target / chapters.length);
+  let result = [];
+  chapters.forEach(cid => {
+    const picked = shuffle(byChapter[cid]).slice(0, perChap);
+    result = result.concat(picked);
+  });
+  return shuffle(result).slice(0, target);
+}
+
+// Build formal exam question set
+function buildExamSet(config) {
+  const allQ   = typeof QUESTIONS !== 'undefined' ? QUESTIONS : [];
+  const target = config.questionCount || 30;
+  // Distribute proportionally: harder questions weighted more
+  const easy   = shuffle(allQ.filter(q => q.difficulty === 'easy'));
+  const medium = shuffle(allQ.filter(q => q.difficulty === 'medium'));
+  const hard   = shuffle(allQ.filter(q => q.difficulty === 'hard'));
+  // ~30% easy, 50% medium, 20% hard
+  const eN = Math.round(target * 0.30);
+  const mN = Math.round(target * 0.50);
+  const hN = target - eN - mN;
+  const pool = [
+    ...easy.slice(0, eN),
+    ...medium.slice(0, mN),
+    ...hard.slice(0, hN)
+  ];
+  // Fill gaps if not enough in a difficulty tier
+  if (pool.length < target) {
+    const used = new Set(pool.map(q => q.id));
+    const extra = shuffle(allQ.filter(q => !used.has(q.id)));
+    pool.push(...extra.slice(0, target - pool.length));
+  }
+  return shuffle(pool).slice(0, target);
+}
+
+// Score a completed session: returns { score, correct, total, details }
+function scoreExam(questions, answers) {
+  let correct = 0;
+  const details = questions.map(q => {
+    const userAns = answers[q.id];
+    let isCorrect = false;
+    if (q.type === 'multi') {
+      // Multi-select: user answer is array, q.answer is array
+      const ua = Array.isArray(userAns) ? [...userAns].sort() : [];
+      const ca = Array.isArray(q.answer) ? [...q.answer].sort() : [];
+      isCorrect = ua.length === ca.length && ua.every((v, i) => v === ca[i]);
+    } else {
+      // Single choice: compare numbers
+      isCorrect = userAns !== undefined && userAns === q.answer;
+    }
+    if (isCorrect) correct++;
+    return { correct: isCorrect, userAnswer: userAns, correctAnswer: q.answer };
+  });
+  const score = questions.length > 0 ? Math.round((correct / questions.length) * 100) : 0;
+  return { score, correct, total: questions.length, details };
+}
