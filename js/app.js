@@ -237,9 +237,16 @@ function renderReader() {
   ch.sections.forEach(sec => {
     const heading = lang === 'zh' ? sec.headingZh : sec.headingEn;
     const content = (lang === 'zh' ? sec.contentZh : sec.contentEn) || '';
+    // Detect HTML content (starts with <) vs plain text
+    const isHtml = content.trim().startsWith('<');
+    const renderedContent = isHtml
+      ? content
+      : content.split('\n').map(line => line.trim()
+          ? `<p>${line.replace(/^[•·]\s?/,'<span style="color:var(--mid-blue);margin-right:.3em;">•</span>')}</p>`
+          : '').join('');
     body += `<div class="reader-section">
       <h3>${heading}</h3>
-      ${content.split('\n').map(line => line.trim() ? `<p>${line.replace(/^[•·]\s?/,'<span style="color:var(--mid-blue);margin-right:.3em;">•</span>')}</p>` : '').join('')}
+      ${renderedContent}
     </div>`;
   });
   document.getElementById('readerBody').innerHTML = body;

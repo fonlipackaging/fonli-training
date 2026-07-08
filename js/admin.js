@@ -486,7 +486,86 @@ function esc(str) {
   return (str || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
+/* ── Rich content editor helpers ── */
+const SNIPPET_TEMPLATES = {
+  table: `<table class="kc-table">
+  <thead><tr><th>列1</th><th>列2</th><th>列3</th></tr></thead>
+  <tbody>
+    <tr><td></td><td></td><td></td></tr>
+    <tr><td></td><td></td><td></td></tr>
+  </tbody>
+</table>`,
+  tip: `<div class="kc-tip">💡 <strong>提示：</strong>在这里填写提示内容</div>`,
+  warning: `<div class="kc-warning">⚠️ 注意：在这里填写警告内容</div>`,
+  intro: `<div class="kc-intro">在这里填写简介内容</div>`,
+  steps: `<div class="kc-steps">
+  <div class="kc-step"><div class="kc-step-num">01</div><div class="kc-step-body"><div class="kc-step-title">步骤标题</div><div class="kc-step-desc">步骤说明</div></div></div>
+  <div class="kc-step"><div class="kc-step-num">02</div><div class="kc-step-body"><div class="kc-step-title">步骤标题</div><div class="kc-step-desc">步骤说明</div></div></div>
+</div>`,
+  imgGrid: `<div class="kc-img-grid">
+  <figure><img src="img/image1.png" alt="图片说明"><figcaption>图片说明</figcaption></figure>
+  <figure><img src="img/image2.png" alt="图片说明"><figcaption>图片说明</figcaption></figure>
+</div>`,
+  twocol: `<div class="kc-two-col">
+  <div class="kc-col kc-col-a"><div class="kc-col-header">左侧标题</div>左侧内容</div>
+  <div class="kc-col kc-col-b"><div class="kc-col-header">右侧标题</div>右侧内容</div>
+</div>`,
+  highlight: `<div class="kc-highlight-row">
+  <div class="kc-highlight"><span class="kc-hi-icon">📦</span><strong>标题</strong><br>内容说明</div>
+  <div class="kc-highlight"><span class="kc-hi-icon">✨</span><strong>标题</strong><br>内容说明</div>
+</div>`
+};
+
+function insertSnippet(textareaId, key) {
+  const ta = document.getElementById(textareaId);
+  if (!ta) return;
+  const snippet = SNIPPET_TEMPLATES[key] || '';
+  const start = ta.selectionStart, end = ta.selectionEnd;
+  ta.value = ta.value.slice(0, start) + '\n' + snippet + '\n' + ta.value.slice(end);
+  ta.selectionStart = ta.selectionEnd = start + snippet.length + 2;
+  ta.focus();
+}
+
+function togglePreview(idx, lang) {
+  const ta   = document.getElementById(`sec-${idx}-content${lang}`);
+  const pre  = document.getElementById(`sec-${idx}-preview${lang}`);
+  const btn  = document.getElementById(`sec-${idx}-prevbtn${lang}`);
+  if (!ta || !pre) return;
+  if (pre.style.display === 'none') {
+    pre.innerHTML = ta.value;
+    pre.style.display = 'block';
+    ta.style.display = 'none';
+    btn.innerHTML = '<i class="ti ti-pencil"></i> ' + t('编辑','Edit');
+  } else {
+    ta.value = pre.innerHTML;
+    pre.style.display = 'none';
+    ta.style.display = 'block';
+    btn.innerHTML = '<i class="ti ti-eye"></i> ' + t('预览','Preview');
+  }
+}
+
+function richEditorToolbar(taId) {
+  const snippets = [
+    {key:'intro',    icon:'ti-info-circle',   label:'简介块'},
+    {key:'table',    icon:'ti-table',         label:'表格'},
+    {key:'tip',      icon:'ti-bulb',          label:'提示框'},
+    {key:'warning',  icon:'ti-alert-triangle', label:'警告框'},
+    {key:'steps',    icon:'ti-list-numbers',  label:'步骤流'},
+    {key:'twocol',   icon:'ti-layout-columns',label:'双栏'},
+    {key:'highlight',icon:'ti-cards',         label:'卡片组'},
+    {key:'imgGrid',  icon:'ti-photo',         label:'图片格'},
+  ];
+  return `<div style="display:flex;flex-wrap:wrap;gap:.3rem;margin-bottom:.4rem;">
+    ${snippets.map(s => `<button type="button" class="btn btn-sm btn-outline" style="padding:.2rem .5rem;font-size:.72rem;"
+      onclick="insertSnippet('${taId}','${s.key}')">
+      <i class="ti ${s.icon}"></i> ${s.label}
+    </button>`).join('')}
+  </div>`;
+}
+
 function buildSectionHtml(idx, sec) {
+  const vzh = (sec.contentZh||'').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const ven = (sec.contentEn||'').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   return `<div class="chapter-section-block" id="sec-block-${idx}"
     style="border:1px solid var(--mid-gray);border-radius:var(--radius-sm);padding:1rem;margin-bottom:.75rem;background:var(--gray);">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;">
@@ -500,21 +579,31 @@ function buildSectionHtml(idx, sec) {
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem;">
       <div class="form-group" style="margin:0;">
         <label class="form-label" style="font-size:.78rem;">${t('小节标题（中文）','Heading (Chinese)')}</label>
-        <input class="form-input" id="sec-${idx}-headingZh" value="${esc(sec.headingZh)}" placeholder="${t('中文小节标题','Chinese section heading')}">
+        <input class="form-input" id="sec-${idx}-headingZh" value="${esc(sec.headingZh||'')}" placeholder="${t('中文小节标题','Chinese section heading')}">
       </div>
       <div class="form-group" style="margin:0;">
         <label class="form-label" style="font-size:.78rem;">${t('小节标题（英文）','Heading (English)')}</label>
-        <input class="form-input" id="sec-${idx}-headingEn" value="${esc(sec.headingEn)}" placeholder="English section heading">
+        <input class="form-input" id="sec-${idx}-headingEn" value="${esc(sec.headingEn||'')}" placeholder="English section heading">
       </div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;">
       <div class="form-group" style="margin:0;">
-        <label class="form-label" style="font-size:.78rem;">${t('内容（中文）','Content (Chinese)')}<span style="font-weight:400;opacity:.7;"> — ${t('每行一段','one paragraph per line')}</span></label>
-        <textarea class="form-input" id="sec-${idx}-contentZh" rows="6" style="resize:vertical;font-size:.82rem;">${esc(sec.contentZh)}</textarea>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.25rem;">
+          <label class="form-label" style="font-size:.78rem;margin:0;">${t('内容（中文 HTML）','Content (Chinese HTML)')}</label>
+          <button type="button" id="sec-${idx}-prevbtnZh" class="btn btn-sm btn-outline" style="padding:.15rem .4rem;font-size:.7rem;" onclick="togglePreview(${idx},'Zh')"><i class="ti ti-eye"></i> ${t('预览','Preview')}</button>
+        </div>
+        ${richEditorToolbar(`sec-${idx}-contentZh`)}
+        <textarea class="form-input" id="sec-${idx}-contentZh" rows="10" style="resize:vertical;font-size:.75rem;font-family:monospace;">${vzh}</textarea>
+        <div id="sec-${idx}-previewZh" class="kc-preview-box" style="display:none;border:1px solid var(--mid-gray);border-radius:6px;padding:.75rem;background:#fff;min-height:80px;"></div>
       </div>
       <div class="form-group" style="margin:0;">
-        <label class="form-label" style="font-size:.78rem;">${t('内容（英文）','Content (English)')}<span style="font-weight:400;opacity:.7;"> — one paragraph per line</span></label>
-        <textarea class="form-input" id="sec-${idx}-contentEn" rows="6" style="resize:vertical;font-size:.82rem;">${esc(sec.contentEn)}</textarea>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.25rem;">
+          <label class="form-label" style="font-size:.78rem;margin:0;">${t('内容（英文 HTML）','Content (English HTML)')}</label>
+          <button type="button" id="sec-${idx}-prevbtnEn" class="btn btn-sm btn-outline" style="padding:.15rem .4rem;font-size:.7rem;" onclick="togglePreview(${idx},'En')"><i class="ti ti-eye"></i> Preview</button>
+        </div>
+        ${richEditorToolbar(`sec-${idx}-contentEn`)}
+        <textarea class="form-input" id="sec-${idx}-contentEn" rows="10" style="resize:vertical;font-size:.75rem;font-family:monospace;">${ven}</textarea>
+        <div id="sec-${idx}-previewEn" class="kc-preview-box" style="display:none;border:1px solid var(--mid-gray);border-radius:6px;padding:.75rem;background:#fff;min-height:80px;"></div>
       </div>
     </div>
   </div>`;
@@ -522,12 +611,19 @@ function buildSectionHtml(idx, sec) {
 
 function collectEditorSections() {
   const blocks = document.querySelectorAll('.chapter-section-block');
-  return Array.from(blocks).map((_, i) => ({
-    headingZh:  document.getElementById(`sec-${i}-headingZh`)?.value  || '',
-    headingEn:  document.getElementById(`sec-${i}-headingEn`)?.value  || '',
-    contentZh:  document.getElementById(`sec-${i}-contentZh`)?.value  || '',
-    contentEn:  document.getElementById(`sec-${i}-contentEn`)?.value  || ''
-  }));
+  return Array.from(blocks).map((_, i) => {
+    // If preview is showing, grab from preview div innerHTML
+    const preZh = document.getElementById(`sec-${i}-previewZh`);
+    const preEn = document.getElementById(`sec-${i}-previewEn`);
+    const taZh  = document.getElementById(`sec-${i}-contentZh`);
+    const taEn  = document.getElementById(`sec-${i}-contentEn`);
+    return {
+      headingZh: document.getElementById(`sec-${i}-headingZh`)?.value || '',
+      headingEn: document.getElementById(`sec-${i}-headingEn`)?.value || '',
+      contentZh: (preZh && preZh.style.display !== 'none') ? preZh.innerHTML : (taZh?.value || ''),
+      contentEn: (preEn && preEn.style.display !== 'none') ? preEn.innerHTML : (taEn?.value || '')
+    };
+  });
 }
 
 function addEditorSection() {
