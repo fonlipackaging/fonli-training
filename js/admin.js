@@ -614,7 +614,8 @@ async function deleteChapter(chId) {
 
 // ── Seed default data ─────────────────────────────────
 async function seedDefaultChapters() {
-  if (!window.CHAPTERS || !CHAPTERS.length) {
+  const chapData = (typeof CHAPTERS !== 'undefined') ? CHAPTERS : null;
+  if (!chapData || !chapData.length) {
     toast(t('找不到默认知识库数据','Default data not found in data.js'), 'danger'); return;
   }
   const btn = document.getElementById('seedBtn');
@@ -623,7 +624,7 @@ async function seedDefaultChapters() {
   try {
     // Firestore batch limit is 500 ops; 10 chapters is fine
     const batch = db.batch();
-    CHAPTERS.forEach(ch => {
+    chapData.forEach(ch => {
       const ref = db.collection('chapters').doc(ch.id);
       batch.set(ref, {
         titleZh:          ch.titleZh  || ch.title || '',
@@ -641,7 +642,7 @@ async function seedDefaultChapters() {
       }, { merge: true });
     });
     await batch.commit();
-    toast(t(`已成功导入 ${CHAPTERS.length} 个章节 ✓`, `Successfully imported ${CHAPTERS.length} chapters ✓`), 'success');
+    toast(t(`已成功导入 ${chapData.length} 个章节 ✓`, `Successfully imported ${chapData.length} chapters ✓`), 'success');
     renderContent();
   } catch(e) {
     toast(t('导入失败：','Import failed: ') + e.message, 'danger');
