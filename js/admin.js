@@ -431,6 +431,7 @@ function showChapterEditor(chId) {
   let sectionsHtml = sections.length
     ? sections.map((s, i) => buildSectionHtml(i, s)).join('')
     : `<p class="no-sections-msg" style="color:var(--dark-gray);text-align:center;padding:1.25rem 0;">${t('暂无小节，点击上方添加','No sections yet — click above to add.')}</p>`;
+  const _sectionsForInit = sections; // capture for after-render init
 
   editorEl.innerHTML = `
     <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem;flex-wrap:wrap;">
@@ -480,13 +481,152 @@ function showChapterEditor(chId) {
         <i class="ti ti-device-floppy"></i> ${t('保存章节','Save Chapter')}
       </button>
     </div>`;
+
+  // Initialize WYSIWYG editors after DOM is rendered
+  if (_sectionsForInit && _sectionsForInit.length) {
+    requestAnimationFrame(() => initSectionEditors(0, _sectionsForInit));
+  }
 }
 
 function esc(str) {
   return (str || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
-/* ── Rich content editor helpers ── */
+// ── WYSIWYG Visual Editor ─────────────────────────────
+
+// Keep selection alive when toolbar buttons are clicked
+let _savedSel = null;
+document.addEventListener('mousedown', e => {
+  if (e.target.closest('.wysiwyg-toolbar')) {
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount) _savedSel = sel.getRangeAt(0).cloneRange();
+  }
+}, true);
+
+function restoreSel() {
+  if (!_savedSel) return;
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(_savedSel);
+}
+
+function wFmt(cmd, val) {
+  restoreSel();
+  document.execCommand(cmd, false, val || null);
+}
+
+function wInsertHtml(editorId, html) {
+  const el = document.getElementById(editorId);
+  if (!el) return;
+  el.focus();
+  // Try restoring selection first, otherwise append
+  const sel = window.getSelection();
+  if (_savedSel && el.contains(_savedSel.startContainer)) {
+    sel.removeAllRanges();
+    sel.addRange(_savedSel);
+    document.execCommand('insertHTML', false, html);
+  } else {
+    // Append at end
+    el.focus();
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    range.collapse(false);
+    sel.removeAllRanges();
+    sel.addRange(range);
+    document.execCommand('insertHTML', false, html);
+  }
+}
+
+function wInsertTable(editorId) {
+  const rows = parseInt(prompt(t('行数（含表头）:','Rows (including header):'), '3'));
+  const cols = parseInt(prompt(t('列数:','Columns:'), '3'));
+  if (!rows || !cols || rows < 1 || cols < 1) return;
+  let html = '<table class="kc-table" style="width:100%;border-collapse:collapse;margin:.75rem 0"><thead><tr>';
+  for (let c = 0; c < cols; c++) html += `<th style="background:#2B2B2B;color:#fff;padding:.45rem .75rem;text-align:left;">${t('列','Col')}${c+1}</th>`;
+  html += '</tr></thead><tbody>';
+  for (let r = 0; r < rows - 1; r++) {
+    html += '<tr>';
+    for (let c = 0; c < cols; c++) html += '<td style="padding:.45rem .75rem;border-bottom:1px solid #f0f0f0;">&nbsp;</td>';
+    html += '</tr>';
+  }
+  html += '</tbody></table><p><br></p>';
+  wInsertHtml(editorId, html);
+}
+
+function wInsertImg(editorId) {
+  const src = prompt(t('图片路径（如 img/image1.png）:','Image path (e.g. img/image1.png):'), 'img/');
+  if (!src) return;
+  const cap = prompt(t('图片说明（可选）:','Caption (optional):'), '') || '';
+  const html = `<figure style="display:inline-block;text-align:center;margin:.5rem .25rem;vertical-align:top;">
+    <img src="${src}" alt="${cap}" style="max-width:160px;height:120px;object-fit:contain;border-radius:6px;border:1px solid #eee;">
+    ${cap ? `<figcaption style="font-size:.72rem;color:#666;margin-top:.25rem;">${cap}</figcaption>` : ''}
+  </figure>`;
+  wInsertHtml(editorId, html);
+}
+
+function wInsertBlock(editorId, type) {
+  const blocks = {
+    intro:   `<div class="kc-intro" style="background:#FEF3EF;border-left:4px solid #E8603C;padding:.75rem 1rem;border-radius:0 8px 8px 0;margin:.5rem 0;">在这里填写简介内容</div><p><br></p>`,
+    tip:     `<div class="kc-tip" style="background:#FEF9C3;border:1px solid #FDE047;border-radius:8px;padding:.65rem 1rem;margin:.5rem 0;">💡 <strong>提示：</strong>在这里填写提示内容</div><p><br></p>`,
+    warning: `<div class="kc-warning" style="background:#FEF2F2;border:1px solid #FECACA;border-radius:8px;padding:.65rem 1rem;margin:.5rem 0;color:#991B1B;">⚠️ <strong>注意：</strong>在这里填写警告内容</div><p><br></p>`,
+    badge:   `<span class="kc-badge kc-badge-orange" style="display:inline-block;padding:.15rem .5rem;border-radius:999px;background:#FEF3C7;color:#92400E;font-weight:700;">标签文字</span>`,
+  };
+  wInsertHtml(editorId, blocks[type] || '');
+}
+
+function wSetMode(idx, lang, mode) {
+  const visual = document.getElementById(`sec-${idx}-vis${lang}`);
+  const source = document.getElementById(`sec-${idx}-src${lang}`);
+  const btnV   = document.getElementById(`sec-${idx}-btnV${lang}`);
+  const btnH   = document.getElementById(`sec-${idx}-btnH${lang}`);
+  if (!visual || !source) return;
+  if (mode === 'visual') {
+    visual.innerHTML = source.value;
+    visual.contentEditable = 'true';
+    visual.style.display = 'block';
+    source.style.display = 'none';
+    if (btnV) { btnV.classList.add('active-tab'); }
+    if (btnH) { btnH.classList.remove('active-tab'); }
+  } else {
+    source.value = visual.innerHTML;
+    visual.contentEditable = 'false';
+    visual.style.display = 'none';
+    source.style.display = 'block';
+    if (btnV) { btnV.classList.remove('active-tab'); }
+    if (btnH) { btnH.classList.add('active-tab'); }
+  }
+}
+
+function wysiwyg_toolbar(idx, lang) {
+  const ed = `sec-${idx}-vis${lang}`;
+  return `
+  <div class="wysiwyg-toolbar">
+    <div class="wt-group">
+      <button type="button" class="wt-btn" title="${t('粗体','Bold')}" onmousedown="event.preventDefault();wFmt('bold')"><b>B</b></button>
+      <button type="button" class="wt-btn" title="${t('斜体','Italic')}" onmousedown="event.preventDefault();wFmt('italic')"><i>I</i></button>
+      <button type="button" class="wt-btn" title="${t('下划线','Underline')}" onmousedown="event.preventDefault();wFmt('underline')"><u>U</u></button>
+    </div>
+    <div class="wt-sep"></div>
+    <div class="wt-group">
+      <button type="button" class="wt-btn" title="${t('标题','Heading')}" onmousedown="event.preventDefault();wFmt('formatBlock','h3')">H</button>
+      <button type="button" class="wt-btn" title="${t('正文','Normal')}" onmousedown="event.preventDefault();wFmt('formatBlock','p')">P</button>
+      <button type="button" class="wt-btn" title="${t('无序列表','Bullet list')}" onmousedown="event.preventDefault();wFmt('insertUnorderedList')">≡</button>
+    </div>
+    <div class="wt-sep"></div>
+    <div class="wt-group">
+      <button type="button" class="wt-btn wt-btn-icon" onmousedown="event.preventDefault();wInsertTable('${ed}')"><i class="ti ti-table"></i> ${t('表格','Table')}</button>
+      <button type="button" class="wt-btn wt-btn-icon" onmousedown="event.preventDefault();wInsertImg('${ed}')"><i class="ti ti-photo"></i> ${t('图片','Image')}</button>
+    </div>
+    <div class="wt-sep"></div>
+    <div class="wt-group">
+      <button type="button" class="wt-btn wt-btn-icon" onmousedown="event.preventDefault();wInsertBlock('${ed}','intro')">📋 ${t('简介块','Intro')}</button>
+      <button type="button" class="wt-btn wt-btn-icon" onmousedown="event.preventDefault();wInsertBlock('${ed}','tip')">💡 ${t('提示','Tip')}</button>
+      <button type="button" class="wt-btn wt-btn-icon" onmousedown="event.preventDefault();wInsertBlock('${ed}','warning')">⚠️ ${t('警告','Warn')}</button>
+    </div>
+  </div>`;
+}
+
+/* ── Rich content editor helpers (legacy - kept for seedDefaultChapters) ── */
 const SNIPPET_TEMPLATES = {
   table: `<table class="kc-table">
   <thead><tr><th>列1</th><th>列2</th><th>列3</th></tr></thead>
@@ -564,8 +704,7 @@ function richEditorToolbar(taId) {
 }
 
 function buildSectionHtml(idx, sec) {
-  const vzh = (sec.contentZh||'').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  const ven = (sec.contentEn||'').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  // Content is set via initSectionEditors() to avoid HTML injection issues
   return `<div class="chapter-section-block" id="sec-block-${idx}"
     style="border:1px solid var(--mid-gray);border-radius:var(--radius-sm);padding:1rem;margin-bottom:.75rem;background:var(--gray);">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;">
@@ -586,42 +725,64 @@ function buildSectionHtml(idx, sec) {
         <input class="form-input" id="sec-${idx}-headingEn" value="${esc(sec.headingEn||'')}" placeholder="English section heading">
       </div>
     </div>
+
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;">
-      <div class="form-group" style="margin:0;">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.25rem;">
-          <label class="form-label" style="font-size:.78rem;margin:0;">${t('内容（中文 HTML）','Content (Chinese HTML)')}</label>
-          <button type="button" id="sec-${idx}-prevbtnZh" class="btn btn-sm btn-outline" style="padding:.15rem .4rem;font-size:.7rem;" onclick="togglePreview(${idx},'Zh')"><i class="ti ti-eye"></i> ${t('预览','Preview')}</button>
-        </div>
-        ${richEditorToolbar(`sec-${idx}-contentZh`)}
-        <textarea class="form-input" id="sec-${idx}-contentZh" rows="10" style="resize:vertical;font-size:.75rem;font-family:monospace;">${vzh}</textarea>
-        <div id="sec-${idx}-previewZh" class="kc-preview-box" style="display:none;border:1px solid var(--mid-gray);border-radius:6px;padding:.75rem;background:#fff;min-height:80px;"></div>
-      </div>
-      <div class="form-group" style="margin:0;">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.25rem;">
-          <label class="form-label" style="font-size:.78rem;margin:0;">${t('内容（英文 HTML）','Content (English HTML)')}</label>
-          <button type="button" id="sec-${idx}-prevbtnEn" class="btn btn-sm btn-outline" style="padding:.15rem .4rem;font-size:.7rem;" onclick="togglePreview(${idx},'En')"><i class="ti ti-eye"></i> Preview</button>
-        </div>
-        ${richEditorToolbar(`sec-${idx}-contentEn`)}
-        <textarea class="form-input" id="sec-${idx}-contentEn" rows="10" style="resize:vertical;font-size:.75rem;font-family:monospace;">${ven}</textarea>
-        <div id="sec-${idx}-previewEn" class="kc-preview-box" style="display:none;border:1px solid var(--mid-gray);border-radius:6px;padding:.75rem;background:#fff;min-height:80px;"></div>
-      </div>
+      ${buildEditorPanel(idx,'Zh',t('中文内容','Chinese Content'))}
+      ${buildEditorPanel(idx,'En','English Content')}
     </div>
   </div>`;
+}
+
+function buildEditorPanel(idx, lang, label) {
+  return `
+  <div class="form-group" style="margin:0;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.35rem;">
+      <label class="form-label" style="font-size:.78rem;margin:0;">${label}</label>
+      <div style="display:flex;gap:.2rem;">
+        <button type="button" id="sec-${idx}-btnV${lang}" class="wt-mode-btn active-tab"
+          onmousedown="event.preventDefault();wSetMode(${idx},'${lang}','visual')">
+          <i class="ti ti-eye"></i> ${t('可视化','Visual')}
+        </button>
+        <button type="button" id="sec-${idx}-btnH${lang}" class="wt-mode-btn"
+          onmousedown="event.preventDefault();wSetMode(${idx},'${lang}','html')">
+          &lt;/&gt; HTML
+        </button>
+      </div>
+    </div>
+    ${wysiwyg_toolbar(idx, lang)}
+    <div class="wysiwyg-editor reader-body" id="sec-${idx}-vis${lang}" contenteditable="false"
+      style="display:block;min-height:120px;"></div>
+    <textarea class="form-input" id="sec-${idx}-src${lang}" rows="8"
+      style="display:none;font-family:monospace;font-size:.73rem;resize:vertical;"></textarea>
+  </div>`;
+}
+
+function initSectionEditors(startIdx, sections) {
+  // Called after DOM is ready to set innerHTML safely
+  sections.forEach((sec, i) => {
+    const idx = startIdx + i;
+    const visZh = document.getElementById(`sec-${idx}-visZh`);
+    const visEn = document.getElementById(`sec-${idx}-visEn`);
+    if (visZh) { visZh.innerHTML = sec.contentZh || ''; visZh.contentEditable = 'true'; }
+    if (visEn) { visEn.innerHTML = sec.contentEn || ''; visEn.contentEditable = 'true'; }
+  });
 }
 
 function collectEditorSections() {
   const blocks = document.querySelectorAll('.chapter-section-block');
   return Array.from(blocks).map((_, i) => {
-    // If preview is showing, grab from preview div innerHTML
-    const preZh = document.getElementById(`sec-${i}-previewZh`);
-    const preEn = document.getElementById(`sec-${i}-previewEn`);
-    const taZh  = document.getElementById(`sec-${i}-contentZh`);
-    const taEn  = document.getElementById(`sec-${i}-contentEn`);
+    const getContent = (lang) => {
+      const src = document.getElementById(`sec-${i}-src${lang}`);
+      const vis = document.getElementById(`sec-${i}-vis${lang}`);
+      // If HTML source mode is visible, use textarea value
+      if (src && src.style.display !== 'none') return src.value;
+      return vis ? vis.innerHTML : '';
+    };
     return {
       headingZh: document.getElementById(`sec-${i}-headingZh`)?.value || '',
       headingEn: document.getElementById(`sec-${i}-headingEn`)?.value || '',
-      contentZh: (preZh && preZh.style.display !== 'none') ? preZh.innerHTML : (taZh?.value || ''),
-      contentEn: (preEn && preEn.style.display !== 'none') ? preEn.innerHTML : (taEn?.value || '')
+      contentZh: getContent('Zh'),
+      contentEn: getContent('En')
     };
   });
 }
@@ -632,6 +793,7 @@ function addEditorSection() {
   if (placeholder) placeholder.remove();
   const idx = container.querySelectorAll('.chapter-section-block').length;
   container.insertAdjacentHTML('beforeend', buildSectionHtml(idx, {}));
+  initSectionEditors(idx, [{}]);
   container.lastElementChild.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
@@ -644,6 +806,7 @@ function removeEditorSection(idx) {
     return;
   }
   container.innerHTML = sections.map((s, i) => buildSectionHtml(i, s)).join('');
+  initSectionEditors(0, sections);
 }
 
 // ── Save ──────────────────────────────────────────────
