@@ -32,6 +32,7 @@ let currentQIndex     = 0;
 let examTimer         = null;
 let currentChapterId  = null;
 let currentChapterIdx = 0;
+let currentSectionIdx = 0;  // pagination within chapter
 
 // ── Auth guard ────────────────────────────────────────
 auth.onAuthStateChanged(async user => {
@@ -216,48 +217,112 @@ function renderLearnList() {
 function openChapter(chapterId) {
   currentChapterId  = chapterId;
   currentChapterIdx = appChapters.findIndex(c => c.id === chapterId);
+  currentSectionIdx = 0;
   renderReader();
   showView('view-reader');
   setActiveNav('nav-learn');
 }
 
 function renderReader() {
-  const ch = appChapters[currentChapterIdx];
+  const ch   = appChapters[currentChapterIdx];
   const lang = getLang();
+  const secs = ch.sections || [];
+  const totalSec = secs.length;
+  // Guard section index
+  if (currentSectionIdx < 0) currentSectionIdx = 0;
+  if (currentSectionIdx >= totalSec) currentSectionIdx = totalSec - 1;
+  const sec = secs[currentSectionIdx] || {};
+
+  // ── Header ──────────────────────────────────────────
   document.getElementById('readerHeader').innerHTML = `
     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;">
       <div>
-        <h2>${lang==='zh' ? ch.titleZh : ch.titleEn}</h2>
-        <p>${t('章节','Chapter')} ${ch.order} / ${appChapters.length} · ${t('约','~')}${ch.estimatedMinutes}${t('分钟阅读','min read')}</p>
+        <h2 style="margin-bottom:.2rem;">${lang==='zh' ? ch.titleZh : ch.titleEn}</h2>
+        <p style="margin:0;font-size:.82rem;color:var(--dark-gray);">
+          ${t('章节','Ch.')} ${ch.order}/${appChapters.length}
+          &nbsp;·&nbsp;
+          <span style="color:var(--orange);font-weight:600;">
+            ${t('小节','Sec.')} ${currentSectionIdx+1} / ${totalSec}
+          </span>
+        </p>
       </div>
-      <span class="tag tag-blue">${ch.order} / ${appChapters.length}</span>
+      <div style="display:flex;align-items:center;gap:.5rem;">
+        <div class="reader-progress-bar" style="width:120px;height:6px;background:var(--mid-gray);border-radius:3px;overflow:hidden;">
+          <div style="height:100%;width:${Math.round((currentSectionIdx+1)/totalSec*100)}%;background:var(--orange);border-radius:3px;transition:width .3s;"></div>
+        </div>
+        <span style="font-size:.78rem;color:var(--dark-gray);">${Math.round((currentSectionIdx+1)/totalSec*100)}%</span>
+      </div>
     </div>`;
 
-  let body = '';
-  ch.sections.forEach(sec => {
-    const heading = lang === 'zh' ? sec.headingZh : sec.headingEn;
-    const content = (lang === 'zh' ? sec.contentZh : sec.contentEn) || '';
-    // Detect HTML content (starts with <) vs plain text
-    const isHtml = content.trim().startsWith('<');
-    const renderedContent = isHtml
-      ? content
-      : content.split('\n').map(line => line.trim()
-          ? `<p>${line.replace(/^[•·]\s?/,'<span style="color:var(--mid-blue);margin-right:.3em;">•</span>')}</p>`
-          : '').join('');
-    body += `<div class="reader-section">
-      <h3>${heading}</h3>
+  // ── Section content ──────────────────────────────────
+  const heading = lang === 'zh' ? sec.headingZh : sec.headingEn;
+  const content = (lang === 'zh' ? sec.contentZh : sec.contentEn) || '';
+  const isHtml = content.trim().startsWith('<');
+  const renderedContent = isHtml
+    ? content
+    : content.split('\n').map(line => line.trim()
+        ? `<p>${line.replace(/^[•·]\s?/,'<span style="color:var(--mid-blue);margin-right:.3em;">•</span>')}</p>`
+        : '').join('');
+
+  document.getElementById('readerBody').innerHTML = `
+    <div class="reader-section">
+      ${heading ? `<h3>${heading}</h3>` : ''}
       ${renderedContent}
     </div>`;
-  });
-  document.getElementById('readerBody').innerHTML = body;
 
-  // Prev/Next btn state
-  document.getElementById('prevChapterBtn').style.visibility = currentChapterIdx === 0 ? 'hidden' : 'visible';
-  const isLast = currentChapterIdx === appChapters.length - 1;
+  // Make images zoomable
+  document.getElementById('readerBody').querySelectorAll('img').forEach(img => {
+    img.style.cursor = 'zoom-in';
+    img.addEventListener('click', () => openLightbox(img.src, img.alt || ''));
+  });
+
+  // ── Section nav buttons ──────────────────────────────
+  const isFirstSec = currentSectionIdx === 0;
+  const isLastSec  = currentSectionIdx === totalSec - 1;
+  const isLastCh   = currentChapterIdx === appChapters.length - 1;
+
+  document.getElementById('prevChapterBtn').style.visibility =
+    (isFirstSec && currentChapterIdx === 0) ? 'hidden' : 'visible';
+  document.getElementById('prevChapterBtn').textContent =
+    isFirstSec ? t('← 上一章', '← Prev Ch.') : t('← 上一节', '← Prev');
+
   const nextBtn = document.getElementById('nextChapterBtn');
-  nextBtn.textContent = isLast ? t('完成学习', 'Finish') : t('下一章 →', 'Next →');
-  document.getElementById('markReadBtn').textContent =
-    t('✓ 标记已读' + (isLast ? '' : '，继续'), '✓ Mark Read' + (isLast ? '' : ' & Continue'));
+  if (isLastSec && isLastCh) {
+    nextBtn.textContent = t('完成学习', 'Finish');
+  } else if (isLastSec) {
+    nextBtn.textContent = t('下一章 →', 'Next Ch. →');
+  } else {
+    nextBtn.textContent = t('下一节 →', 'Next →');
+  }
+
+  const markBtn = document.getElementById('markReadBtn');
+  if (markBtn) {
+    markBtn.style.display = isLastSec ? 'inline-flex' : 'none';
+  }
+
+  window.scrollTo(0, 0);
+}
+
+// ── Lightbox ──────────────────────────────────────────
+function openLightbox(src, caption) {
+  let lb = document.getElementById('img-lightbox');
+  if (!lb) {
+    lb = document.createElement('div');
+    lb.id = 'img-lightbox';
+    lb.style.cssText = `position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:zoom-out;`;
+    lb.innerHTML = `
+      <button onclick="document.getElementById('img-lightbox').remove()"
+        style="position:absolute;top:1rem;right:1.25rem;background:none;border:none;
+               color:#fff;font-size:1.8rem;cursor:pointer;line-height:1;">✕</button>
+      <img id="lb-img" style="max-width:92vw;max-height:85vh;border-radius:6px;box-shadow:0 8px 40px rgba(0,0,0,.6);object-fit:contain;">
+      <p id="lb-cap" style="color:rgba(255,255,255,.75);font-size:.85rem;margin-top:.75rem;text-align:center;max-width:80vw;"></p>`;
+    lb.addEventListener('click', e => { if (e.target === lb) lb.remove(); });
+    document.body.appendChild(lb);
+  }
+  document.getElementById('lb-img').src = src;
+  document.getElementById('lb-cap').textContent = caption;
+  lb.style.display = 'flex';
 }
 
 async function markChapterRead() {
@@ -271,7 +336,8 @@ async function markChapterRead() {
   // Go to next chapter or back to list
   if (currentChapterIdx < appChapters.length - 1) {
     currentChapterIdx++;
-    currentChapterId = appChapters[currentChapterIdx].id;
+    currentChapterId  = appChapters[currentChapterIdx].id;
+    currentSectionIdx = 0;
     renderReader();
   } else {
     toast(t('🎉 全部章节学习完成！', '🎉 All chapters completed!'), 'success');
@@ -280,12 +346,39 @@ async function markChapterRead() {
 }
 
 function navigateChapter(dir) {
-  const newIdx = currentChapterIdx + dir;
-  if (newIdx < 0 || newIdx >= appChapters.length) return;
-  currentChapterIdx = newIdx;
-  currentChapterId  = appChapters[newIdx].id;
-  renderReader();
-  window.scrollTo(0, 0);
+  const ch     = appChapters[currentChapterIdx];
+  const secs   = (ch && ch.sections) ? ch.sections : [];
+  const total  = secs.length;
+
+  if (dir > 0) {
+    // Forward: go to next section, or next chapter if last section
+    if (currentSectionIdx < total - 1) {
+      currentSectionIdx++;
+      renderReader();
+    } else {
+      // Move to next chapter
+      const newIdx = currentChapterIdx + 1;
+      if (newIdx >= appChapters.length) return;
+      currentChapterIdx = newIdx;
+      currentChapterId  = appChapters[newIdx].id;
+      currentSectionIdx = 0;
+      renderReader();
+    }
+  } else {
+    // Backward: go to prev section, or prev chapter last section
+    if (currentSectionIdx > 0) {
+      currentSectionIdx--;
+      renderReader();
+    } else {
+      const newIdx = currentChapterIdx - 1;
+      if (newIdx < 0) return;
+      currentChapterIdx = newIdx;
+      currentChapterId  = appChapters[newIdx].id;
+      const prevSecs = appChapters[newIdx].sections || [];
+      currentSectionIdx = Math.max(0, prevSecs.length - 1);
+      renderReader();
+    }
+  }
 }
 
 // ── Chapter Quiz ──────────────────────────────────────
