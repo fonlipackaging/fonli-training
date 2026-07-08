@@ -238,19 +238,19 @@ function renderReader() {
     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;">
       <div>
         <h2 style="margin-bottom:.2rem;">${lang==='zh' ? ch.titleZh : ch.titleEn}</h2>
-        <p style="margin:0;font-size:.82rem;color:var(--dark-gray);">
+        <p style="margin:0;font-size:.82rem;color:rgba(255,255,255,.65);">
           ${t('章节','Ch.')} ${ch.order}/${appChapters.length}
           &nbsp;·&nbsp;
-          <span style="color:var(--orange);font-weight:600;">
+          <span style="color:#ffb08a;font-weight:600;">
             ${t('小节','Sec.')} ${currentSectionIdx+1} / ${totalSec}
           </span>
         </p>
       </div>
       <div style="display:flex;align-items:center;gap:.5rem;">
-        <div class="reader-progress-bar" style="width:120px;height:6px;background:var(--mid-gray);border-radius:3px;overflow:hidden;">
-          <div style="height:100%;width:${Math.round((currentSectionIdx+1)/totalSec*100)}%;background:var(--orange);border-radius:3px;transition:width .3s;"></div>
+        <div class="reader-progress-bar" style="width:120px;height:7px;background:rgba(255,255,255,.2);border-radius:4px;overflow:hidden;">
+          <div style="height:100%;width:${Math.round((currentSectionIdx+1)/totalSec*100)}%;background:#E8603C;border-radius:4px;transition:width .4s;"></div>
         </div>
-        <span style="font-size:.78rem;color:var(--dark-gray);">${Math.round((currentSectionIdx+1)/totalSec*100)}%</span>
+        <span style="font-size:.78rem;color:rgba(255,255,255,.7);">${Math.round((currentSectionIdx+1)/totalSec*100)}%</span>
       </div>
     </div>`;
 
