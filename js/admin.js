@@ -614,9 +614,27 @@ async function deleteChapter(chId) {
 
 // ── Seed default data ─────────────────────────────────
 async function seedDefaultChapters() {
-  const chapData = (typeof CHAPTERS !== 'undefined') ? CHAPTERS : null;
+  // Step 1: try global CHAPTERS (works if data.js already loaded)
+  let chapData = null;
+  try { if (typeof CHAPTERS !== 'undefined' && CHAPTERS.length) chapData = CHAPTERS; } catch(e) {}
+
+  // Step 2: if not found, fetch and execute data.js dynamically
+  if (!chapData) {
+    try {
+      const res  = await fetch('js/data.js');
+      const text = await res.text();
+      // Execute the script in a sandboxed function to capture CHAPTERS
+      // eslint-disable-next-line no-new-func
+      const fn   = new Function(text + '\n return (typeof CHAPTERS !== "undefined") ? CHAPTERS : null;');
+      chapData   = fn();
+    } catch(e) {
+      console.error('动态加载 data.js 失败:', e);
+    }
+  }
+
   if (!chapData || !chapData.length) {
-    toast(t('找不到默认知识库数据','Default data not found in data.js'), 'danger'); return;
+    toast(t('找不到默认知识库数据，请确认 data.js 已上传','Cannot find data.js. Please ensure it is uploaded.'), 'danger', 5000);
+    return;
   }
   const btn = document.getElementById('seedBtn');
   if (btn) { btn.disabled = true; btn.textContent = t('导入中...','Importing...'); }
