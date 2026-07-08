@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>菲利培训系统 | Fonli Training</title>
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css">
 </head>
 <body>
 
@@ -12,10 +13,10 @@
 <nav class="navbar">
   <div class="navbar-inner">
     <div style="display:flex;align-items:center;gap:.75rem;">
-      <button class="hamburger" id="hamburger">☰</button>
+      <button class="hamburger" id="hamburger"><i class="ti ti-menu-2"></i></button>
       <div class="navbar-brand">
         <div class="brand-mark" style="background:transparent;overflow:hidden;">
-          <img src="LOGO.png" alt="FL" onerror="this.parentElement.style.background='var(--gold)';this.outerHTML='<span>FL</span>'" style="width:36px;height:36px;object-fit:contain;">
+          <img src="LOGO-white.png" alt="FL" onerror="this.outerHTML='<img src=LOGO.png style=width:30px;height:30px;object-fit:contain;filter:brightness(10)>'" style="width:30px;height:30px;object-fit:contain;">
         </div>
         <div>
           <div class="brand-name" data-zh="菲利包装" data-en="Fonli Packaging">菲利包装</div>
@@ -42,25 +43,25 @@
     <div class="sidebar-section"><span class="sidebar-label" data-zh="学习路径" data-en="Learning Path">学习路径</span></div>
     <nav class="sidebar-nav">
       <a href="#" id="nav-dashboard" onclick="navigate('dashboard')">
-        <span class="nav-icon">🏠</span><span data-zh="学习总览" data-en="Dashboard">学习总览</span>
+        <i class="ti ti-home nav-icon"></i><span data-zh="学习总览" data-en="Dashboard">学习总览</span>
       </a>
       <a href="#" id="nav-learn" onclick="navigate('learn')">
-        <span class="nav-icon">📚</span><span data-zh="知识学习" data-en="Knowledge">知识学习</span>
+        <i class="ti ti-book-2 nav-icon"></i><span data-zh="知识学习" data-en="Knowledge">知识学习</span>
       </a>
       <a href="#" id="nav-quiz" onclick="navigate('quiz')">
-        <span class="nav-icon">✏️</span><span data-zh="随堂练习" data-en="Chapter Quiz">随堂练习</span>
+        <i class="ti ti-pencil nav-icon"></i><span data-zh="随堂练习" data-en="Chapter Quiz">随堂练习</span>
       </a>
       <a href="#" id="nav-mock" onclick="navigate('mock')">
-        <span class="nav-icon">🎯</span><span data-zh="模拟测试" data-en="Mock Exam">模拟测试</span>
+        <i class="ti ti-target nav-icon"></i><span data-zh="模拟测试" data-en="Mock Exam">模拟测试</span>
       </a>
       <a href="#" id="nav-exam" onclick="navigate('exam')">
-        <span class="nav-icon">📝</span><span data-zh="正式考试" data-en="Final Exam">正式考试</span>
+        <i class="ti ti-file-certificate nav-icon"></i><span data-zh="正式考试" data-en="Final Exam">正式考试</span>
       </a>
     </nav>
     <div class="sidebar-section" style="margin-top:.5rem;"><span class="sidebar-label" data-zh="我的记录" data-en="My Records">我的记录</span></div>
     <nav class="sidebar-nav">
       <a href="#" id="nav-history" onclick="navigate('history')">
-        <span class="nav-icon">📊</span><span data-zh="考试记录" data-en="Exam History">考试记录</span>
+        <i class="ti ti-history nav-icon"></i><span data-zh="考试记录" data-en="Exam History">考试记录</span>
       </a>
     </nav>
   </aside>
