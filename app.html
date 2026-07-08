@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>培训系统 | Fonli Training</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <div style="display:flex;align-items:center;gap:.75rem;">
+      <button class="hamburger" id="hamburger">☰</button>
+      <div class="navbar-brand">
+        <div class="brand-mark"><span>FL</span></div>
+        <div>
+          <div class="brand-name" data-zh="芳力包装" data-en="Fonli Packaging">芳力包装</div>
+          <div class="brand-sub" data-zh="培训系统" data-en="Training System">培训系统</div>
+        </div>
+      </div>
+    </div>
+    <div class="navbar-actions">
+      <button class="lang-btn" onclick="toggleLang()" id="langToggle">EN</button>
+      <div class="user-chip">
+        <span class="dot"></span>
+        <span id="userNameChip">--</span>
+      </div>
+      <button class="btn btn-sm" style="background:rgba(255,255,255,.15);color:#fff;" onclick="doLogout()" data-zh="退出" data-en="Logout">退出</button>
+    </div>
+  </div>
+</nav>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<div class="app-layout">
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-section"><span class="sidebar-label" data-zh="学习路径" data-en="Learning Path">学习路径</span></div>
+    <nav class="sidebar-nav">
+      <a href="#" id="nav-dashboard" onclick="navigate('dashboard')">
+        <span class="nav-icon">🏠</span><span data-zh="学习总览" data-en="Dashboard">学习总览</span>
+      </a>
+      <a href="#" id="nav-learn" onclick="navigate('learn')">
+        <span class="nav-icon">📚</span><span data-zh="知识学习" data-en="Knowledge">知识学习</span>
+      </a>
+      <a href="#" id="nav-quiz" onclick="navigate('quiz')">
+        <span class="nav-icon">✏️</span><span data-zh="随堂练习" data-en="Chapter Quiz">随堂练习</span>
+      </a>
+      <a href="#" id="nav-mock" onclick="navigate('mock')">
+        <span class="nav-icon">🎯</span><span data-zh="模拟测试" data-en="Mock Exam">模拟测试</span>
+      </a>
+      <a href="#" id="nav-exam" onclick="navigate('exam')">
+        <span class="nav-icon">📝</span><span data-zh="正式考试" data-en="Final Exam">正式考试</span>
+      </a>
+    </nav>
+    <div class="sidebar-section" style="margin-top:.5rem;"><span class="sidebar-label" data-zh="我的记录" data-en="My Records">我的记录</span></div>
+    <nav class="sidebar-nav">
+      <a href="#" id="nav-history" onclick="navigate('history')">
+        <span class="nav-icon">📊</span><span data-zh="考试记录" data-en="Exam History">考试记录</span>
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Main content -->
+  <main class="main-content">
+
+    <!-- ── Dashboard ── -->
+    <div class="view" id="view-dashboard">
+      <h1 style="margin-bottom:1.5rem;" id="welcomeTitle">欢迎回来 👋</h1>
+      <div class="stat-grid" id="dashStats"></div>
+
+      <!-- Learning path progress -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">📋 <span data-zh="学习进度" data-en="Learning Progress">学习进度</span></div>
+            <div class="card-subtitle" data-zh="完成全部章节后可参加随堂练习和模拟测试" data-en="Complete all chapters to unlock quizzes and mock exam">完成全部章节后可参加随堂练习和模拟测试</div>
+          </div>
+        </div>
+        <div id="overallProgress"></div>
+      </div>
+
+      <!-- Exam status card -->
+      <div class="card" id="examStatusCard">
+        <div class="card-header">
+          <div class="card-title">📝 <span data-zh="正式考试状态" data-en="Final Exam Status">正式考试状态</span></div>
+        </div>
+        <div id="examStatusContent"></div>
+      </div>
+    </div>
+
+    <!-- ── Learn ── -->
+    <div class="view hidden" id="view-learn">
+      <h2 style="margin-bottom:1.25rem;" data-zh="📚 知识学习" data-en="📚 Knowledge Learning">📚 知识学习</h2>
+      <p style="margin-bottom:1.25rem;font-size:.88rem;" data-zh="按顺序学习各章节内容，完成全部章节解锁随堂练习。" data-en="Study chapters in order. Complete all to unlock quizzes.">按顺序学习各章节内容，完成全部章节解锁随堂练习。</p>
+      <div class="chapter-list" id="chapterList"></div>
+    </div>
+
+    <!-- ── Chapter Reader ── -->
+    <div class="view hidden" id="view-reader">
+      <button onclick="navigate('learn')" style="margin-bottom:1rem;background:none;border:none;color:var(--mid-blue);font-size:.9rem;cursor:pointer;display:flex;align-items:center;gap:.4rem;">
+        ← <span data-zh="返回章节列表" data-en="Back to chapters">返回章节列表</span>
+      </button>
+      <div class="reader-header" id="readerHeader"></div>
+      <div class="reader-body" id="readerBody"></div>
+      <div style="display:flex;justify-content:space-between;margin-top:1.25rem;gap:.75rem;flex-wrap:wrap;">
+        <button class="btn btn-outline" id="prevChapterBtn" onclick="navigateChapter(-1)">← <span data-zh="上一章" data-en="Previous">上一章</span></button>
+        <button class="btn btn-primary" id="markReadBtn" onclick="markChapterRead()">
+          <span data-zh="✓ 标记已读，继续" data-en="✓ Mark Read & Continue">✓ 标记已读，继续</span>
+        </button>
+        <button class="btn btn-outline" id="nextChapterBtn" onclick="navigateChapter(1)"><span data-zh="下一章" data-en="Next">下一章</span> →</button>
+      </div>
+    </div>
+
+    <!-- ── Quiz ── -->
+    <div class="view hidden" id="view-quiz">
+      <h2 style="margin-bottom:1.25rem;" data-zh="✏️ 随堂练习" data-en="✏️ Chapter Quiz">✏️ 随堂练习</h2>
+      <p style="margin-bottom:1rem;font-size:.88rem;" data-zh="每章5题，完成答题后即时查看解析。" data-en="5 questions per chapter with instant explanations.">每章5题，完成答题后即时查看解析。</p>
+      <div id="quizChapterList" class="chapter-list"></div>
+    </div>
+
+    <!-- ── Quiz Session ── -->
+    <div class="view hidden" id="view-quiz-session">
+      <div id="quizSessionContent"></div>
+    </div>
+
+    <!-- ── Mock ── -->
+    <div class="view hidden" id="view-mock">
+      <div class="card text-center" style="padding:2.5rem 1.5rem;">
+        <div style="font-size:3rem;margin-bottom:1rem;">🎯</div>
+        <h2 style="margin-bottom:.75rem;" data-zh="模拟测试" data-en="Mock Exam">模拟测试</h2>
+        <p style="margin-bottom:1.5rem;" id="mockDesc"></p>
+        <div class="exam-meta" style="justify-content:center;margin-bottom:1.5rem;">
+          <span>📊 <span data-zh="30题" data-en="30 questions">30题</span></span>
+          <span>⏱ <span data-zh="35分钟" data-en="35 minutes">35分钟</span></span>
+          <span>🎯 <span data-zh="70分及格" data-en="70 to pass">70分及格</span></span>
+        </div>
+        <button class="btn btn-gold btn-lg" id="startMockBtn" onclick="startMock()">
+          <span data-zh="开始模拟测试" data-en="Start Mock Exam">开始模拟测试</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ── Exam Session (shared for mock + final) ── -->
+    <div class="view hidden" id="view-exam-session">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:.75rem;">
+        <h2 id="sessionTitle"></h2>
+        <div class="timer-badge" id="timerDisplay">00:00</div>
+      </div>
+      <div class="exam-progress">
+        <div class="exam-progress-info">
+          <span id="questionCounter"></span>
+          <span id="answeredCounter"></span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="examProgressFill" style="width:0%"></div></div>
+      </div>
+      <div class="question-nav" id="questionNav"></div>
+      <div id="questionArea"></div>
+      <div style="display:flex;justify-content:space-between;margin-top:1rem;flex-wrap:wrap;gap:.75rem;">
+        <button class="btn btn-outline" id="prevQBtn" onclick="navigateQuestion(-1)">← <span data-zh="上一题" data-en="Previous">上一题</span></button>
+        <button class="btn btn-danger" onclick="confirmSubmit()" data-zh="提交答卷" data-en="Submit">提交答卷</button>
+        <button class="btn btn-outline" id="nextQBtn" onclick="navigateQuestion(1)"><span data-zh="下一题" data-en="Next">下一题</span> →</button>
+      </div>
+    </div>
+
+    <!-- ── Exam Result ── -->
+    <div class="view hidden" id="view-result">
+      <div class="card">
+        <div class="score-display">
+          <div class="score-circle" id="scoreCircle">
+            <div class="score-num" id="scoreNum">--</div>
+          </div>
+          <div class="score-label" id="scoreLabel"></div>
+          <div class="score-breakdown" id="scoreBreakdown"></div>
+          <div style="margin-top:1.5rem;display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;" id="resultActions"></div>
+        </div>
+      </div>
+      <div class="card" id="resultReview" style="margin-top:0;"></div>
+    </div>
+
+    <!-- ── Final Exam Landing ── -->
+    <div class="view hidden" id="view-exam">
+      <div class="card" style="padding:2rem;">
+        <div class="exam-header">
+          <div style="font-size:3rem;margin-bottom:.75rem;">📝</div>
+          <h2 data-zh="正式考试" data-en="Final Exam">正式考试</h2>
+          <div class="exam-meta" style="justify-content:center;margin-top:1rem;">
+            <span>📊 50 <span data-zh="题" data-en="questions">题</span></span>
+            <span>⏱ 60 <span data-zh="分钟" data-en="min">分钟</span></span>
+            <span>✅ 80 <span data-zh="分及格" data-en="to pass">分及格</span></span>
+            <span>⭐ 95 <span data-zh="分优秀" data-en="excellent">分优秀</span></span>
+          </div>
+        </div>
+        <div id="examLandingContent" style="margin-top:1.5rem;"></div>
+      </div>
+    </div>
+
+    <!-- ── History ── -->
+    <div class="view hidden" id="view-history">
+      <h2 style="margin-bottom:1.25rem;" data-zh="📊 考试记录" data-en="📊 Exam History">📊 考试记录</h2>
+      <div id="historyContent"></div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Confirm modal -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 data-zh="确认提交" data-en="Confirm Submit">确认提交</h3>
+      <button class="modal-close" onclick="hideModal('confirmModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p id="confirmMsg"></p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="hideModal('confirmModal')" data-zh="继续答题" data-en="Continue">继续答题</button>
+      <button class="btn btn-primary" onclick="submitExam()" data-zh="确认提交" data-en="Submit Now">确认提交</button>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="js/config.js"></script>
+<script src="js/data.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

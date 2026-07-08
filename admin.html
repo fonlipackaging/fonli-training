@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>管理后台 | Fonli Admin</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <div style="display:flex;align-items:center;gap:.75rem;">
+      <button class="hamburger" id="hamburger">☰</button>
+      <div class="navbar-brand">
+        <div class="brand-mark"><span>FL</span></div>
+        <div>
+          <div class="brand-name">芳力包装</div>
+          <div class="brand-sub">管理后台 Admin</div>
+        </div>
+      </div>
+    </div>
+    <div class="navbar-actions">
+      <button class="lang-btn" onclick="toggleLang()" id="langToggle">EN</button>
+      <div class="user-chip"><span class="dot"></span><span id="adminNameChip">Admin</span></div>
+      <button class="btn btn-sm" style="background:rgba(255,255,255,.15);color:#fff;" onclick="doLogout()">退出</button>
+    </div>
+  </div>
+</nav>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<div class="app-layout">
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-section"><span class="sidebar-label">管理功能</span></div>
+    <nav class="sidebar-nav">
+      <a href="#" id="nav-overview" onclick="navigate('overview')">
+        <span class="nav-icon">📊</span><span data-zh="数据总览" data-en="Overview">数据总览</span>
+      </a>
+      <a href="#" id="nav-users" onclick="navigate('users')">
+        <span class="nav-icon">👥</span><span data-zh="用户管理" data-en="Users">用户管理</span>
+      </a>
+      <a href="#" id="nav-results" onclick="navigate('results')">
+        <span class="nav-icon">📋</span><span data-zh="考试成绩" data-en="Results">考试成绩</span>
+      </a>
+      <a href="#" id="nav-notifications" onclick="navigate('notifications')">
+        <span class="nav-icon">🔔</span><span data-zh="通知中心" data-en="Notifications">通知中心</span>
+        <span class="nav-badge hidden" id="notifBadge">0</span>
+      </a>
+    </nav>
+    <div class="sidebar-section" style="margin-top:.5rem;"><span class="sidebar-label">系统</span></div>
+    <nav class="sidebar-nav">
+      <a href="app.html"><span class="nav-icon">🔗</span><span data-zh="切换到学员视图" data-en="Switch to User View">切换到学员视图</span></a>
+    </nav>
+  </aside>
+
+  <main class="main-content">
+
+    <!-- ── Overview ── -->
+    <div class="view" id="view-overview">
+      <h1 style="margin-bottom:1.5rem;" data-zh="数据总览" data-en="Overview">数据总览</h1>
+      <div class="stat-grid" id="overviewStats"></div>
+      <div class="card" style="margin-top:0;">
+        <div class="card-title" style="margin-bottom:1rem;">📊 <span data-zh="最近考试成绩" data-en="Recent Exam Results">最近考试成绩</span></div>
+        <div id="recentResults"></div>
+      </div>
+    </div>
+
+    <!-- ── Users ── -->
+    <div class="view hidden" id="view-users">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:.75rem;">
+        <h1 data-zh="用户管理" data-en="User Management">用户管理</h1>
+        <button class="btn btn-primary" onclick="showModal('addUserModal')">
+          + <span data-zh="添加用户" data-en="Add User">添加用户</span>
+        </button>
+      </div>
+      <div class="card" style="padding:0;">
+        <div id="userListContent"></div>
+      </div>
+    </div>
+
+    <!-- ── Results ── -->
+    <div class="view hidden" id="view-results">
+      <h1 style="margin-bottom:1.25rem;" data-zh="考试成绩" data-en="Exam Results">考试成绩</h1>
+      <div style="display:flex;gap:.75rem;margin-bottom:1rem;flex-wrap:wrap;">
+        <select class="form-input form-select" id="filterMode" onchange="renderResults()" style="width:auto;min-width:140px;">
+          <option value="all" data-zh="全部类型" data-en="All Types">全部类型</option>
+          <option value="exam" data-zh="正式考试" data-en="Final Exam">正式考试</option>
+          <option value="mock" data-zh="模拟测试" data-en="Mock Exam">模拟测试</option>
+        </select>
+        <select class="form-input form-select" id="filterResult" onchange="renderResults()" style="width:auto;min-width:140px;">
+          <option value="all">全部结果</option>
+          <option value="pass">及格以上</option>
+          <option value="fail">未及格</option>
+        </select>
+      </div>
+      <div class="card" style="padding:0;"><div id="resultsContent"></div></div>
+    </div>
+
+    <!-- ── Notifications ── -->
+    <div class="view hidden" id="view-notifications">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:.75rem;">
+        <h1 data-zh="通知中心" data-en="Notifications">通知中心</h1>
+        <button class="btn btn-outline btn-sm" onclick="markAllRead()" data-zh="全部标为已读" data-en="Mark All Read">全部标为已读</button>
+      </div>
+      <div class="card" style="padding:0;"><div id="notifContent"></div></div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Add User Modal -->
+<div class="modal-overlay" id="addUserModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 data-zh="添加用户" data-en="Add User">添加用户</h3>
+      <button class="modal-close" onclick="hideModal('addUserModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label" data-zh="姓名" data-en="Name">姓名</label>
+        <input class="form-input" type="text" id="newName" placeholder="员工姓名">
+      </div>
+      <div class="form-group">
+        <label class="form-label" data-zh="邮箱" data-en="Email">邮箱</label>
+        <input class="form-input" type="email" id="newEmail" placeholder="工作邮箱">
+      </div>
+      <div class="form-group">
+        <label class="form-label" data-zh="初始密码" data-en="Initial Password">初始密码</label>
+        <input class="form-input" type="text" id="newPassword" placeholder="至少6位" value="Fonli2024">
+        <div class="form-hint" data-zh="用户首次登录后应修改密码" data-en="User should change password on first login">用户首次登录后应修改密码</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" data-zh="角色" data-en="Role">角色</label>
+        <select class="form-input form-select" id="newRole">
+          <option value="user">学员 (User)</option>
+          <option value="admin">管理员 (Admin)</option>
+        </select>
+      </div>
+      <div class="form-error hidden" id="addUserError"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="hideModal('addUserModal')" data-zh="取消" data-en="Cancel">取消</button>
+      <button class="btn btn-primary" onclick="addUser()" data-zh="创建用户" data-en="Create User">创建用户</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete confirm modal -->
+<div class="modal-overlay" id="deleteUserModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 data-zh="确认删除" data-en="Confirm Delete">确认删除</h3>
+      <button class="modal-close" onclick="hideModal('deleteUserModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p id="deleteUserMsg"></p>
+      <div class="alert alert-warning" style="margin-top:.75rem;" data-zh="⚠️ 此操作不可撤销，用户的所有数据将被删除。" data-en="⚠️ This action is irreversible. All user data will be deleted.">
+        ⚠️ 此操作不可撤销，用户的所有数据将被删除。
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="hideModal('deleteUserModal')" data-zh="取消" data-en="Cancel">取消</button>
+      <button class="btn btn-danger" id="confirmDeleteBtn" data-zh="确认删除" data-en="Delete">确认删除</button>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-functions-compat.js"></script>
+<script src="js/config.js"></script>
+<script src="js/data.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>
