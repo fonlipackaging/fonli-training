@@ -1,34 +1,24 @@
-// ═══════════════════════════════════════════════════════
-//  FONLI TRAINING SYSTEM — Firebase & App Configuration
-//  ⚠️  Fill in your own Firebase project credentials below
-// ═══════════════════════════════════════════════════════
-
 const FIREBASE_CONFIG = {
-  apiKey:            "YOUR_API_KEY",
-  authDomain:        "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId:         "YOUR_PROJECT_ID",
-  storageBucket:     "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId:             "YOUR_APP_ID"
+  apiKey:            "AIzaSyDCgY6hGyRjpyq89TQJW4giogds8TDUpJI",
+  authDomain:        "fonli-training.firebaseapp.com",
+  projectId:         "fonli-training",
+  storageBucket:     "fonli-training.firebasestorage.app",
+  messagingSenderId: "876828021650",
+  appId:             "1:876828021650:web:8a0c41e15db19cb5bce74b"
 };
 
-// ── EmailJS (for admin email notifications) ──────────
-// Sign up free at https://emailjs.com
-// 200 emails/month on free plan
 const EMAILJS_CONFIG = {
   serviceId:        "YOUR_EMAILJS_SERVICE_ID",
-  passTemplateId:   "YOUR_PASS_TEMPLATE_ID",   // template for exam pass notification
-  failTemplateId:   "YOUR_FAIL_TEMPLATE_ID",   // template for 3-fail notification
+  passTemplateId:   "YOUR_PASS_TEMPLATE_ID",
+  failTemplateId:   "YOUR_FAIL_TEMPLATE_ID",
   publicKey:        "YOUR_EMAILJS_PUBLIC_KEY"
 };
 
-// ── Admin contact ────────────────────────────────────
-const ADMIN_EMAIL = "admin@fonlipackaging.com"; // change to real admin email
+const ADMIN_EMAIL = "YOUR_ADMIN_EMAIL";
 
-// ── App settings ─────────────────────────────────────
 const APP_CONFIG = {
-  appNameZh: "芳力包装培训系统",
-  appNameEn: "Fonli Packaging Training System",
-  defaultLang: "zh",   // "zh" | "en"
+  appNameZh: "菲利包装培训系统",
+  appNameEn: "Feili Packaging Training System",
+  defaultLang: "zh",
   version: "1.0.0"
 };
