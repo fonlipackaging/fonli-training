@@ -52,6 +52,9 @@
         <i class="ti ti-bell nav-icon"></i><span data-zh="通知中心" data-en="Notifications">通知中心</span>
         <span class="nav-badge hidden" id="notifBadge">0</span>
       </a>
+      <a href="#" id="nav-content" onclick="navigate('content')">
+        <i class="ti ti-books nav-icon"></i><span data-zh="知识管理" data-en="Knowledge">知识管理</span>
+      </a>
     </nav>
     <div class="sidebar-section" style="margin-top:.5rem;"><span class="sidebar-label">系统</span></div>
     <nav class="sidebar-nav">
@@ -100,6 +103,23 @@
         </select>
       </div>
       <div class="card" style="padding:0;"><div id="resultsContent"></div></div>
+    </div>
+
+    <!-- ── Knowledge Management ── -->
+    <div class="view hidden" id="view-content">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:.75rem;">
+        <h1 data-zh="知识管理" data-en="Knowledge Management">知识管理</h1>
+        <div style="display:flex;gap:.75rem;flex-wrap:wrap;">
+          <button class="btn btn-outline btn-sm" onclick="seedDefaultChapters()" id="seedBtn">
+            <i class="ti ti-download"></i> <span data-zh="导入默认知识库" data-en="Import Default">导入默认知识库</span>
+          </button>
+          <button class="btn btn-primary" onclick="showChapterEditor(null)">
+            <i class="ti ti-plus"></i> <span data-zh="添加章节" data-en="Add Chapter">添加章节</span>
+          </button>
+        </div>
+      </div>
+      <div id="contentChapterList"></div>
+      <div id="chapterEditorArea" class="hidden"></div>
     </div>
 
     <!-- ── Notifications ── -->
