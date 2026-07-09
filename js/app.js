@@ -58,8 +58,7 @@ auth.onAuthStateChanged(async user => {
 // ── Load chapters: always use data.js (Firestore only stores progress/users) ─
 async function loadChapters() {
   // Always use the static data.js CHAPTERS — Firestore content may be stale.
-  // Firestore is only used for user progress and exam records.
-  appChapters = CHAPTERS;
+  appChapters = (typeof CHAPTERS !== 'undefined' && Array.isArray(CHAPTERS)) ? CHAPTERS : [];
 }
 
 async function loadUserData() {
@@ -396,6 +395,11 @@ function renderQuizChapterList() {
   const done   = userProgress.completedChapters || [];
   const scores = userProgress.quizScores || {};
   const allQs  = typeof QUESTIONS !== 'undefined' ? QUESTIONS : [];
+  if (!Array.isArray(appChapters) || appChapters.length === 0) {
+    document.getElementById('quizChapterList').innerHTML =
+      '<p style="color:#888;text-align:center;padding:2rem">章节数据加载中，请刷新页面重试…</p>';
+    return;
+  }
   let html = '';
   appChapters.forEach(function(ch) {
     var isAvail = done.includes(ch.id);
