@@ -35,16 +35,24 @@ let currentChapterIdx = 0;
 let currentSectionIdx = 0;  // pagination within chapter
 
 // ── Auth guard ────────────────────────────────────────
+function hideAppLoading() {
+  const ld = document.getElementById('appLoading');
+  if (ld) ld.style.display = 'none';
+}
+
 auth.onAuthStateChanged(async user => {
   if (!user) { window.location.href = 'index.html'; return; }
   currentUser = user;
-  await loadUserData();
-  initSidebar();
-  navigate('dashboard');
-  applyI18n();
-  // Hide loading screen now that app is ready
-  const ld = document.getElementById('appLoading');
-  if (ld) ld.style.display = 'none';
+  try {
+    await loadUserData();
+    initSidebar();
+    navigate('dashboard');
+    applyI18n();
+  } catch(e) {
+    console.error('App init error:', e);
+  } finally {
+    hideAppLoading();
+  }
 });
 
 // ── Load chapters from Firestore (with data.js fallback) ─
