@@ -1900,5 +1900,253 @@ const QUESTIONS = [
     explanationZh: '约8个托盘建议走整柜：目的港散货（LCL）清关费用极高，整柜虽略贵但综合更划算。',
     explanationEn: 'For ~8 pallets, recommend FCL: LCL destination clearance fees are very high, making FCL more cost-effective overall despite slightly higher freight.'
   }
+,
 
+  // ── CH13: 金属产品重量计算（附录E）──
+  {
+    id: 'q_ch13_01', chapterId: 'ch13', type: 'single', difficulty: 'easy',
+    questionZh: '铝（Aluminium）的密度是多少 g/cm³？',
+    questionEn: 'What is the density of Aluminium in g/cm³?',
+    optionsZh: ['1.5 g/cm³', '2.79 g/cm³', '6.8 g/cm³', '7.9 g/cm³'],
+    optionsEn: ['1.5 g/cm³', '2.79 g/cm³', '6.8 g/cm³', '7.9 g/cm³'],
+    answer: 1,
+    explanationZh: '铝密度为 2.79 g/cm³，是四种常见金属中最轻的，适合轻量化产品设计。',
+    explanationEn: 'Aluminium density is 2.79 g/cm³ — the lightest among common packaging metals.'
+  },
+  {
+    id: 'q_ch13_02', chapterId: 'ch13', type: 'single', difficulty: 'easy',
+    questionZh: '锌合金（Zamac）的密度是多少 g/cm³？',
+    questionEn: 'What is the density of Zamac (Zinc Alloy) in g/cm³?',
+    optionsZh: ['2.79 g/cm³', '4.5 g/cm³', '6.8 g/cm³', '8.9 g/cm³'],
+    optionsEn: ['2.79 g/cm³', '4.5 g/cm³', '6.8 g/cm³', '8.9 g/cm³'],
+    answer: 2,
+    explanationZh: '锌合金密度为 6.8 g/cm³，约为铝的 2.4 倍，重量感强，中东高端市场常用。',
+    explanationEn: 'Zamac density is 6.8 g/cm³ — about 2.4× heavier than aluminium, preferred in premium Middle East markets.'
+  },
+  {
+    id: 'q_ch13_03', chapterId: 'ch13', type: 'single', difficulty: 'medium',
+    questionZh: '金属产品重量计算公式是？',
+    questionEn: 'What is the formula for calculating metal product weight?',
+    optionsZh: ['长×宽×高 ÷ 密度', '长×宽×厚×密度 ÷ 1000', '长+宽+厚×密度', '体积×1000÷密度'],
+    optionsEn: ['L×W×H ÷ density', 'L×W×T×density ÷ 1000', 'L+W+T×density', 'Volume×1000÷density'],
+    answer: 1,
+    explanationZh: '公式：长(mm)×宽(mm)×厚(mm)×密度 ÷ 1000 = 重量(g)。除以1000是将mm³换算为cm³。',
+    explanationEn: 'Formula: L(mm)×W(mm)×T(mm)×density ÷ 1000 = weight(g). Dividing by 1000 converts mm³ to cm³.'
+  },
+  {
+    id: 'q_ch13_04', chapterId: 'ch13', type: 'single', difficulty: 'medium',
+    questionZh: '一块铝标牌尺寸 50mm×30mm，厚度 0.3mm，铝密度 2.79，其重量约为？',
+    questionEn: 'An aluminium plate: 50mm×30mm×0.3mm, density 2.79. Approximate weight?',
+    optionsZh: ['0.36 g', '1.26 g', '3.6 g', '12.6 g'],
+    optionsEn: ['0.36 g', '1.26 g', '3.6 g', '12.6 g'],
+    answer: 1,
+    explanationZh: '计算：50×30×0.3×2.79÷1000 = 1.2555 ≈ 1.26g。铝标牌通常很轻。',
+    explanationEn: 'Calculation: 50×30×0.3×2.79÷1000 ≈ 1.26g. Aluminium plates are very lightweight.'
+  },
+  {
+    id: 'q_ch13_05', chapterId: 'ch13', type: 'single', difficulty: 'easy',
+    questionZh: '常规铝标牌的厚度规格是多少？',
+    questionEn: 'What is the standard thickness for regular aluminium plates?',
+    optionsZh: ['0.1 mm', '0.3 mm', '1.5 mm', '3.0 mm'],
+    optionsEn: ['0.1 mm', '0.3 mm', '1.5 mm', '3.0 mm'],
+    answer: 1,
+    explanationZh: '常规铝标牌厚 0.3mm；需要3D凸字效果的用 0.4–0.5mm；锌合金标牌则为 1.5–3mm。',
+    explanationEn: 'Regular aluminium plates are 0.3mm thick; 3D raised text versions use 0.4–0.5mm; Zamac plates are 1.5–3mm.'
+  },
+  {
+    id: 'q_ch13_06', chapterId: 'ch13', type: 'single', difficulty: 'medium',
+    questionZh: '不锈钢（Stainless Steel）的密度是多少 g/cm³？',
+    questionEn: 'What is the density of Stainless Steel in g/cm³?',
+    optionsZh: ['2.79 g/cm³', '6.8 g/cm³', '7.9 g/cm³', '8.9 g/cm³'],
+    optionsEn: ['2.79 g/cm³', '6.8 g/cm³', '7.9 g/cm³', '8.9 g/cm³'],
+    answer: 2,
+    explanationZh: '不锈钢密度为 7.9 g/cm³，比锌合金（6.8）更重，常用于不锈钢标牌，结合腐蚀工艺质感出众。',
+    explanationEn: 'Stainless Steel density is 7.9 g/cm³, heavier than Zamac. Often used with etching for a premium finish.'
+  },
+  {
+    id: 'q_ch13_07', chapterId: 'ch13', type: 'boolean', difficulty: 'easy',
+    questionZh: '相同尺寸下，锌合金标牌比铝标牌更重。',
+    questionEn: 'Given the same dimensions, a Zamac plate is heavier than an aluminium plate.',
+    optionsZh: ['正确', '错误'],
+    optionsEn: ['True', 'False'],
+    answer: 0,
+    explanationZh: '正确。锌合金密度（6.8）是铝（2.79）的约2.4倍，相同尺寸下锌合金明显更重。',
+    explanationEn: 'True. Zamac density (6.8) is ~2.4× that of aluminium (2.79), so same-size Zamac is significantly heavier.'
+  },
+
+  // ── CH14: 付款方式与报价类型（附录F+G）──
+  {
+    id: 'q_ch14_01', chapterId: 'ch14', type: 'single', difficulty: 'easy',
+    questionZh: '公司接受哪几种付款方式？',
+    questionEn: 'Which payment methods does the company accept?',
+    optionsZh: ['仅 TT 电汇', 'TT、PayPal、Western Union、L/C', 'PayPal、WU、比特币', 'TT、支付宝、PayPal'],
+    optionsEn: ['TT only', 'TT, PayPal, Western Union, L/C', 'PayPal, WU, Bitcoin', 'TT, Alipay, PayPal'],
+    answer: 1,
+    explanationZh: '公司接受 4 种付款方式：TT（电汇）、PayPal、Western Union（西联）、L/C（信用证）。',
+    explanationEn: 'The company accepts 4 payment methods: TT (wire transfer), PayPal, Western Union, and L/C (Letter of Credit).'
+  },
+  {
+    id: 'q_ch14_02', chapterId: 'ch14', type: 'single', difficulty: 'medium',
+    questionZh: '通过 PayPal 收款时，需要在报价中额外加入多少手续费？',
+    questionEn: 'When collecting payment via PayPal, how much fee must be added to the quote?',
+    optionsZh: ['2.5%', '3.5%', '4.5%', '5.5%'],
+    optionsEn: ['2.5%', '3.5%', '4.5%', '5.5%'],
+    answer: 2,
+    explanationZh: 'PayPal 手续费为 4.5%，由收款方（我们）承担，报价时必须计入，否则亏损。',
+    explanationEn: 'PayPal charges 4.5% transaction fee paid by the receiver (us). Must be included in the quote to avoid loss.'
+  },
+  {
+    id: 'q_ch14_03', chapterId: 'ch14', type: 'single', difficulty: 'easy',
+    questionZh: 'Western Union（西联汇款）适合多少金额以下的付款？',
+    questionEn: 'Western Union is suitable for payments under what amount?',
+    optionsZh: ['$500', '$1,000', '$2,000', '$5,000'],
+    optionsEn: ['$500', '$1,000', '$2,000', '$5,000'],
+    answer: 2,
+    explanationZh: 'WU（西联）适合 $2,000 以下的小额付款，手续费由客户承担，在欧洲市场常见。',
+    explanationEn: 'Western Union is suitable for payments under $2,000. The fee is borne by the sender (client), common in European markets.'
+  },
+  {
+    id: 'q_ch14_04', chapterId: 'ch14', type: 'single', difficulty: 'medium',
+    questionZh: '订单金额 < $10,000 时，订金比例是多少？',
+    questionEn: 'When order value is under $10,000, what is the deposit percentage?',
+    optionsZh: ['20%', '30%', '50%', '100%'],
+    optionsEn: ['20%', '30%', '50%', '100%'],
+    answer: 2,
+    explanationZh: '小单（<$10K）订金 50%；大单（≥$10K）订金 30%；尾款出货前必须结清。',
+    explanationEn: 'Small orders (<$10K): 50% deposit. Large orders (≥$10K): 30% deposit. Balance due before shipment.'
+  },
+  {
+    id: 'q_ch14_05', chapterId: 'ch14', type: 'single', difficulty: 'medium',
+    questionZh: 'EXW（出厂价）包含哪些费用？',
+    questionEn: 'What does EXW (Ex Works) price include?',
+    optionsZh: ['产品价格 + 运费', '产品价格 + 出口费用', '仅产品出厂价格，不含任何运费', '含关税的到门价格'],
+    optionsEn: ['Product + freight', 'Product + export costs', 'Only product ex-factory price, no freight', 'Door delivery including duties'],
+    answer: 2,
+    explanationZh: 'EXW 仅含产品出厂价格，客户需自行安排提货及所有后续运输和费用。',
+    explanationEn: 'EXW is the bare ex-factory price only. The buyer arranges and pays for all logistics from the factory onward.'
+  },
+  {
+    id: 'q_ch14_06', chapterId: 'ch14', type: 'single', difficulty: 'medium',
+    questionZh: 'FOB 比 EXW 多出的费用主要包含？',
+    questionEn: 'FOB includes what additional costs compared to EXW?',
+    optionsZh: ['国际运费和保险', '目的地关税', '国内货代、报关、内陆运输等（装船前费用）', '全程费用含关税'],
+    optionsEn: ['International freight & insurance', 'Destination duties', 'Domestic freight, customs clearance, inland transport (pre-shipment)', 'All costs including duties'],
+    answer: 2,
+    explanationZh: 'FOB = EXW + 国内货代费 + 报关费 + 内陆运输费，约折合人民币 2,000 元，货物装船后风险转移给买方。',
+    explanationEn: 'FOB = EXW + domestic freight agent fee + customs + inland transport (~RMB 2,000). Risk passes to buyer once goods are on board.'
+  },
+  {
+    id: 'q_ch14_07', chapterId: 'ch14', type: 'single', difficulty: 'hard',
+    questionZh: '以下报价方式中，对买方最省事（全包含关税）的是？',
+    questionEn: 'Which Incoterm is most hassle-free for the buyer (includes all duties)?',
+    optionsZh: ['EXW', 'FOB', 'CIF', 'DDP'],
+    optionsEn: ['EXW', 'FOB', 'CIF', 'DDP'],
+    answer: 3,
+    explanationZh: 'DDP（门到门价）对买方最省事：卖方承担全程费用直至送达指定地点，包括目的地关税。',
+    explanationEn: 'DDP (Delivered Duty Paid) is the most buyer-friendly Incoterm: seller covers all costs to the buyer\'s door, including import duties.'
+  },
+  {
+    id: 'q_ch14_08', chapterId: 'ch14', type: 'single', difficulty: 'medium',
+    questionZh: 'CIF 报价 = FOB + ？',
+    questionEn: 'CIF = FOB + ?',
+    optionsZh: ['关税 + 目的港费用', '国际运费 + 保险费', '报关费 + 内陆运输', '设计费 + 打样费'],
+    optionsEn: ['Duties + destination charges', 'International freight + insurance', 'Customs + inland transport', 'Design + sampling fees'],
+    answer: 1,
+    explanationZh: 'CIF = Cost（产品）+ Insurance（保险）+ Freight（运费）= FOB + 国际运费 + 保险，到港后清关关税由买方承担。',
+    explanationEn: 'CIF = FOB + international freight + insurance. Import clearance and duties at the destination remain the buyer\'s responsibility.'
+  },
+  {
+    id: 'q_ch14_09', chapterId: 'ch14', type: 'boolean', difficulty: 'easy',
+    questionZh: 'PayPal 手续费由付款方（客户）承担，所以报价时不需要加入手续费。',
+    questionEn: 'PayPal transaction fees are paid by the buyer, so no fee needs to be added to the quote.',
+    optionsZh: ['正确', '错误'],
+    optionsEn: ['True', 'False'],
+    answer: 1,
+    explanationZh: '错误。PayPal 手续费（4.5%）由收款方（我们）承担，报价时必须加入，否则会亏损。',
+    explanationEn: 'False. PayPal fees (4.5%) are charged to the receiver (us), so they must be included in the quote to avoid losses.'
+  },
+
+  // ── CH15: 客户成单12步流程（附录H）──
+  {
+    id: 'q_ch15_01', chapterId: 'ch15', type: 'single', difficulty: 'easy',
+    questionZh: '客户成单标准流程共有几个步骤？',
+    questionEn: 'How many steps are in the standard customer order process?',
+    optionsZh: ['8步', '10步', '12步', '15步'],
+    optionsEn: ['8 steps', '10 steps', '12 steps', '15 steps'],
+    answer: 2,
+    explanationZh: '成单流程共12步：询盘→报价→确认PI→收定金→下单生产→产品完成→询货代→订舱报关→入仓→开船→领提单→归档。',
+    explanationEn: '12-step order process: Inquiry → Quote → Confirm PI → Deposit → Production → Completion → Check Freight → Book Shipment → Warehouse → Departure → Get B/L → Archive.'
+  },
+  {
+    id: 'q_ch15_02', chapterId: 'ch15', type: 'single', difficulty: 'medium',
+    questionZh: '在流程的哪一步之后才能开始正式安排生产？',
+    questionEn: 'After which step can production officially begin?',
+    optionsZh: ['确认订单（PI）后', '客户付定金后', '客户确认设计后', '报价完成后'],
+    optionsEn: ['After confirming the PI', 'After client pays the deposit', 'After client confirms the design', 'After quoting'],
+    answer: 1,
+    explanationZh: '必须在收到定金后才能安排生产——这是公司财务风险控制的底线，不可提前开单生产。',
+    explanationEn: 'Production can only start after the deposit is received — this is a non-negotiable financial risk control rule.'
+  },
+  {
+    id: 'q_ch15_03', chapterId: 'ch15', type: 'single', difficulty: 'medium',
+    questionZh: '流程第 3 步"确认订单"中，需要向客户出具什么文件？',
+    questionEn: 'In step 3 "Confirm Order", what document must be issued to the client?',
+    optionsZh: ['装箱单（Packing List）', '商业发票（Commercial Invoice）', '形式合同（Proforma Invoice/PI）', '提单（B/L）'],
+    optionsEn: ['Packing List', 'Commercial Invoice', 'Proforma Invoice (PI)', 'Bill of Lading (B/L)'],
+    answer: 2,
+    explanationZh: 'PI（形式合同/Proforma Invoice）是正式开始执行订单的书面依据，必须在生产前完成确认。',
+    explanationEn: 'PI (Proforma Invoice) is the formal document confirming the order, required before production begins.'
+  },
+  {
+    id: 'q_ch15_04', chapterId: 'ch15', type: 'single', difficulty: 'medium',
+    questionZh: '第 11 步领取提单（B/L）后，若客户尚未付清尾款，正确做法是？',
+    questionEn: 'In step 11, if the client hasn\'t paid the balance when you receive the B/L, what should you do?',
+    optionsZh: ['直接把提单发给客户', '凭提单控货，通知客户付尾款后再放单', '联系货代直接放货', '等客户主动联系'],
+    optionsEn: ['Send B/L to client directly', 'Hold the B/L, notify client to pay balance before releasing', 'Ask freight agent to release cargo', 'Wait for client to contact you'],
+    answer: 1,
+    explanationZh: '正本提单是控制货物的关键凭证——持单方才有权提货。未收尾款前绝不可放单。',
+    explanationEn: 'The original B/L controls cargo release. Never release the B/L until the balance is paid — the holder of the B/L has the right to claim the goods.'
+  },
+  {
+    id: 'q_ch15_05', chapterId: 'ch15', type: 'single', difficulty: 'hard',
+    questionZh: '出口到沙特阿拉伯，除常规单证外，还需特别提供什么？',
+    questionEn: 'When exporting to Saudi Arabia, what special document is additionally required?',
+    optionsZh: ['CE认证书', 'CO证书（产地证）且外箱须标注 MADE IN CHINA', 'SGS检测报告', 'ISO质量证书'],
+    optionsEn: ['CE Certificate', 'CO (Certificate of Origin) and MADE IN CHINA on outer carton', 'SGS Inspection Report', 'ISO Quality Certificate'],
+    answer: 1,
+    explanationZh: '沙特要求：①CO产地证（Certificate of Origin）②外箱印有 MADE IN CHINA 字样，缺一不可，否则会被拒绝清关。',
+    explanationEn: 'Saudi Arabia requires: ① CO (Certificate of Origin) ② "MADE IN CHINA" on outer carton. Both are mandatory — missing either will result in customs rejection.'
+  },
+  {
+    id: 'q_ch15_06', chapterId: 'ch15', type: 'single', difficulty: 'hard',
+    questionZh: '欧洲市场要求使用哪种规格的托盘？',
+    questionEn: 'What pallet size is required for the European market?',
+    optionsZh: ['100×120 cm', '80×120 cm', '60×100 cm', '110×110 cm'],
+    optionsEn: ['100×120 cm', '80×120 cm', '60×100 cm', '110×110 cm'],
+    answer: 1,
+    explanationZh: '欧洲标准托盘为 80×120 cm（与中国标准不同），使用错误规格会导致清关和仓库操作问题。',
+    explanationEn: 'European standard pallet is 80×120 cm. Using the wrong size causes problems at customs and in European warehouses.'
+  },
+  {
+    id: 'q_ch15_07', chapterId: 'ch15', type: 'boolean', difficulty: 'easy',
+    questionZh: '电放提单（Telex Release）需要客户提交正本提单才能提货。',
+    questionEn: 'Telex Release requires the client to submit the original B/L to collect cargo.',
+    optionsZh: ['正确', '错误'],
+    optionsEn: ['True', 'False'],
+    answer: 1,
+    explanationZh: '错误。电放（Telex Release）是指卖方通知货代在目的港直接放货，客户无需提交正本提单。',
+    explanationEn: 'False. Telex Release means the freight agent releases cargo at destination without requiring the original B/L from the client.'
+  },
+  {
+    id: 'q_ch15_08', chapterId: 'ch15', type: 'single', difficulty: 'medium',
+    questionZh: '货量约 8 个托盘但不足一个 20 尺柜时，推荐哪种运输方式？',
+    questionEn: 'For about 8 pallets (not enough for a full 20ft container), which shipping method is recommended?',
+    optionsZh: ['散货（LCL），更经济', '整柜（FCL），目的港散货清关费用极高', '空运，速度最快', '快递，方便快捷'],
+    optionsEn: ['LCL — more economical', 'FCL — destination LCL clearance fees are extremely high', 'Air freight — fastest', 'Express courier — convenient'],
+    answer: 1,
+    explanationZh: '约8个托盘建议走整柜（FCL）：目的港散货（LCL）清关费用极高，整柜综合成本更划算。',
+    explanationEn: 'For ~8 pallets, recommend FCL: destination LCL port clearance fees are extremely high, making FCL more cost-effective overall.'
+  }
+
+];
 ];
