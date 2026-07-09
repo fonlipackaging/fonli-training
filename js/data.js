@@ -1,18 +1,18 @@
 // ═══════════════════════════════════════════════════════
-//  FONLI TRAINING SYSTEM — Knowledge Base (Rich HTML)
-//  Source: DOC-001 香水包装产品知识手册 V3
+//  FONLI TRAINING SYSTEM — Knowledge Base
+//  Source: DOC-001 香水包装产品知识手册 V3.0  (2026.07.04)
 // ═══════════════════════════════════════════════════════
 
 const CHAPTERS = [
 
-// ── CH01 ────────────────────────────────────────────
+// ── CH01 ─────────────────────────────────────────────
 {
   id: 'ch01', order: 1,
   titleZh: '关于菲利包装', titleEn: 'About Fonli Packaging',
   icon: '🏢', estimatedMinutes: 8,
   sections: [
     {
-      headingZh: '公司概况', headingEn: 'Company Overview',
+      headingZh: `公司概况`, headingEn: `Company Overview`,
       contentZh: `
 <div class="kc-intro">菲利包装 <strong>Fonli Packaging</strong> 是一家专注高端香水及化妆品包装的 ODM/OEM 专业制造商，拥有自有工厂与设计团队，承接从定制设计到量产的全链条服务。</div>
 <table class="kc-table">
@@ -25,19 +25,19 @@ const CHAPTERS = [
   <tr><td class="kc-label">生产基地</td><td>中国 · 东莞市虎门镇</td></tr>
 </table>`,
       contentEn: `
-<div class="kc-intro"><strong>Fonli Packaging</strong> is a professional ODM/OEM manufacturer specializing in high-end perfume and cosmetic packaging. We have our own factory and design team, providing full-chain service from custom design to mass production.</div>
+<div class="kc-intro"><strong>Fonli Packaging</strong> is a professional ODM/OEM manufacturer specializing in high-end perfume and cosmetic packaging, with our own factory and design team providing full-chain service from custom design to mass production.</div>
 <table class="kc-table">
   <tr><td class="kc-label">Main Business</td><td>High-end perfume packaging ODM/OEM — glass bottles, caps, pumps, boxes, one-stop service</td></tr>
   <tr><td class="kc-label">Experience</td><td>10+ years in perfume packaging industry</td></tr>
   <tr><td class="kc-label">Resources</td><td>Own factory + own design team, full quality control</td></tr>
   <tr><td class="kc-label">Positioning</td><td>Mid-to-high-end, emphasizing design and craftsmanship value</td></tr>
-  <tr><td class="kc-label">Main Markets</td><td>Europe · USA · Middle East · Asia</td></tr>
+  <tr><td class="kc-label">Markets</td><td>Europe · USA · Middle East · Asia</td></tr>
   <tr><td class="kc-label">Certifications</td><td>ISO 9001-2015 · ISO 14001 · Sedex · FSC · Global Recycled Standard</td></tr>
   <tr><td class="kc-label">Factory</td><td>Humen Town, Dongguan City, China</td></tr>
 </table>`
     },
     {
-      headingZh: '三大核心优势', headingEn: 'Three Core Strengths',
+      headingZh: `三大核心优势`, headingEn: `Three Core Strengths`,
       contentZh: `
 <div class="kc-card-row">
   <div class="kc-card kc-card-orange"><div class="kc-card-num">10+</div><div class="kc-card-title">年行业经验</div><div class="kc-card-desc">深耕香水包材领域，熟悉欧美中东市场需求</div></div>
@@ -52,7 +52,7 @@ const CHAPTERS = [
 </div>`
     },
     {
-      headingZh: '目标客户群', headingEn: 'Target Customers',
+      headingZh: `目标客户群`, headingEn: `Target Customers`,
       contentZh: `
 <table class="kc-table">
   <thead><tr><th>优先级</th><th>客户类型</th><th>说明</th></tr></thead>
@@ -68,748 +68,933 @@ const CHAPTERS = [
 <table class="kc-table">
   <thead><tr><th>Priority</th><th>Customer Type</th><th>Notes</th></tr></thead>
   <tbody>
-    <tr><td><span class="kc-badge kc-badge-red">★★★</span></td><td>Own Perfume Brands (EU/Middle East)</td><td>Clear positioning & new product plans — best quality customers</td></tr>
-    <tr><td><span class="kc-badge kc-badge-red">★★★</span></td><td>Perfume OEM/ODM Factories</td><td>Stable brand clients, high repurchase rate</td></tr>
-    <tr><td><span class="kc-badge kc-badge-orange">★★☆</span></td><td>Filling Companies / Regional Distributors</td><td>Have channels and budgets, stable volumes</td></tr>
-    <tr><td><span class="kc-badge kc-badge-orange">★★☆</span></td><td>Foreign Packaging Design Companies</td><td>Professional, high process requirements</td></tr>
-    <tr><td><span class="kc-badge kc-badge-gray">★☆☆</span></td><td>Small/One-off Inquiries</td><td>Low priority — invest resources carefully</td></tr>
+    <tr><td><span class="kc-badge kc-badge-red">★★★</span></td><td>Own Fragrance Brands (EU/Middle East)</td><td>Clear positioning & new product plans — best quality leads</td></tr>
+    <tr><td><span class="kc-badge kc-badge-red">★★★</span></td><td>Perfume OEM/ODM Factories</td><td>Stable brand clients, high repeat order rate</td></tr>
+    <tr><td><span class="kc-badge kc-badge-orange">★★☆</span></td><td>Filling Companies / Regional Distributors</td><td>Have channels and budget, stable volume</td></tr>
+    <tr><td><span class="kc-badge kc-badge-orange">★★☆</span></td><td>Overseas Packaging Design Firms</td><td>Professional clients with high craft requirements</td></tr>
+    <tr><td><span class="kc-badge kc-badge-gray">★☆☆</span></td><td>Small / Inquiry-only Customers</td><td>Low priority — invest resources cautiously</td></tr>
   </tbody>
 </table>`
     }
   ]
 },
 
-// ── CH02 ────────────────────────────────────────────
+// ── CH02 ─────────────────────────────────────────────
 {
   id: 'ch02', order: 2,
   titleZh: '定制项目流程', titleEn: 'Custom Project Process',
-  icon: '⚙️', estimatedMinutes: 8,
+  icon: '⚙️', estimatedMinutes: 10,
   sections: [
     {
-      headingZh: '六步定制流程', headingEn: 'Six-Step Custom Process',
+      headingZh: `六步定制流程`, headingEn: `6-Step Custom Process`,
       contentZh: `
-<div class="kc-intro">独特美观的玻璃香水瓶是香水销售的亮点，Fonli 提供从设计到量产的完整定制服务。</div>
+<div class="kc-intro">独特美观的玻璃香水瓶是香水销售的亮点——不仅能吸引客户，更是产品的加分项。Fonli 提供从设计到量产的完整定制服务，共分 <strong>6 个步骤</strong>。</div>
 <div class="kc-steps">
   <div class="kc-step"><div class="kc-step-num">01</div><div class="kc-step-body"><div class="kc-step-title">设计构思 Design Concept</div><div class="kc-step-desc">了解品牌定位、目标人群、风格方向，确定设计概念基础</div></div></div>
-  <div class="kc-step"><div class="kc-step-num">02</div><div class="kc-step-body"><div class="kc-step-title">原型渲染 Prototyping & Rendering</div><div class="kc-step-desc">设计团队出方案，探索造型与工艺，呈现给客户审阅</div></div></div>
+  <div class="kc-step"><div class="kc-step-num">02</div><div class="kc-step-body"><div class="kc-step-title">原型渲染 Prototyping & Rendering</div><div class="kc-step-desc">设计团队出方案、探索造型与工艺，呈现给客户审阅</div></div></div>
   <div class="kc-step"><div class="kc-step-num">03</div><div class="kc-step-body"><div class="kc-step-title">3D 打样 3D Mockup</div><div class="kc-step-desc">3D 建模技术制作数字或实物手板，确认尺寸、形状和细节</div></div></div>
   <div class="kc-step"><div class="kc-step-num">04</div><div class="kc-step-body"><div class="kc-step-title">报价确认 Cost Analysis</div><div class="kc-step-desc">根据选材、工艺复杂度、数量提供透明报价，逐环节说明成本</div></div></div>
-  <div class="kc-step"><div class="kc-step-num">05</div><div class="kc-step-body"><div class="kc-step-title">模具与样品 Mould & Sample</div><div class="kc-step-desc">报价确认后制作量产模具，工程师确保精度，出样品确认</div></div></div>
+  <div class="kc-step kc-step-highlight"><div class="kc-step-num">05</div><div class="kc-step-body"><div class="kc-step-title">模具与样品 Mould & Sample</div><div class="kc-step-desc">报价确认后制作量产模具，工程师确保精度，出样品确认 — <strong>必须获得客户书面签字</strong></div></div></div>
   <div class="kc-step"><div class="kc-step-num">06</div><div class="kc-step-body"><div class="kc-step-title">大货生产 Mass Production</div><div class="kc-step-desc">模具就绪后启动量产，全程品控，确保每件符合最高标准</div></div></div>
 </div>`,
       contentEn: `
-<div class="kc-intro">A unique, beautiful perfume bottle is the highlight of fragrance sales. Fonli provides complete customization from design to mass production.</div>
+<div class="kc-intro">A unique and beautiful glass perfume bottle is the highlight of fragrance sales. Fonli provides complete custom service from design to mass production in <strong>6 steps</strong>.</div>
 <div class="kc-steps">
-  <div class="kc-step"><div class="kc-step-num">01</div><div class="kc-step-body"><div class="kc-step-title">Design Concept</div><div class="kc-step-desc">Understand brand positioning, target audience, style direction, establish design concept</div></div></div>
-  <div class="kc-step"><div class="kc-step-num">02</div><div class="kc-step-body"><div class="kc-step-title">Prototyping & Rendering</div><div class="kc-step-desc">Design team develops proposals, explores shapes and processes, presents to client for review</div></div></div>
-  <div class="kc-step"><div class="kc-step-num">03</div><div class="kc-step-body"><div class="kc-step-title">3D Mockup</div><div class="kc-step-desc">3D modeling to create digital or physical prototypes, confirming dimensions and details</div></div></div>
-  <div class="kc-step"><div class="kc-step-num">04</div><div class="kc-step-body"><div class="kc-step-title">Cost Analysis</div><div class="kc-step-desc">Transparent pricing based on materials, process complexity and quantity, explaining costs at each step</div></div></div>
-  <div class="kc-step"><div class="kc-step-num">05</div><div class="kc-step-body"><div class="kc-step-title">Mould & Sample</div><div class="kc-step-desc">After quote confirmation, production mold is made, engineers ensure precision, sample provided for approval</div></div></div>
-  <div class="kc-step"><div class="kc-step-num">06</div><div class="kc-step-body"><div class="kc-step-title">Mass Production</div><div class="kc-step-desc">Once mold is ready, mass production begins with full quality control at every stage</div></div></div>
+  <div class="kc-step"><div class="kc-step-num">01</div><div class="kc-step-body"><div class="kc-step-title">Design Concept</div><div class="kc-step-desc">Understand brand positioning, target audience, and style direction to establish the design concept</div></div></div>
+  <div class="kc-step"><div class="kc-step-num">02</div><div class="kc-step-body"><div class="kc-step-title">Prototyping & Rendering</div><div class="kc-step-desc">Design team creates proposals, exploring shapes and craftsmanship for client review</div></div></div>
+  <div class="kc-step"><div class="kc-step-num">03</div><div class="kc-step-body"><div class="kc-step-title">3D Mockup</div><div class="kc-step-desc">3D modeling technology to create digital or physical prototypes, confirming dimensions and details</div></div></div>
+  <div class="kc-step"><div class="kc-step-num">04</div><div class="kc-step-body"><div class="kc-step-title">Cost Analysis</div><div class="kc-step-desc">Transparent quotation based on materials, craft complexity, and quantity</div></div></div>
+  <div class="kc-step kc-step-highlight"><div class="kc-step-num">05</div><div class="kc-step-body"><div class="kc-step-title">Mould & Sample</div><div class="kc-step-desc">After quotation confirmation, produce production moulds and samples — <strong>written client sign-off required before proceeding</strong></div></div></div>
+  <div class="kc-step"><div class="kc-step-num">06</div><div class="kc-step-body"><div class="kc-step-title">Mass Production</div><div class="kc-step-desc">Full quality control throughout production to ensure every piece meets the highest standards</div></div></div>
 </div>`
+    },
+    {
+      headingZh: `公模 vs 私模`, headingEn: `Stock Mold vs Private Mold`,
+      contentZh: `
+<div class="kc-intro">菲利包装提供两种合作模式，业务员需根据客户需求和数量推荐合适方案。</div>
+<table class="kc-table">
+  <thead><tr><th>对比项</th><th>公模现货（标准款）</th><th>私模定制（新开模款）</th></tr></thead>
+  <tbody>
+    <tr><td class="kc-label">瓶型归属</td><td>与其他品牌共用标准款</td><td>客户品牌专属，不与他人共用</td></tr>
+    <tr><td class="kc-label">MOQ</td><td><strong>10,000 pcs</strong></td><td><strong>20,000 – 30,000 pcs</strong></td></tr>
+    <tr><td class="kc-label">开模费</td><td>无（现有模具）</td><td>需支付一次性开模费</td></tr>
+    <tr><td class="kc-label">交期</td><td>较短（模具已有）</td><td>较长（需开模）</td></tr>
+    <tr><td class="kc-label">适合客户</td><td>预算有限、量不大、快速出货</td><td>有品牌意识、追求独特性、量大</td></tr>
+  </tbody>
+</table>`,
+      contentEn: `
+<div class="kc-intro">Fonli offers two cooperation modes. Sales staff should recommend the right option based on client needs and quantity.</div>
+<table class="kc-table">
+  <thead><tr><th>Comparison</th><th>Stock Mold (Standard)</th><th>Private Mold (Custom)</th></tr></thead>
+  <tbody>
+    <tr><td class="kc-label">Bottle Ownership</td><td>Shared standard mold with other brands</td><td>Exclusively owned by client brand</td></tr>
+    <tr><td class="kc-label">MOQ</td><td><strong>10,000 pcs</strong></td><td><strong>20,000 – 30,000 pcs</strong></td></tr>
+    <tr><td class="kc-label">Tooling Fee</td><td>None (existing mold)</td><td>One-time tooling fee required</td></tr>
+    <tr><td class="kc-label">Lead Time</td><td>Shorter (mold ready)</td><td>Longer (mold creation needed)</td></tr>
+    <tr><td class="kc-label">Best For</td><td>Limited budget, smaller quantity, fast delivery</td><td>Brand-conscious clients seeking uniqueness, larger volume</td></tr>
+  </tbody>
+</table>`
     }
   ]
 },
 
-// ── CH03 ────────────────────────────────────────────
+// ── CH03 ─────────────────────────────────────────────
 {
   id: 'ch03', order: 3,
-  titleZh: '玻璃瓶知识', titleEn: 'Glass Bottle Knowledge',
-  icon: '🍾', estimatedMinutes: 15,
+  titleZh: '玻璃瓶', titleEn: 'Glass Bottle',
+  icon: '🍶', estimatedMinutes: 15,
   sections: [
     {
-      headingZh: '产品概述', headingEn: 'Product Overview',
+      headingZh: `规格参数与材料`, headingEn: `Specifications & Materials`,
       contentZh: `
-<div class="kc-intro">玻璃瓶是盛装香水液体的<strong>主体容器</strong>，也是整套包装中最大的视觉面，直接传递品牌风格与调性。</div>
-<div class="kc-highlight-row">
-  <div class="kc-highlight"><span class="kc-hi-icon">📦</span><strong>产品定义</strong><br>盛装香水的主体容器，独特美观的玻璃瓶是香水销售的亮点</div>
-  <div class="kc-highlight"><span class="kc-hi-icon">👁️</span><strong>核心作用</strong><br>承载液体、保证密封；整套包装最大视觉面，传递品牌风格</div>
-</div>`,
-      contentEn: `
-<div class="kc-intro">The glass bottle is the <strong>main container</strong> for perfume liquid and the largest visual element of the entire packaging — directly conveying the brand's style and tone.</div>
-<div class="kc-highlight-row">
-  <div class="kc-highlight"><span class="kc-hi-icon">📦</span><strong>Definition</strong><br>Main container for perfume — a unique, beautiful bottle is the selling point</div>
-  <div class="kc-highlight"><span class="kc-hi-icon">👁️</span><strong>Key Role</strong><br>Holds liquid, ensures sealing; largest visual surface, conveys brand identity</div>
-</div>`
-    },
-    {
-      headingZh: '常见规格参数', headingEn: 'Common Specifications',
-      contentZh: `
+<div class="kc-intro">玻璃瓶是盛装香水的主体容器，也是整套包装中最大的视觉面，直接传递品牌风格与调性。</div>
 <table class="kc-table">
-  <thead><tr><th>容量</th><th>重量范围</th><th>生产交期</th></tr></thead>
+  <thead><tr><th>容量</th><th>重量范围</th><th>生产交期</th><th>封口规格</th></tr></thead>
   <tbody>
-    <tr><td><strong>30 ml</strong></td><td>80 – 150 g</td><td>50 – 60 天</td></tr>
-    <tr><td><strong>50 ml</strong></td><td>130 – 180 g</td><td>50 – 60 天</td></tr>
-    <tr><td><strong>100 ml</strong></td><td>200 – 280 g</td><td>30 – 40 天</td></tr>
-    <tr><td><strong>60 / 200 ml 定制</strong></td><td>基于设计</td><td>基于设计</td></tr>
+    <tr><td>30 ml</td><td>80 – 150 g</td><td>50 – 60 天</td><td rowspan="3">Crimp（卡口）/ Screw（螺口）<br>颈口：FEA 13 / 15 / 18 / 20 mm</td></tr>
+    <tr><td>50 ml</td><td>130 – 180 g</td><td>50 – 60 天</td></tr>
+    <tr><td>100 ml</td><td>200 – 280 g</td><td>30 – 40 天</td></tr>
+    <tr><td>定制规格</td><td>基于设计</td><td>基于设计</td><td>根据实际设计及开模情况确定</td></tr>
   </tbody>
 </table>
-<div class="kc-tip">💡 <strong>封口方式：</strong>卡口（Crimp）最常见；螺口（Screw）适合旅行款。颈口规格：FEA 13 / 15 / 18 / 20 mm。<br>⚠️ 下单前须与客户确认封口方式，Crimp 与 Screw 不可互换！</div>`,
-      contentEn: `
-<table class="kc-table">
-  <thead><tr><th>Volume</th><th>Weight Range</th><th>Lead Time</th></tr></thead>
+<table class="kc-table" style="margin-top:12px">
+  <thead><tr><th>材料类型</th><th>英文</th><th>特点</th></tr></thead>
   <tbody>
-    <tr><td><strong>30 ml</strong></td><td>80 – 150 g</td><td>50 – 60 days</td></tr>
-    <tr><td><strong>50 ml</strong></td><td>130 – 180 g</td><td>50 – 60 days</td></tr>
-    <tr><td><strong>100 ml</strong></td><td>200 – 280 g</td><td>30 – 40 days</td></tr>
-    <tr><td><strong>60 / 200 ml Custom</strong></td><td>Design-based</td><td>Design-based</td></tr>
-  </tbody>
-</table>
-<div class="kc-tip">💡 <strong>Neck Types:</strong> Crimp (most common); Screw (travel size). Neck size: FEA 13 / 15 / 18 / 20 mm.<br>⚠️ Always confirm neck type with client before ordering — Crimp and Screw are NOT interchangeable!</div>`
-    },
-    {
-      headingZh: '瓶身材料与抛光', headingEn: 'Materials & Polishing',
-      contentZh: `
-<table class="kc-table">
-  <thead><tr><th>材料类型</th><th>英文名</th><th>特点</th></tr></thead>
-  <tbody>
-    <tr><td><strong>高白料玻璃</strong></td><td>White Opal Glass</td><td>透明度高，折射好，显色准确，适合高端定制，价格略高</td></tr>
-    <tr><td><strong>普通毛瓶</strong></td><td>Flint Glass / Plain Bottles</td><td>通用玻璃，成本低，适合公模现货款</td></tr>
-  </tbody>
-</table>
-<table class="kc-table" style="margin-top:1rem">
-  <thead><tr><th>抛光工艺</th><th>英文</th><th>效果与适用</th></tr></thead>
-  <tbody>
-    <tr><td><strong>手抛</strong></td><td>Hand Polishing</td><td>透明度极高，折射极好，棱角分明，价格最高，适合顶级香水</td></tr>
-    <tr><td><strong>火抛</strong></td><td>Fire Polishing</td><td>通透度比普通毛瓶好，棱角圆滑，价格居中</td></tr>
+    <tr><td><strong>高白料玻璃</strong></td><td>White Opal Glass</td><td>透明度高，折射效果好，显色准确；适合高端定制</td></tr>
+    <tr><td>普通玻璃（毛瓶）</td><td>Flint Glass / Plain Bottles</td><td>通用玻璃，成本较低，适合公模现货款</td></tr>
   </tbody>
 </table>`,
       contentEn: `
+<div class="kc-intro">The glass bottle is the main container for perfume and the largest visual surface of the entire packaging, directly conveying brand style and tone.</div>
 <table class="kc-table">
-  <thead><tr><th>Material</th><th>English Name</th><th>Features</th></tr></thead>
+  <thead><tr><th>Volume</th><th>Weight Range</th><th>Lead Time</th><th>Neck Finish</th></tr></thead>
   <tbody>
-    <tr><td><strong>White Opal Glass</strong></td><td>高白料玻璃</td><td>High clarity, excellent refraction, accurate color — premium custom, slightly higher cost</td></tr>
-    <tr><td><strong>Plain Bottles</strong></td><td>Flint Glass / 毛瓶</td><td>Standard glass, lower cost, suitable for stock mold products</td></tr>
+    <tr><td>30 ml</td><td>80 – 150 g</td><td>50 – 60 days</td><td rowspan="3">Crimp / Screw<br>FEA 13 / 15 / 18 / 20 mm</td></tr>
+    <tr><td>50 ml</td><td>130 – 180 g</td><td>50 – 60 days</td></tr>
+    <tr><td>100 ml</td><td>200 – 280 g</td><td>30 – 40 days</td></tr>
+    <tr><td>Custom</td><td>Design-based</td><td>Design-based</td><td>Determined by design and mold</td></tr>
   </tbody>
 </table>
-<table class="kc-table" style="margin-top:1rem">
-  <thead><tr><th>Polishing Type</th><th>English</th><th>Effect & Use</th></tr></thead>
+<table class="kc-table" style="margin-top:12px">
+  <thead><tr><th>Material</th><th>Name</th><th>Features</th></tr></thead>
   <tbody>
-    <tr><td><strong>Hand Polishing</strong></td><td>手抛</td><td>Highest clarity, excellent refraction, sharp edges — top-tier perfume, highest price</td></tr>
-    <tr><td><strong>Fire Polishing</strong></td><td>火抛</td><td>Better transparency than plain bottles, rounded edges, mid-range price</td></tr>
+    <tr><td><strong>High-clarity Glass</strong></td><td>White Opal Glass</td><td>High transparency, excellent refraction, accurate color; suitable for high-end custom</td></tr>
+    <tr><td>Standard Glass</td><td>Flint Glass / Plain Bottles</td><td>General glass, lower cost, suitable for stock mold products</td></tr>
   </tbody>
 </table>`
     },
     {
-      headingZh: '装饰工艺大全', headingEn: 'Decoration Techniques',
+      headingZh: `装饰工艺`, headingEn: `Decoration Processes`,
       contentZh: `
-<div class="kc-process-grid">
-  <div class="kc-process-item"><div class="kc-process-name">喷涂</div><div class="kc-process-en">Color Coating</div><div class="kc-process-desc">实色 / 透明 / 渐变 / 局部喷涂，可调配专属颜色</div></div>
-  <div class="kc-process-item"><div class="kc-process-name">UV电镀</div><div class="kc-process-en">UV Plating</div><div class="kc-process-desc">金属质感，增加档次感</div></div>
-  <div class="kc-process-item"><div class="kc-process-name">蒙沙/喷沙</div><div class="kc-process-en">Frosting</div><div class="kc-process-desc">磨砂质感，低调奢华，欧美常见</div></div>
-  <div class="kc-process-item"><div class="kc-process-name">植绒</div><div class="kc-process-en">Flocking</div><div class="kc-process-desc">天鹅绒触感，高端礼品感</div></div>
-  <div class="kc-process-item"><div class="kc-process-name">裂纹</div><div class="kc-process-en">Cracking</div><div class="kc-process-desc">特殊纹理效果，艺术感强</div></div>
-  <div class="kc-process-item"><div class="kc-process-name">烫金/丝印</div><div class="kc-process-en">Hot Stamping</div><div class="kc-process-desc">品牌 LOGO 印刷，每种工艺 MOQ 10,000 pcs</div></div>
-  <div class="kc-process-item"><div class="kc-process-name">橡胶漆</div><div class="kc-process-en">Rubber Coating</div><div class="kc-process-desc">柔软触感，防滑高级，哑面阻尼手感</div></div>
-  <div class="kc-process-item"><div class="kc-process-name">蚀刻</div><div class="kc-process-en">Etching</div><div class="kc-process-desc">表面纹理处理，适合特殊造型</div></div>
-  <div class="kc-process-item"><div class="kc-process-name">转印</div><div class="kc-process-en">Transfer / Decal</div><div class="kc-process-desc">印刷图案转印到瓶身（贴花工艺）</div></div>
-  <div class="kc-process-item"><div class="kc-process-name">UV打印</div><div class="kc-process-en">UV Printing</div><div class="kc-process-desc">直接打印在玻璃上，表面有颗粒感</div></div>
-</div>
-<div class="kc-img-grid">
-  <figure><img src="img/image1.png" alt="玻璃瓶"><figcaption>玻璃瓶 Overall</figcaption></figure>
-  <figure><img src="img/image2.png" alt="透喷"><figcaption>喷漆效果（透喷）</figcaption></figure>
-  <figure><img src="img/image3.png" alt="实喷"><figcaption>喷漆效果（实喷）</figcaption></figure>
-  <figure><img src="img/image4.png" alt="UV电镀"><figcaption>UV 电镀（金属反亮）</figcaption></figure>
-  <figure><img src="img/image5.png" alt="蒙砂"><figcaption>蒙砂（雾面效果）</figcaption></figure>
-  <figure><img src="img/image6.png" alt="植绒"><figcaption>植绒（绒布手感）</figcaption></figure>
-  <figure><img src="img/image7.jpeg" alt="裂纹"><figcaption>裂纹</figcaption></figure>
-  <figure><img src="img/image8.jpeg" alt="烫金"><figcaption>烫金（LOGO）</figcaption></figure>
-  <figure><img src="img/image9.jpeg" alt="丝印"><figcaption>丝印</figcaption></figure>
-  <figure><img src="img/image10.jpeg" alt="橡胶漆"><figcaption>橡胶漆（哑面）</figcaption></figure>
-  <figure><img src="img/image11.jpeg" alt="镭射"><figcaption>镭射</figcaption></figure>
-  <figure><img src="img/image12.jpeg" alt="转印"><figcaption>转印</figcaption></figure>
-  <figure><img src="img/image13.jpeg" alt="UV打印"><figcaption>UV 打印</figcaption></figure>
-</div>`,
-      contentEn: `
-<div class="kc-process-grid">
-  <div class="kc-process-item"><div class="kc-process-name">Color Coating</div><div class="kc-process-en">喷涂</div><div class="kc-process-desc">Solid / transparent / gradient / partial coating, custom colors</div></div>
-  <div class="kc-process-item"><div class="kc-process-name">UV Plating</div><div class="kc-process-en">UV电镀</div><div class="kc-process-desc">Metallic appearance, enhances premium feel</div></div>
-  <div class="kc-process-item"><div class="kc-process-name">Frosting</div><div class="kc-process-en">蒙沙</div><div class="kc-process-desc">Matte texture, understated luxury, common in EU/US markets</div></div>
-  <div class="kc-process-item"><div class="kc-process-name">Flocking</div><div class="kc-process-en">植绒</div><div class="kc-process-desc">Velvet touch, premium gift feel</div></div>
-  <div class="kc-process-item"><div class="kc-process-name">Cracking</div><div class="kc-process-en">裂纹</div><div class="kc-process-desc">Special texture effect, strong artistic feel</div></div>
-  <div class="kc-process-item"><div class="kc-process-name">Hot Stamping</div><div class="kc-process-en">烫金</div><div class="kc-process-desc">Brand LOGO printing, MOQ 10,000 pcs per type</div></div>
-  <div class="kc-process-item"><div class="kc-process-name">Rubber Coating</div><div class="kc-process-en">橡胶漆</div><div class="kc-process-desc">Soft touch, non-slip, matte damping feel</div></div>
-  <div class="kc-process-item"><div class="kc-process-name">Etching</div><div class="kc-process-en">蚀刻</div><div class="kc-process-desc">Surface texture treatment, special design shapes</div></div>
-  <div class="kc-process-item"><div class="kc-process-name">Transfer / Decal</div><div class="kc-process-en">转印</div><div class="kc-process-desc">Transfer printed patterns onto bottle surface</div></div>
-  <div class="kc-process-item"><div class="kc-process-name">UV Printing</div><div class="kc-process-en">UV打印</div><div class="kc-process-desc">Direct print on glass, slight texture on surface</div></div>
-</div>
-<div class="kc-img-grid">
-  <figure><img src="img/image1.png" alt="Glass Bottle"><figcaption>Glass Bottle</figcaption></figure>
-  <figure><img src="img/image2.png" alt="Transparent coating"><figcaption>Transparent Coating</figcaption></figure>
-  <figure><img src="img/image3.png" alt="Solid coating"><figcaption>Solid Color Coating</figcaption></figure>
-  <figure><img src="img/image4.png" alt="UV Plating"><figcaption>UV Plating (Metal)</figcaption></figure>
-  <figure><img src="img/image5.png" alt="Frosting"><figcaption>Frosting (Matte)</figcaption></figure>
-  <figure><img src="img/image6.png" alt="Flocking"><figcaption>Flocking (Velvet)</figcaption></figure>
-  <figure><img src="img/image7.jpeg" alt="Cracking"><figcaption>Cracking Effect</figcaption></figure>
-  <figure><img src="img/image8.jpeg" alt="Hot Stamping"><figcaption>Hot Stamping (LOGO)</figcaption></figure>
-  <figure><img src="img/image9.jpeg" alt="Silkscreen"><figcaption>Silk Screen Print</figcaption></figure>
-  <figure><img src="img/image10.jpeg" alt="Rubber Coating"><figcaption>Rubber Coating</figcaption></figure>
-  <figure><img src="img/image11.jpeg" alt="Laser"><figcaption>Laser Effect</figcaption></figure>
-  <figure><img src="img/image12.jpeg" alt="Transfer"><figcaption>Transfer / Decal</figcaption></figure>
-  <figure><img src="img/image13.jpeg" alt="UV Print"><figcaption>UV Printing</figcaption></figure>
-</div>`
-    },
-    {
-      headingZh: '瓶身结构：A 型 vs B 型', headingEn: 'Bottle Structure: Type A vs Type B',
-      contentZh: `
-<div class="kc-two-col">
-  <div class="kc-col kc-col-a">
-    <div class="kc-col-header">A 结构（带肩套 / 铝牌）</div>
-    <ol class="kc-struct-list"><li>盖子（Cap）</li><li>PP 垫片</li><li>喷头（Pump）</li><li><strong>肩套（Shoulder）— 装饰</strong></li><li>瓶子（Bottle）</li><li><strong>铝牌（Plate）</strong></li></ol>
-    <div class="kc-col-note">适合：有铝牌装饰、肩套造型的高端款式<br>💎 中东风格常见</div>
-  </div>
-  <div class="kc-col kc-col-b">
-    <div class="kc-col-header">B 结构（带中套）</div>
-    <ol class="kc-struct-list"><li>盖子（Cap）</li><li>PP 垫片</li><li>喷头（Pump）</li><li><strong>中套（Collar）— 装饰 + 固定</strong></li><li>瓶子（Bottle）</li></ol>
-    <div class="kc-col-note">适合：现代简约风格，中套起装饰和固定喷头双重作用<br>🌍 欧美风格常见</div>
-  </div>
-</div>`,
-      contentEn: `
-<div class="kc-two-col">
-  <div class="kc-col kc-col-a">
-    <div class="kc-col-header">Type A (Shoulder + Plate)</div>
-    <ol class="kc-struct-list"><li>Cap</li><li>PP Gasket</li><li>Pump</li><li><strong>Shoulder — Decorative</strong></li><li>Bottle</li><li><strong>Name Plate</strong></li></ol>
-    <div class="kc-col-note">For: High-end styles with decorative plate and shoulder<br>💎 Common in Middle East style</div>
-  </div>
-  <div class="kc-col kc-col-b">
-    <div class="kc-col-header">Type B (Collar)</div>
-    <ol class="kc-struct-list"><li>Cap</li><li>PP Gasket</li><li>Pump</li><li><strong>Collar — Decorative + Securing</strong></li><li>Bottle</li></ol>
-    <div class="kc-col-note">For: Modern minimalist style, collar serves dual decorative and securing function<br>🌍 Common in European/US style</div>
-  </div>
-</div>`
-    },
-    {
-      headingZh: '品检要点', headingEn: 'QC Checklist',
-      contentZh: `
+<div class="kc-intro">香水瓶表面工艺直接影响产品的视觉效果和档次感，业务员必须熟悉每种工艺的效果与特点。</div>
 <table class="kc-table">
-  <thead><tr><th>检查项目</th><th>说明 / 处理方式</th></tr></thead>
+  <thead><tr><th>工艺中文</th><th>工艺英文</th><th>说明</th></tr></thead>
   <tbody>
-    <tr><td><span class="kc-badge kc-badge-red">必检</span> 气泡 (Bubbles)</td><td>玻璃生产过程中的气泡，验货时重点检查</td></tr>
-    <tr><td><span class="kc-badge kc-badge-red">必检</span> 破裂/碎裂</td><td>运输或生产损坏，封柜前逐箱确认</td></tr>
-    <tr><td><span class="kc-badge kc-badge-orange">注意</span> 容量标准 (OFC)</td><td>以 OFC 溢流容量为准，非满口容量（Brimful Capacity）</td></tr>
-    <tr><td><span class="kc-badge kc-badge-orange">注意</span> 公差</td><td>瓶身 ±1mm，容量 ±3ml，重量 ±5g 属正常范围</td></tr>
-    <tr><td><span class="kc-badge kc-badge-orange">注意</span> 封口方式</td><td>卡口（Crimp）和螺口（Screw）下单前必须与客户确认</td></tr>
+    <tr><td>喷涂</td><td>Color Coating / Painting</td><td>实色 / 透明 / 渐变 / 局部喷涂，可调配专属颜色</td></tr>
+    <tr><td>UV 电镀</td><td>Metalizing / UV Plating</td><td>金属质感，增加档次感（金/银/玫瑰金等）</td></tr>
+    <tr><td>蒙沙 / 喷沙</td><td>Frosting / Sand-blasting</td><td>磨砂质感，低调奢华，欧美市场常见</td></tr>
+    <tr><td>植绒</td><td>Flocking / Velvet</td><td>天鹅绒触感，高端礼品感</td></tr>
+    <tr><td>裂纹</td><td>Cracking</td><td>特殊纹理效果，艺术感强</td></tr>
+    <tr><td>烫金 / 丝印</td><td>Hot Stamping / Silk Screen</td><td>常用于品牌 LOGO 印刷，每种工艺/LOGO 标准 MOQ 10,000 pcs</td></tr>
+    <tr><td>橡胶漆</td><td>Rubber Coating / Soft Touch</td><td>柔软触感涂层，防滑且高级（哑面阻尼手感）</td></tr>
+    <tr><td>蚀刻</td><td>Etching</td><td>表面纹理处理，适合特殊造型设计</td></tr>
+    <tr><td>转印</td><td>Transfer / Decal</td><td>把印刷好的图案转印到瓶子上（贴花工艺）</td></tr>
+    <tr><td>UV 打印</td><td>UV Printing</td><td>用打印机直接打印在玻璃瓶上，表面有颗粒感</td></tr>
   </tbody>
 </table>`,
       contentEn: `
+<div class="kc-intro">Surface treatments directly affect the visual impact and perceived quality of the bottle. Sales staff must be familiar with each process.</div>
 <table class="kc-table">
-  <thead><tr><th>Check Item</th><th>Description / Action</th></tr></thead>
+  <thead><tr><th>Chinese</th><th>English</th><th>Description</th></tr></thead>
   <tbody>
-    <tr><td><span class="kc-badge kc-badge-red">Must Check</span> Bubbles</td><td>Air bubbles from glass production — inspect closely during QC</td></tr>
-    <tr><td><span class="kc-badge kc-badge-red">Must Check</span> Cracks / Chips</td><td>Transport or production damage — check every carton before container loading</td></tr>
-    <tr><td><span class="kc-badge kc-badge-orange">Note</span> Volume Standard (OFC)</td><td>Use OFC (Over Flow Capacity), not Brimful Capacity</td></tr>
-    <tr><td><span class="kc-badge kc-badge-orange">Note</span> Tolerance</td><td>Normal range: body ±1mm, volume ±3ml, weight ±5g</td></tr>
-    <tr><td><span class="kc-badge kc-badge-orange">Note</span> Neck Type</td><td>Crimp vs Screw must be confirmed with client before ordering</td></tr>
+    <tr><td>喷涂</td><td>Color Coating / Painting</td><td>Solid / transparent / gradient / partial coating — custom colors available</td></tr>
+    <tr><td>UV 电镀</td><td>Metalizing / UV Plating</td><td>Metallic finish — gold, silver, rose gold, etc.</td></tr>
+    <tr><td>蒙沙 / 喷沙</td><td>Frosting / Sand-blasting</td><td>Matte frosted texture, understated luxury, popular in EU/US markets</td></tr>
+    <tr><td>植绒</td><td>Flocking / Velvet</td><td>Velvety soft touch, premium gift feel</td></tr>
+    <tr><td>裂纹</td><td>Cracking</td><td>Special crackle texture, strong artistic effect</td></tr>
+    <tr><td>烫金 / 丝印</td><td>Hot Stamping / Silk Screen</td><td>Common for brand LOGO printing; standard MOQ 10,000 pcs per process/LOGO</td></tr>
+    <tr><td>橡胶漆</td><td>Rubber Coating / Soft Touch</td><td>Soft matte coating, anti-slip, premium damped feel</td></tr>
+    <tr><td>蚀刻</td><td>Etching</td><td>Surface texture treatment for special design patterns</td></tr>
+    <tr><td>转印</td><td>Transfer / Decal</td><td>Transfer pre-printed designs onto the bottle</td></tr>
+    <tr><td>UV 打印</td><td>UV Printing</td><td>Direct print on glass bottle, slight surface texture</td></tr>
   </tbody>
 </table>`
+    },
+    {
+      headingZh: `A/B 结构详解`, headingEn: `Structure A vs Structure B`,
+      contentZh: `
+<div class="kc-intro">香水瓶有两种常见装配结构，业务员必须熟练区分，直接影响配件选型和报价。</div>
+<div class="kc-ab-wrap">
+  <div class="kc-ab-box kc-ab-a">
+    <div class="kc-ab-title">🅐 A 结构（带肩套 / 铝牌）</div>
+    <div class="kc-ab-subtitle">中东高端风格常见</div>
+    <ol class="kc-ab-list">
+      <li>盖子（Cap）</li>
+      <li>PP 垫片</li>
+      <li>喷头（Pump）</li>
+      <li>肩套（<strong>Shoulder</strong>）</li>
+      <li>铝牌（<strong>Name Plate</strong>）</li>
+      <li>玻璃瓶（Glass Bottle）</li>
+    </ol>
+    <div class="kc-ab-note">✦ 特点：肩套覆盖瓶肩，铝牌展示品牌，整体感强，多用于中东高端香水</div>
+  </div>
+  <div class="kc-ab-box kc-ab-b">
+    <div class="kc-ab-title">🅑 B 结构（带中套）</div>
+    <div class="kc-ab-subtitle">欧美现代风格常见</div>
+    <ol class="kc-ab-list">
+      <li>盖子（Cap）</li>
+      <li>PP 垫片</li>
+      <li>喷头（Pump）</li>
+      <li>中套（<strong>Collar</strong>）</li>
+      <li>玻璃瓶（Glass Bottle）</li>
+    </ol>
+    <div class="kc-ab-note">✦ 特点：中套套在瓶口喷头处，起装饰和固定双重作用，欧美现代简约风格常见</div>
+  </div>
+</div>
+<div class="kc-highlight-box">⚠️ 关键提示：接单时必须与客户确认是 A 结构还是 B 结构，结构不同则配件完全不同，直接影响报价！</div>
+<div class="kc-intro" style="margin-top:12px">实物参考图：</div>
+<div class="kc-img-row"><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_002.jpg" class="kc-img" loading="lazy" alt="A 结构香水瓶（肩套 + 铝牌）"><p class="kc-img-caption">A 结构香水瓶（肩套 + 铝牌）</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_001.jpg" class="kc-img" loading="lazy" alt="B 结构香水瓶（中套）"><p class="kc-img-caption">B 结构香水瓶（中套）</p></div></div></div>`,
+      contentEn: `
+<div class="kc-intro">Perfume bottles come in two common assembly structures. Sales staff must distinguish them clearly — the choice directly affects component selection and quotation.</div>
+<div class="kc-ab-wrap">
+  <div class="kc-ab-box kc-ab-a">
+    <div class="kc-ab-title">🅐 Structure A (Shoulder + Name Plate)</div>
+    <div class="kc-ab-subtitle">Common in Middle East high-end style</div>
+    <ol class="kc-ab-list">
+      <li>Cap</li>
+      <li>PP Gasket</li>
+      <li>Spray Pump</li>
+      <li><strong>Shoulder</strong></li>
+      <li><strong>Name Plate</strong></li>
+      <li>Glass Bottle</li>
+    </ol>
+    <div class="kc-ab-note">✦ The shoulder covers the bottle neck; the name plate displays the brand — commonly used in Middle East luxury perfumes</div>
+  </div>
+  <div class="kc-ab-box kc-ab-b">
+    <div class="kc-ab-title">🅑 Structure B (Collar)</div>
+    <div class="kc-ab-subtitle">Common in European / American modern style</div>
+    <ol class="kc-ab-list">
+      <li>Cap</li>
+      <li>PP Gasket</li>
+      <li>Spray Pump</li>
+      <li><strong>Collar</strong></li>
+      <li>Glass Bottle</li>
+    </ol>
+    <div class="kc-ab-note">✦ The collar sits around the pump at the bottle neck, serving both decorative and stabilizing purposes — popular in modern EU/US styles</div>
+  </div>
+</div>
+<div class="kc-highlight-box">⚠️ Key: Always confirm with client whether they need Structure A or B — different structures require completely different components and affect pricing!</div>
+<div class="kc-intro" style="margin-top:12px">Reference photos:</div>
+<div class="kc-img-row"><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_002.jpg" class="kc-img" loading="lazy" alt="Structure A Bottle (Shoulder + Name Plate)"><p class="kc-img-caption">Structure A Bottle (Shoulder + Name Plate)</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_001.jpg" class="kc-img" loading="lazy" alt="Structure B Bottle (Collar)"><p class="kc-img-caption">Structure B Bottle (Collar)</p></div></div></div>`
+    },
+    {
+      headingZh: `抛光工艺与品检要点 / 产品图片`, headingEn: `Polishing & QC / Product Images`,
+      contentZh: `
+<div class="kc-intro">以下为常见抛光工艺对比。</div>
+<table class="kc-table">
+  <thead><tr><th>工艺</th><th>英文</th><th>特点</th></tr></thead>
+  <tbody>
+    <tr><td><strong>手抛</strong></td><td>Hand Polishing</td><td>透明度极高，折射效果极好，棱角分明；适合高端香水包装，价格最高</td></tr>
+    <tr><td>火抛</td><td>Fire Polishing</td><td>通透度高，表面瑕疵少，棱角比较圆滑；价格居中</td></tr>
+  </tbody>
+</table>
+<div class="kc-intro" style="margin-top:16px">品检要点：</div>
+<table class="kc-table">
+  <thead><tr><th>检查项</th><th>说明</th></tr></thead>
+  <tbody>
+    <tr><td>气泡（Bubbles）</td><td>玻璃生产过程中的气泡，验货时重点检查</td></tr>
+    <tr><td>破裂 / 碎裂（Cracks / Chips）</td><td>运输或生产损坏，验货必检，封柜前逐箱确认</td></tr>
+    <tr><td>容量标准（OFC）</td><td>以 OFC（Over Flow Capacity 溢流容量）为准，非满口容量</td></tr>
+    <tr><td>公差（Tolerance）</td><td>瓶身 ±1mm，容量 ±3ml，重量 ±5g（正常范围）</td></tr>
+    <tr><td>封口方式确认</td><td>卡口（Crimp）和螺口（Screw）不可互换，下单前必须确认</td></tr>
+  </tbody>
+</table>
+<div class="kc-intro" style="margin-top:16px">产品图片</div>
+<div class="kc-img-row"><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_000.jpg" class="kc-img" loading="lazy" alt="透喷渐变"><p class="kc-img-caption">透喷渐变</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_050.jpg" class="kc-img" loading="lazy" alt="实喷效果"><p class="kc-img-caption">实喷效果</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_003.jpg" class="kc-img" loading="lazy" alt="玻璃瓶总览"><p class="kc-img-caption">玻璃瓶总览</p></div></div></div>
+<div class="kc-img-row"><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_049.jpg" class="kc-img" loading="lazy" alt="UV 电镀（金属光泽）"><p class="kc-img-caption">UV 电镀（金属光泽）</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_048.jpg" class="kc-img" loading="lazy" alt="蒙砂（雾面效果）"><p class="kc-img-caption">蒙砂（雾面效果）</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_047.jpg" class="kc-img" loading="lazy" alt="植绒（绒布触感）"><p class="kc-img-caption">植绒（绒布触感）</p></div></div></div>
+<div class="kc-img-row"><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_046.jpg" class="kc-img" loading="lazy" alt="裂纹工艺"><p class="kc-img-caption">裂纹工艺</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_045.jpg" class="kc-img" loading="lazy" alt="烫金工艺"><p class="kc-img-caption">烫金工艺</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_044.jpg" class="kc-img" loading="lazy" alt="丝印工艺"><p class="kc-img-caption">丝印工艺</p></div></div></div>
+<div class="kc-img-row"><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_043.jpg" class="kc-img" loading="lazy" alt="橡胶漆（哑面）"><p class="kc-img-caption">橡胶漆（哑面）</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_042.jpg" class="kc-img" loading="lazy" alt="镭射工艺"><p class="kc-img-caption">镭射工艺</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_041.jpg" class="kc-img" loading="lazy" alt="转印工艺"><p class="kc-img-caption">转印工艺</p></div></div></div>
+<div class="kc-img-row"><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_040.jpg" class="kc-img" loading="lazy" alt="UV 打印工艺"><p class="kc-img-caption">UV 打印工艺</p></div></div></div>`,
+      contentEn: `
+<div class="kc-intro">Polishing process comparison:</div>
+<table class="kc-table">
+  <thead><tr><th>Process</th><th>English</th><th>Features</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Hand Polishing</strong></td><td>Hand Polishing</td><td>Highest transparency, best refraction, sharp edges; top-tier pricing</td></tr>
+    <tr><td>Fire Polishing</td><td>Fire Polishing</td><td>High clarity, fewer surface defects, smoother edges; mid-range pricing</td></tr>
+  </tbody>
+</table>
+<div class="kc-intro" style="margin-top:16px">Quality Inspection Points:</div>
+<table class="kc-table">
+  <thead><tr><th>Check Item</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td>Bubbles</td><td>Air bubbles formed during glass production — inspect carefully during QC</td></tr>
+    <tr><td>Cracks / Chips</td><td>Production or transport damage — must check every carton before sealing container</td></tr>
+    <tr><td>OFC Standard</td><td>Volume measured by OFC (Over Flow Capacity), not brimful capacity</td></tr>
+    <tr><td>Tolerance</td><td>Bottle body ±1mm, volume ±3ml, weight ±5g (normal range)</td></tr>
+    <tr><td>Neck Finish</td><td>Crimp and Screw are NOT interchangeable — must confirm before ordering</td></tr>
+  </tbody>
+</table>
+<div class="kc-intro" style="margin-top:16px">Product Images</div>
+<div class="kc-img-row"><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_000.jpg" class="kc-img" loading="lazy" alt="Transparent Gradient Coating"><p class="kc-img-caption">Transparent Gradient Coating</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_050.jpg" class="kc-img" loading="lazy" alt="Solid Color Coating"><p class="kc-img-caption">Solid Color Coating</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_003.jpg" class="kc-img" loading="lazy" alt="Glass Bottle Overview"><p class="kc-img-caption">Glass Bottle Overview</p></div></div></div>
+<div class="kc-img-row"><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_049.jpg" class="kc-img" loading="lazy" alt="UV Plating (Metallic)"><p class="kc-img-caption">UV Plating (Metallic)</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_048.jpg" class="kc-img" loading="lazy" alt="Frosting (Matte)"><p class="kc-img-caption">Frosting (Matte)</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_047.jpg" class="kc-img" loading="lazy" alt="Flocking (Velvet Touch)"><p class="kc-img-caption">Flocking (Velvet Touch)</p></div></div></div>
+<div class="kc-img-row"><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_046.jpg" class="kc-img" loading="lazy" alt="Cracking Effect"><p class="kc-img-caption">Cracking Effect</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_045.jpg" class="kc-img" loading="lazy" alt="Hot Stamping"><p class="kc-img-caption">Hot Stamping</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_044.jpg" class="kc-img" loading="lazy" alt="Silk Screen"><p class="kc-img-caption">Silk Screen</p></div></div></div>
+<div class="kc-img-row"><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_043.jpg" class="kc-img" loading="lazy" alt="Rubber Coating (Matte)"><p class="kc-img-caption">Rubber Coating (Matte)</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_042.jpg" class="kc-img" loading="lazy" alt="Laser / Holographic"><p class="kc-img-caption">Laser / Holographic</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_041.jpg" class="kc-img" loading="lazy" alt="Transfer / Decal"><p class="kc-img-caption">Transfer / Decal</p></div></div></div>
+<div class="kc-img-row"><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_040.jpg" class="kc-img" loading="lazy" alt="UV Printing"><p class="kc-img-caption">UV Printing</p></div></div></div>`
     }
   ]
 },
 
-// ── CH04 ────────────────────────────────────────────
+// ── CH04 ─────────────────────────────────────────────
 {
   id: 'ch04', order: 4,
-  titleZh: '香水盖知识', titleEn: 'Perfume Cap Knowledge',
-  icon: '🔒', estimatedMinutes: 10,
+  titleZh: '香水盖', titleEn: 'Perfume Cap',
+  icon: '🔵', estimatedMinutes: 12,
   sections: [
     {
-      headingZh: '产品概述', headingEn: 'Product Overview',
+      headingZh: `材料类型（9种）`, headingEn: `Cap Materials (9 Types)`,
       contentZh: `
-<div class="kc-intro">香水盖套在喷头上方，是客户<strong>手感最直接</strong>的部件，也是彰显品牌调性的关键元素。</div>
-<div class="kc-highlight-row">
-  <div class="kc-highlight"><span class="kc-hi-icon">🛡️</span><strong>保护功能</strong><br>保护喷头避免误触，防止香水挥发</div>
-  <div class="kc-highlight"><span class="kc-hi-icon">✨</span><strong>品牌展示</strong><br>盖子设计直接影响客户对产品档次的第一印象</div>
-</div>`,
+<div class="kc-intro">香水盖是整套包装中客户手感最直接的部件，也是彰显品牌设计风格与档次的重要元素。</div>
+<table class="kc-table">
+  <thead><tr><th>序号</th><th>英文名</th><th>中文名</th><th>特点与卖点</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>ABS</td><td>ABS 工程塑料</td><td>可电镀/喷涂，性价比高，适合中端产品</td></tr>
+    <tr><td>2</td><td>Zamak / Zinc Alloy</td><td>锌铝合金</td><td>重量感好，电镀效果出色；中东高端市场常用，质感高级</td></tr>
+    <tr><td>3</td><td>Aluminium Oxide</td><td>电化铝</td><td>轻盈，哑光金属质感，色泽均匀自然</td></tr>
+    <tr><td>4</td><td>K Materials</td><td>K 料（K 树脂）</td><td>高透明度，仿水晶效果，折射感佳</td></tr>
+    <tr><td>5</td><td>Surlyn</td><td>沙林（离聚物）</td><td>高透明，可做通透水晶感；常见于欧式设计</td></tr>
+    <tr><td>6</td><td>Acrylic</td><td>亚克力</td><td>透明或彩色，可雕刻花纹，视觉效果丰富</td></tr>
+    <tr><td>7</td><td>PP</td><td>聚丙烯塑料</td><td>轻量，颜色丰富，经济实惠；适合简约风格或库存款</td></tr>
+    <tr><td>8</td><td>Wood</td><td>木盖</td><td>自然质感，环保定位，欧美市场越来越受欢迎</td></tr>
+    <tr><td>9</td><td>Magnetic</td><td>磁吸盖</td><td>开合顺滑，高级感强；适合高端定制款，常规磁力 N42/N52</td></tr>
+  </tbody>
+</table>`,
       contentEn: `
-<div class="kc-intro">The perfume cap sits over the pump — it's the part the customer <strong>feels most directly</strong>, and a key element expressing brand character.</div>
-<div class="kc-highlight-row">
-  <div class="kc-highlight"><span class="kc-hi-icon">🛡️</span><strong>Protection</strong><br>Protects the pump from accidental activation, prevents evaporation</div>
-  <div class="kc-highlight"><span class="kc-hi-icon">✨</span><strong>Brand Expression</strong><br>Cap design directly shapes client's first impression of product quality</div>
-</div>`
+<div class="kc-intro">The cap is the component clients touch most directly — it is a key element expressing brand design style and product grade.</div>
+<table class="kc-table">
+  <thead><tr><th>#</th><th>English</th><th>Chinese</th><th>Features</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>ABS</td><td>ABS Engineering Plastic</td><td>Can be plated/painted, cost-effective, suitable for mid-range products</td></tr>
+    <tr><td>2</td><td>Zamak / Zinc Alloy</td><td>锌铝合金</td><td>Heavy feel, excellent plating; preferred in Middle East high-end market</td></tr>
+    <tr><td>3</td><td>Aluminium Oxide</td><td>电化铝</td><td>Lightweight, matte metallic look, natural even color</td></tr>
+    <tr><td>4</td><td>K Materials</td><td>K 料</td><td>High transparency, crystal-like effect, good refraction</td></tr>
+    <tr><td>5</td><td>Surlyn</td><td>沙林</td><td>High transparency, crystal-clear effect; popular in European designs</td></tr>
+    <tr><td>6</td><td>Acrylic</td><td>亚克力</td><td>Transparent or colored, can be engraved, rich visual effects</td></tr>
+    <tr><td>7</td><td>PP</td><td>聚丙烯</td><td>Lightweight, many colors, economical; suitable for minimalist or stock styles</td></tr>
+    <tr><td>8</td><td>Wood</td><td>木盖</td><td>Natural texture, eco-friendly positioning, growing popularity in EU/US markets</td></tr>
+    <tr><td>9</td><td>Magnetic</td><td>磁吸盖</td><td>Smooth open/close, premium feel; standard magnetic strength N42/N52</td></tr>
+  </tbody>
+</table>`
     },
     {
-      headingZh: '9 种常见材料', headingEn: '9 Common Materials',
+      headingZh: `装饰工艺与品检 / 产品图片`, headingEn: `Decoration & QC / Product Images`,
       contentZh: `
 <table class="kc-table">
-  <thead><tr><th>#</th><th>材料</th><th>英文名</th><th>特点与卖点</th></tr></thead>
+  <thead><tr><th>工艺名称</th><th>说明</th></tr></thead>
   <tbody>
-    <tr><td>1</td><td><strong>ABS 工程塑料</strong></td><td>ABS</td><td>可电镀/喷涂，性价比高，金色/银色电镀常见搭配，适合中端产品</td></tr>
-    <tr><td>2</td><td><strong>锌铝合金</strong></td><td>Zamak / Zinc Alloy</td><td>重量感好，可做精细造型，电镀效果出色；中东高端市场常用</td></tr>
-    <tr><td>3</td><td><strong>电化铝</strong></td><td>Aluminium Oxide</td><td>轻盈，哑光金属质感，色泽均匀自然</td></tr>
-    <tr><td>4</td><td><strong>K料</strong></td><td>K Materials / K-Resin</td><td>高透明度，仿水晶效果，折射感佳</td></tr>
-    <tr><td>5</td><td><strong>沙林</strong></td><td>Surlyn</td><td>高透明，可做通透水晶感；常见于欧式设计</td></tr>
-    <tr><td>6</td><td><strong>亚克力</strong></td><td>Acrylic</td><td>透明或彩色，可雕刻花纹，视觉效果丰富</td></tr>
-    <tr><td>7</td><td><strong>PP 塑料</strong></td><td>PP</td><td>轻量，颜色丰富，经济实惠；适合简约风格</td></tr>
-    <tr><td>8</td><td><strong>木盖</strong></td><td>Wood</td><td>自然质感，环保定位，欧美市场越来越受欢迎</td></tr>
-    <tr><td>9</td><td><strong>磁吸盖</strong></td><td>Magnetic</td><td>开合顺滑，高级感强；适合高端定制款，磁力大小 N42/N52</td></tr>
+    <tr><td>水镀（Metalizing）</td><td>最常见，可做金/银/黑镍等，Zamak 和 ABS 最适合，金属感强</td></tr>
+    <tr><td>UV 真空镀（UV Plating）</td><td>价格比水镀低，表面达到电镀效果；纹路上颜色均匀度相对较差</td></tr>
+    <tr><td>喷涂（Color Coating）</td><td>哑光/亮光/橡胶漆，颜色完全自定义</td></tr>
+    <tr><td>烫金（Hot Stamping）</td><td>LOGO 或花纹在盖子上呈现</td></tr>
+    <tr><td>蚀刻 / 雕花（Etching / Engraving）</td><td>凹进去的花纹，高端感强</td></tr>
+    <tr><td>压花（Embossing）</td><td>凸出来的花纹，立体视觉效果</td></tr>
   </tbody>
 </table>
-<div class="kc-tip">🌍 <strong>市场偏好：</strong>中东 → Zamak / ABS（重量感 = 品质感）；欧美 → Wood / Surlyn（轻薄自然）</div>
-<div class="kc-img-grid">
-  <figure><img src="img/image14.png" alt="ABS Zamak"><figcaption>ABS / Zamak 款</figcaption></figure>
-  <figure><img src="img/image15.png" alt="K料 Surlyn"><figcaption>K料 / Surlyn / Acrylic</figcaption></figure>
-  <figure><img src="img/image16.png" alt="木盖"><figcaption>Wood（木盖）</figcaption></figure>
-  <figure><img src="img/image17.png" alt="磁吸盖"><figcaption>Magnetic（磁吸盖）</figcaption></figure>
-  <figure><img src="img/image18.jpeg" alt="岩石纹"><figcaption>Rock（岩石纹）</figcaption></figure>
-</div>`,
+<div class="kc-highlight-box" style="margin-top:12px">⚠️ 品检要点：电镀均匀度、批次色差需对比对版样；磁力过强或过弱均影响体验，需打样确认。</div>
+<div class="kc-intro" style="margin-top:16px">产品图片</div>
+<div class="kc-img-row"><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_039.jpg" class="kc-img" loading="lazy" alt="ABS / Zamak 合金盖"><p class="kc-img-caption">ABS / Zamak 合金盖</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_038.jpg" class="kc-img" loading="lazy" alt="K 料（Surlyn / Acrylic）"><p class="kc-img-caption">K 料（Surlyn / Acrylic）</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_037.jpg" class="kc-img" loading="lazy" alt="Wood 木盖"><p class="kc-img-caption">Wood 木盖</p></div></div></div>
+<div class="kc-img-row"><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_036.jpg" class="kc-img" loading="lazy" alt="Magnetic 磁吸盖"><p class="kc-img-caption">Magnetic 磁吸盖</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_035.jpg" class="kc-img" loading="lazy" alt="Rock 岩石纹盖"><p class="kc-img-caption">Rock 岩石纹盖</p></div></div></div>`,
       contentEn: `
 <table class="kc-table">
-  <thead><tr><th>#</th><th>Material</th><th>Chinese Name</th><th>Features</th></tr></thead>
+  <thead><tr><th>Process</th><th>Description</th></tr></thead>
   <tbody>
-    <tr><td>1</td><td><strong>ABS</strong></td><td>ABS 工程塑料</td><td>Plateable/paintable, good value, gold/silver plating common, mid-range products</td></tr>
-    <tr><td>2</td><td><strong>Zamak / Zinc Alloy</strong></td><td>锌铝合金</td><td>Good weight, fine details, excellent plating — popular in Middle East high-end</td></tr>
-    <tr><td>3</td><td><strong>Aluminium Oxide</strong></td><td>电化铝</td><td>Lightweight, matte metallic look, natural even color</td></tr>
-    <tr><td>4</td><td><strong>K Materials</strong></td><td>K料</td><td>High transparency, crystal-like effect, good refraction</td></tr>
-    <tr><td>5</td><td><strong>Surlyn</strong></td><td>沙林</td><td>High clarity, transparent crystal look — common in European designs</td></tr>
-    <tr><td>6</td><td><strong>Acrylic</strong></td><td>亚克力</td><td>Clear or colored, can engrave patterns, visually rich</td></tr>
-    <tr><td>7</td><td><strong>PP</strong></td><td>PP 塑料</td><td>Lightweight, colorful, economical — simple styles</td></tr>
-    <tr><td>8</td><td><strong>Wood</strong></td><td>木盖</td><td>Natural texture, eco-friendly positioning, growing popularity in EU/US</td></tr>
-    <tr><td>9</td><td><strong>Magnetic</strong></td><td>磁吸盖</td><td>Smooth open/close, premium feel — high-end custom; magnet strength N42/N52</td></tr>
+    <tr><td>Metalizing / Galvanization</td><td>Most common; gold/silver/black nickel; best on Zamak and ABS; strong metallic feel</td></tr>
+    <tr><td>UV Vacuum Plating</td><td>Lower cost than water plating; achieves plating appearance; slightly less uniform on textured areas</td></tr>
+    <tr><td>Color Coating</td><td>Matte/gloss/rubber coating; fully custom color</td></tr>
+    <tr><td>Hot Stamping</td><td>LOGO or pattern stamped onto cap</td></tr>
+    <tr><td>Etching / Engraving</td><td>Recessed patterns, high-end feel</td></tr>
+    <tr><td>Embossing</td><td>Raised patterns, 3D visual effect</td></tr>
   </tbody>
 </table>
-<div class="kc-tip">🌍 <strong>Market Preference:</strong> Middle East → Zamak / ABS (weight = quality feel); EU/US → Wood / Surlyn (light and natural)</div>
-<div class="kc-img-grid">
-  <figure><img src="img/image14.png" alt="ABS Zamak"><figcaption>ABS / Zamak</figcaption></figure>
-  <figure><img src="img/image15.png" alt="K material Surlyn"><figcaption>K Material / Surlyn / Acrylic</figcaption></figure>
-  <figure><img src="img/image16.png" alt="Wood Cap"><figcaption>Wood Cap</figcaption></figure>
-  <figure><img src="img/image17.png" alt="Magnetic Cap"><figcaption>Magnetic Cap</figcaption></figure>
-  <figure><img src="img/image18.jpeg" alt="Rock texture"><figcaption>Rock Texture</figcaption></figure>
-</div>`
+<div class="kc-highlight-box" style="margin-top:12px">⚠️ QC Notes: Compare plating uniformity and batch color against approved samples. Magnetic strength must be confirmed at sampling stage.</div>
+<div class="kc-intro" style="margin-top:16px">Product Images</div>
+<div class="kc-img-row"><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_039.jpg" class="kc-img" loading="lazy" alt="ABS / Zamak Cap"><p class="kc-img-caption">ABS / Zamak Cap</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_038.jpg" class="kc-img" loading="lazy" alt="K Resin (Surlyn / Acrylic)"><p class="kc-img-caption">K Resin (Surlyn / Acrylic)</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_037.jpg" class="kc-img" loading="lazy" alt="Wood Cap"><p class="kc-img-caption">Wood Cap</p></div></div></div>
+<div class="kc-img-row"><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_036.jpg" class="kc-img" loading="lazy" alt="Magnetic Cap"><p class="kc-img-caption">Magnetic Cap</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_035.jpg" class="kc-img" loading="lazy" alt="Rock Texture Cap"><p class="kc-img-caption">Rock Texture Cap</p></div></div></div>`
     }
   ]
 },
 
-// ── CH05 ────────────────────────────────────────────
+// ── CH05 ─────────────────────────────────────────────
 {
   id: 'ch05', order: 5,
-  titleZh: '喷头与中套知识', titleEn: 'Pump & Collar Knowledge',
+  titleZh: '喷头', titleEn: 'Spray Pump',
   icon: '💨', estimatedMinutes: 10,
   sections: [
     {
-      headingZh: '喷头 Spray Pump', headingEn: 'Spray Pump Overview',
+      headingZh: `规格参数与部件构成`, headingEn: `Specifications & Components`,
       contentZh: `
-<div class="kc-intro">喷头是控制香水喷出量与雾化效果的<strong>核心功能部件</strong>，也是客户日常使用频率最高的部件。海关编码：<code>9616 1000 00</code></div>
+<div class="kc-intro">喷头是控制香水喷出量与雾化效果的核心功能部件。标准颈口 15mm，标准出液量 0.10–0.12 ml/次。</div>
 <table class="kc-table">
-  <thead><tr><th>参数</th><th>标准规格</th></tr></thead>
+  <thead><tr><th>参数</th><th>规格</th></tr></thead>
   <tbody>
-    <tr><td>颈口尺寸</td><td>13 / 15 / 18 / 20 mm（<strong>15mm 最常规</strong>）</td></tr>
-    <tr><td>材料</td><td>铝（Aluminium / Alu）/ 塑料（Plastic）</td></tr>
+    <tr><td>颈口尺寸（Neck Size）</td><td>13 / 15 / 18 / 20 mm（<strong>15mm 为最常规</strong>）</td></tr>
+    <tr><td>材料（Material）</td><td>铝（Aluminium）/ 塑料（Plastic）</td></tr>
     <tr><td>颜色</td><td>金色 / 银色 / 定制颜色</td></tr>
-    <tr><td>封口方式</td><td>卡口（Crimp Pump）为主；螺口（Screw Type）适合旅行款</td></tr>
+    <tr><td>封口方式</td><td>卡口款（Crimp）为主，另有螺口式（Screw）适合旅行款</td></tr>
+    <tr><td>海关编码</td><td>9616 1000 00</td></tr>
   </tbody>
 </table>
-<table class="kc-table" style="margin-top:1rem">
-  <thead><tr><th>#</th><th>部件（中文）</th><th>部件（英文）</th><th>功能</th></tr></thead>
+<table class="kc-table" style="margin-top:12px">
+  <thead><tr><th>序号</th><th>部件（中文）</th><th>部件（英文）</th><th>功能</th></tr></thead>
   <tbody>
     <tr><td>1</td><td>压头</td><td>Actuator / Push Head</td><td>手指按压触发喷射</td></tr>
     <tr><td>2</td><td>喷嘴</td><td>Nozzle</td><td>雾化喷出口，决定喷雾角度和细腻度</td></tr>
-    <tr><td>3</td><td>导管</td><td>Dip-tube / Intake Tube</td><td>伸入瓶底，吸取香水液体</td></tr>
+    <tr><td>3</td><td>导管</td><td>Dip-tube / Intake Tube</td><td>伸入瓶底的细管，吸取香水液体</td></tr>
     <tr><td>4</td><td>弹簧</td><td>Upper Spring</td><td>提供回弹力，按压后自动复位</td></tr>
     <tr><td>5</td><td>泵体</td><td>Pump Body</td><td>主体压力腔，驱动液体上升</td></tr>
     <tr><td>6</td><td>活塞</td><td>Piston</td><td>在泵体内往复运动产生压力</td></tr>
-    <tr><td>7</td><td>密封圈</td><td>Gasket</td><td>防止香水泄漏</td></tr>
+    <tr><td>7</td><td>密封圈</td><td>Gasket</td><td>防止香水泄漏的密封件</td></tr>
   </tbody>
-</table>
-<div class="kc-two-col" style="margin-top:1rem">
-  <div class="kc-col kc-col-a"><div class="kc-col-header">卡口式 Crimp Pump</div><ul><li>压接卡固，不可拆卸</li><li>使用方便，密封好</li><li><strong>日常零售款首选（绝大多数产品）</strong></li></ul></div>
-  <div class="kc-col kc-col-b"><div class="kc-col-header">螺口式 Screw Type</div><ul><li>螺旋旋入，可锁定</li><li>防止旅行中误喷，安全性高</li><li><strong>旅行装、航空限制规格专用</strong></li></ul></div>
-</div>
-<div class="kc-warning">⚠️ 导管长度须根据瓶身高度定制，过长会折弯影响出液，过短会有死角残液。下单前必须与客户确认颈口规格（FEA）。</div>
-<div class="kc-img-grid">
-  <figure><img src="img/image19.png" alt="卡口喷头"><figcaption>卡口式 / Crimp Pump</figcaption></figure>
-  <figure><img src="img/image20.png" alt="螺口喷头"><figcaption>螺口式 / Screw Type</figcaption></figure>
-</div>`,
+</table>`,
       contentEn: `
-<div class="kc-intro">The spray pump is the <strong>core functional component</strong> controlling spray volume and atomization — the most frequently used part in daily use. HS Code: <code>9616 1000 00</code></div>
+<div class="kc-intro">The spray pump controls perfume output and atomization. Standard neck size is 15mm; standard dosage is 0.10–0.12 ml per actuation.</div>
 <table class="kc-table">
-  <thead><tr><th>Parameter</th><th>Standard Spec</th></tr></thead>
+  <thead><tr><th>Parameter</th><th>Specification</th></tr></thead>
   <tbody>
     <tr><td>Neck Size</td><td>13 / 15 / 18 / 20 mm (<strong>15mm most common</strong>)</td></tr>
-    <tr><td>Material</td><td>Aluminium (Alu) / Plastic</td></tr>
+    <tr><td>Material</td><td>Aluminium / Plastic</td></tr>
     <tr><td>Color</td><td>Gold / Silver / Custom</td></tr>
-    <tr><td>Neck Type</td><td>Crimp Pump (most common); Screw Type for travel size</td></tr>
+    <tr><td>Closure Type</td><td>Crimp (main), Screw type for travel/airline products</td></tr>
+    <tr><td>HS Code</td><td>9616 1000 00</td></tr>
   </tbody>
 </table>
-<div class="kc-two-col" style="margin-top:1rem">
-  <div class="kc-col kc-col-a"><div class="kc-col-header">Crimp Pump</div><ul><li>Press-fit, non-removable</li><li>Easy to use, good seal</li><li><strong>Standard retail choice (vast majority)</strong></li></ul></div>
-  <div class="kc-col kc-col-b"><div class="kc-col-header">Screw Type</div><ul><li>Screw-in, lockable</li><li>Prevents accidental spray in travel</li><li><strong>Travel size and airline-compliant products</strong></li></ul></div>
-</div>
-<div class="kc-warning">⚠️ Dip-tube length must be customized to bottle height — too long causes bending, too short leaves residual liquid. Always confirm FEA neck size before ordering.</div>
-<div class="kc-img-grid">
-  <figure><img src="img/image19.png" alt="Crimp Pump"><figcaption>Crimp Pump</figcaption></figure>
-  <figure><img src="img/image20.png" alt="Screw Type"><figcaption>Screw Type Pump</figcaption></figure>
-</div>`
+<table class="kc-table" style="margin-top:12px">
+  <thead><tr><th>#</th><th>Part (EN)</th><th>Function</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>Actuator / Push Head</td><td>Finger-press trigger to activate spray</td></tr>
+    <tr><td>2</td><td>Nozzle</td><td>Atomization outlet — determines spray angle and fineness</td></tr>
+    <tr><td>3</td><td>Dip-tube / Intake Tube</td><td>Tube reaching to bottle bottom to draw liquid</td></tr>
+    <tr><td>4</td><td>Upper Spring</td><td>Provides rebound force for auto-return after pressing</td></tr>
+    <tr><td>5</td><td>Pump Body</td><td>Main pressure chamber driving liquid upward</td></tr>
+    <tr><td>6</td><td>Piston</td><td>Reciprocating motion inside pump body to generate pressure</td></tr>
+    <tr><td>7</td><td>Gasket</td><td>Sealing component to prevent leakage</td></tr>
+  </tbody>
+</table>`
     },
     {
-      headingZh: '中套 Collar / Ring', headingEn: 'Collar / Ring',
+      headingZh: `喷头类型对比 / 品检 / 产品图片`, headingEn: `Pump Types & QC / Images`,
       contentZh: `
-<div class="kc-intro">中套套在喷头与瓶口之间，起<strong>固定喷头</strong>和<strong>装饰美观</strong>的双重作用。海关编码：<code>9616 1000 00</code></div>
+<table class="kc-table">
+  <thead><tr><th>类型</th><th>卡口式 (Crimp Pump)</th><th>螺口式 (Screw Type)</th></tr></thead>
+  <tbody>
+    <tr><td>结构</td><td>压接卡固，不可拆卸</td><td>螺旋旋入，可锁定</td></tr>
+    <tr><td>优点</td><td>使用方便，密封好，最常见</td><td>防止旅行中误喷，安全性高</td></tr>
+    <tr><td>适用场景</td><td>日常零售款（绝大多数产品）</td><td>旅行装、航空限制规格</td></tr>
+  </tbody>
+</table>
+<div class="kc-highlight-box" style="margin-top:12px">⚠️ 注意：导管须根据瓶身高度定制，过长会折弯影响出液，过短会有死角残液。喷头颈口规格必须与瓶口匹配，下单前务必确认。</div>
+<div class="kc-intro" style="margin-top:16px">产品图片</div>
+<div class="kc-img-row"><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_034.jpg" class="kc-img" loading="lazy" alt="卡口式喷头（Crimp Pump）"><p class="kc-img-caption">卡口式喷头（Crimp Pump）</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_033.jpg" class="kc-img" loading="lazy" alt="螺口式喷头（Screw Pump）"><p class="kc-img-caption">螺口式喷头（Screw Pump）</p></div></div></div>`,
+      contentEn: `
+<table class="kc-table">
+  <thead><tr><th>Type</th><th>Crimp Pump</th><th>Screw Type</th></tr></thead>
+  <tbody>
+    <tr><td>Structure</td><td>Press-crimped, non-detachable</td><td>Screw-in, can be locked</td></tr>
+    <tr><td>Advantage</td><td>Easy to use, good seal, most common</td><td>Prevents accidental spraying while traveling</td></tr>
+    <tr><td>Best For</td><td>Standard retail products (most products)</td><td>Travel-size, airline-compliant products</td></tr>
+  </tbody>
+</table>
+<div class="kc-highlight-box" style="margin-top:12px">⚠️ Note: Dip-tube length must be customized to bottle height — too long causes bending, too short leaves residue. Neck size MUST match bottle neck before ordering.</div>
+<div class="kc-intro" style="margin-top:16px">Product Images</div>
+<div class="kc-img-row"><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_034.jpg" class="kc-img" loading="lazy" alt="Crimp Pump (卡口式)"><p class="kc-img-caption">Crimp Pump (卡口式)</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_033.jpg" class="kc-img" loading="lazy" alt="Screw Pump (螺口式)"><p class="kc-img-caption">Screw Pump (螺口式)</p></div></div></div>`
+    }
+  ]
+},
+
+// ── CH06 ─────────────────────────────────────────────
+{
+  id: 'ch06', order: 6,
+  titleZh: '中套', titleEn: 'Collar / Ring',
+  icon: '⭕', estimatedMinutes: 8,
+  sections: [
+    {
+      headingZh: `规格参数与注意事项 / 产品图片`, headingEn: `Specifications & Notes / Images`,
+      contentZh: `
+<div class="kc-intro">中套（Collar / Ring）套在喷头与瓶口之间，起固定喷头和装饰美观的双重作用。</div>
 <table class="kc-table">
   <thead><tr><th>参数</th><th>标准款</th><th>定制款</th></tr></thead>
   <tbody>
     <tr><td>颈口尺寸</td><td>15 mm</td><td>15 mm / 可定制</td></tr>
-    <tr><td>材料</td><td>铝（Alu）/ 塑料（Plastic）</td><td>铝 / 锌合金（Zamac）/ 塑料</td></tr>
+    <tr><td>材料</td><td>铝（Alu）/ 塑料</td><td>铝 / 锌合金（Zamac）/ 塑料</td></tr>
     <tr><td>颜色</td><td>金色 / 银色</td><td>金色 / 银色 / 完全定制</td></tr>
-    <tr><td>MOQ</td><td>10,000 pcs（金 / 银色）</td><td>定制颜色 30,000 pcs；锌合金定制 10,000 pcs</td></tr>
+    <tr><td>MOQ</td><td>10,000 pcs（金/银色）</td><td>定制颜色 30,000 pcs；锌合金定制 10,000 pcs</td></tr>
   </tbody>
 </table>
-<div class="kc-tip">💡 定制色 MOQ 为 30K，若客户数量不足，建议选金/银标准色节省成本。</div>
-<div class="kc-img-grid">
-  <figure><img src="img/image21.png" alt="标准中套"><figcaption>标准中套（金/银）</figcaption></figure>
-  <figure><img src="img/image22.png" alt="定制肩套"><figcaption>定制肩套 / Custom Collar</figcaption></figure>
-</div>`,
+<div class="kc-highlight-box" style="margin-top:12px">⚠️ 注意：中套内径须与瓶颈外径吻合，下单前需核对瓶颈尺寸。定制颜色 MOQ 为 30,000 pcs，数量不足时建议选金/银标准色。</div>
+<div class="kc-intro" style="margin-top:16px">产品图片</div>
+<div class="kc-img-row"><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_032.jpg" class="kc-img" loading="lazy" alt="标准中套（金 / 银）"><p class="kc-img-caption">标准中套（金 / 银）</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_031.jpg" class="kc-img" loading="lazy" alt="定制肩套（A 结构）"><p class="kc-img-caption">定制肩套（A 结构）</p></div></div></div>`,
       contentEn: `
-<div class="kc-intro">The collar sits between the pump and bottle neck, serving the dual purpose of <strong>securing the pump</strong> and <strong>decorative enhancement</strong>. HS Code: <code>9616 1000 00</code></div>
+<div class="kc-intro">The Collar (Ring) sits between the pump and bottle neck, serving both stabilization and decorative purposes.</div>
 <table class="kc-table">
   <thead><tr><th>Parameter</th><th>Standard</th><th>Custom</th></tr></thead>
   <tbody>
     <tr><td>Neck Size</td><td>15 mm</td><td>15 mm / customizable</td></tr>
-    <tr><td>Material</td><td>Aluminium (Alu) / Plastic</td><td>Alu / Zamac / Plastic</td></tr>
+    <tr><td>Material</td><td>Aluminium / Plastic</td><td>Alu / Zamac / Plastic</td></tr>
     <tr><td>Color</td><td>Gold / Silver</td><td>Gold / Silver / Fully Custom</td></tr>
-    <tr><td>MOQ</td><td>10,000 pcs (Gold / Silver)</td><td>Custom color: 30,000 pcs; Zamac custom: 10,000 pcs</td></tr>
+    <tr><td>MOQ</td><td>10,000 pcs (gold/silver)</td><td>Custom color: 30,000 pcs; Zamac custom: 10,000 pcs</td></tr>
   </tbody>
 </table>
-<div class="kc-tip">💡 Custom color MOQ is 30K. If client quantity is insufficient, recommend standard gold/silver to save cost.</div>
-<div class="kc-img-grid">
-  <figure><img src="img/image21.png" alt="Standard Collar"><figcaption>Standard Collar (Gold/Silver)</figcaption></figure>
-  <figure><img src="img/image22.png" alt="Custom Collar"><figcaption>Custom Collar / Shoulder</figcaption></figure>
-</div>`
+<div class="kc-highlight-box" style="margin-top:12px">⚠️ Note: Collar inner diameter must match bottle neck outer diameter — verify before ordering. Custom color MOQ is 30,000 pcs; recommend standard gold/silver if quantity is insufficient.</div>
+<div class="kc-intro" style="margin-top:16px">Product Images</div>
+<div class="kc-img-row"><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_032.jpg" class="kc-img" loading="lazy" alt="Standard Collar (Gold / Silver)"><p class="kc-img-caption">Standard Collar (Gold / Silver)</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_031.jpg" class="kc-img" loading="lazy" alt="Custom Shoulder Collar (Structure A)"><p class="kc-img-caption">Custom Shoulder Collar (Structure A)</p></div></div></div>`
     }
   ]
 },
 
-// ── CH06 ────────────────────────────────────────────
-{
-  id: 'ch06', order: 6,
-  titleZh: '香水标牌知识', titleEn: 'Name Plate Knowledge',
-  icon: '🏷️', estimatedMinutes: 10,
-  sections: [
-    {
-      headingZh: '产品概述与规格', headingEn: 'Overview & Specs',
-      contentZh: `
-<div class="kc-intro">香水标牌（Custom Plate）贴附在瓶身或盒子上，承载品牌 LOGO 等核心信息，是品牌辨识度的重要载体，常见于<strong>中东风格高端香水</strong>。</div>
-<table class="kc-table">
-  <thead><tr><th>参数</th><th>详情</th></tr></thead>
-  <tbody>
-    <tr><td>材料</td><td>锌合金（Zamac）/ 铝（Aluminium）/ 不锈钢（Steel）/ 塑料（Plastic）</td></tr>
-    <tr><td>颜色</td><td>金色 / 银色 / 完全定制</td></tr>
-    <tr><td>MOQ</td><td>3,000 pcs（标准金/银色）</td></tr>
-    <tr><td>固定方式</td><td>背胶粘贴（常见）/ 嵌入式（胶水黏贴）</td></tr>
-  </tbody>
-</table>`,
-      contentEn: `
-<div class="kc-intro">The custom name plate is attached to the bottle or box, carrying brand LOGO and key information — an important brand recognition element, commonly seen in <strong>Middle East high-end perfumes</strong>.</div>
-<table class="kc-table">
-  <thead><tr><th>Parameter</th><th>Details</th></tr></thead>
-  <tbody>
-    <tr><td>Material</td><td>Zamac / Aluminium / Stainless Steel / Plastic</td></tr>
-    <tr><td>Color</td><td>Gold / Silver / Fully Custom</td></tr>
-    <tr><td>MOQ</td><td>3,000 pcs (standard gold/silver)</td></tr>
-    <tr><td>Fixing Method</td><td>Self-adhesive (common) / Inset (adhesive glue)</td></tr>
-  </tbody>
-</table>`
-    },
-    {
-      headingZh: '材料对比', headingEn: 'Material Comparison',
-      contentZh: `
-<table class="kc-table">
-  <thead><tr><th>材料</th><th>英文</th><th>特点</th></tr></thead>
-  <tbody>
-    <tr><td><strong>镜面铝</strong></td><td>Mirror Aluminum</td><td>常规厚 0.3mm，镜面效果，常用于印刷与击凸，色彩丰富，性价比高</td></tr>
-    <tr><td><strong>进口镜面铝</strong></td><td>Premium Aluminum</td><td>反射率更高，可做镜面氧化效果，料纹不明显</td></tr>
-    <tr><td><strong>普通拉丝铝</strong></td><td>Brushed Aluminum</td><td>表面有纹路（注意横纹/竖纹方向），哑光质感</td></tr>
-    <tr><td><strong>不锈钢</strong></td><td>Stainless Steel</td><td>镜面效果极佳，硬度更高；常用：腐蚀、电镀、上色</td></tr>
-    <tr><td><strong>锌合金</strong></td><td>Zamac / Zinc Alloy</td><td>常规厚 1.5–3mm，厚实感强；常用：压铸、抛光、电镀、滴胶</td></tr>
-  </tbody>
-</table>
-<div class="kc-img-grid">
-  <figure><img src="img/image38.png" alt="铝标牌"><figcaption>铝标牌样品</figcaption></figure>
-  <figure><img src="img/image39.jpeg" alt="铝标上瓶"><figcaption>铝标上瓶效果图</figcaption></figure>
-  <figure><img src="img/image40.png" alt="不锈钢标牌"><figcaption>不锈钢标牌</figcaption></figure>
-  <figure><img src="img/image41.png" alt="锌合金标牌"><figcaption>锌合金标牌</figcaption></figure>
-</div>`,
-      contentEn: `
-<table class="kc-table">
-  <thead><tr><th>Material</th><th>Name</th><th>Features</th></tr></thead>
-  <tbody>
-    <tr><td><strong>Mirror Aluminum</strong></td><td>镜面铝</td><td>Standard 0.3mm thick, mirror finish, printing + embossing common, colorful, good value</td></tr>
-    <tr><td><strong>Premium Aluminum</strong></td><td>进口镜面铝</td><td>Higher reflectivity, can achieve anodized mirror effect, less visible grain</td></tr>
-    <tr><td><strong>Brushed Aluminum</strong></td><td>拉丝铝</td><td>Surface grain (watch horizontal/vertical direction), matte look</td></tr>
-    <tr><td><strong>Stainless Steel</strong></td><td>不锈钢</td><td>Excellent mirror finish, higher hardness; common processes: etching, plating, coloring</td></tr>
-    <tr><td><strong>Zamac / Zinc Alloy</strong></td><td>锌合金</td><td>Standard 1.5–3mm thick, substantial feel; common: die casting, polishing, plating, epoxy</td></tr>
-  </tbody>
-</table>
-<div class="kc-img-grid">
-  <figure><img src="img/image38.png" alt="Aluminum Plate"><figcaption>Aluminum Plate Sample</figcaption></figure>
-  <figure><img src="img/image39.jpeg" alt="On Bottle"><figcaption>Plate on Bottle</figcaption></figure>
-  <figure><img src="img/image40.png" alt="Steel Plate"><figcaption>Stainless Steel Plate</figcaption></figure>
-  <figure><img src="img/image41.png" alt="Zamac Plate"><figcaption>Zamac Plate</figcaption></figure>
-</div>`
-    }
-  ]
-},
-
-// ── CH07 ────────────────────────────────────────────
+// ── CH07 ─────────────────────────────────────────────
 {
   id: 'ch07', order: 7,
-  titleZh: '香水盒知识', titleEn: 'Perfume Box Knowledge',
-  icon: '📦', estimatedMinutes: 8,
+  titleZh: '香水标牌', titleEn: 'Name Plate',
+  icon: '🏷️', estimatedMinutes: 12,
   sections: [
     {
-      headingZh: '8 种香水盒类型', headingEn: '8 Box Types',
+      headingZh: `标牌材料与规格`, headingEn: `Plate Materials & Specs`,
       contentZh: `
-<div class="kc-intro">香水盒是消费者拿到产品时接触的<strong>第一个包装</strong>，是品牌形象的最终完整呈现。</div>
+<div class="kc-intro">香水标牌（Name Plate）是贴附在瓶身的品牌装饰铭牌，承载品牌 LOGO 与香型名称，常见于中东风格高端香水。</div>
 <table class="kc-table">
-  <thead><tr><th>#</th><th>类型</th><th>英文名</th><th>特点</th></tr></thead>
+  <thead><tr><th>材料类型</th><th>英文</th><th>特点</th></tr></thead>
   <tbody>
-    <tr><td>1</td><td><strong>翻盖精品盒</strong></td><td>Rigid Box – Book Shape</td><td>磁吸或插扣开合，高档感强，常见于高端礼盒</td></tr>
-    <tr><td>2</td><td><strong>抽屉盒</strong></td><td>Rigid Box – Drawer</td><td>抽拉式设计，展示感强，中东高端市场流行</td></tr>
-    <tr><td>3</td><td><strong>天地盒</strong></td><td>Rigid Box – Top & Bottom</td><td>上下盖形式，经典稳重，礼品装常用</td></tr>
-    <tr><td>4</td><td><strong>圆筒盒</strong></td><td>Cylinder Box</td><td>适合圆形瓶型，造型独特</td></tr>
-    <tr><td>5</td><td><strong>木盒</strong></td><td>Wooden Box</td><td>奢华定制，高端收藏感</td></tr>
-    <tr><td>6</td><td><strong>折叠卡盒</strong></td><td>Folding Box / Soft Box</td><td>成本较低，适合零售单品，大量首选</td></tr>
-    <tr><td>7</td><td><strong>试香纸</strong></td><td>Test Paper / Blotter</td><td>展会或店头试香使用</td></tr>
-    <tr><td>8</td><td><strong>手提纸袋</strong></td><td>Paper Bag</td><td>配套提袋，完成整套包装体验</td></tr>
+    <tr><td>铝标牌</td><td>Aluminum Label</td><td>性价比高，平印工艺让标牌色彩丰富，适合大众定制</td></tr>
+    <tr><td>不锈钢标牌</td><td>Stainless Steel Plate</td><td>常用腐蚀工艺，非常有质感，价格偏贵</td></tr>
+    <tr><td>锌合金标牌</td><td>Zamac Plate</td><td>更有厚实感，配合锌合金盖子整体搭配性更好</td></tr>
   </tbody>
 </table>
-<div class="kc-img-grid">
-  <figure><img src="img/image42.png" alt="翻盖盒"><figcaption>翻盖盒 Book Shape</figcaption></figure>
-  <figure><img src="img/image43.png" alt="抽屉盒"><figcaption>抽屉盒 Drawer</figcaption></figure>
-  <figure><img src="img/image44.png" alt="天地盒"><figcaption>天地盒 Top & Bottom</figcaption></figure>
-  <figure><img src="img/image45.png" alt="木盒"><figcaption>木盒 Wooden Box</figcaption></figure>
-  <figure><img src="img/image46.png" alt="圆筒盒"><figcaption>圆筒盒 Cylinder</figcaption></figure>
-  <figure><img src="img/image47.png" alt="折叠盒"><figcaption>折叠盒 Soft Box</figcaption></figure>
-  <figure><img src="img/image48.png" alt="试香纸"><figcaption>试香纸 Blotter</figcaption></figure>
-  <figure><img src="img/image49.png" alt="纸袋"><figcaption>纸袋 Paper Bag</figcaption></figure>
-</div>`,
+<table class="kc-table" style="margin-top:12px">
+  <thead><tr><th>参数</th><th>规格</th></tr></thead>
+  <tbody>
+    <tr><td>MOQ</td><td>3,000 pcs（标准金/银色）</td></tr>
+    <tr><td>固定方式</td><td>背胶粘贴（常见）/ 嵌入式</td></tr>
+    <tr><td>表面工艺</td><td>电镀、印刷、烫金、凹凸（Embossing/Debossing）、蚀刻</td></tr>
+  </tbody>
+</table>
+<div class="kc-intro" style="margin-top:16px">产品图片</div>
+<div class="kc-img-row"><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_015.jpg" class="kc-img" loading="lazy" alt="铝标牌样品"><p class="kc-img-caption">铝标牌样品</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_014.jpg" class="kc-img" loading="lazy" alt="铝标上瓶效果"><p class="kc-img-caption">铝标上瓶效果</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_013.jpg" class="kc-img" loading="lazy" alt="不锈钢标牌样品"><p class="kc-img-caption">不锈钢标牌样品</p></div></div></div>
+<div class="kc-img-row"><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_012.jpg" class="kc-img" loading="lazy" alt="锌合金标牌样品"><p class="kc-img-caption">锌合金标牌样品</p></div></div></div>`,
       contentEn: `
-<div class="kc-intro">The perfume box is the <strong>first packaging</strong> the consumer touches — the final complete presentation of the brand.</div>
+<div class="kc-intro">The Name Plate is a brand decorative plaque attached to the bottle, carrying the brand LOGO and fragrance name — common in Middle East high-end perfumes.</div>
 <table class="kc-table">
-  <thead><tr><th>#</th><th>Type</th><th>Chinese</th><th>Features</th></tr></thead>
+  <thead><tr><th>Material</th><th>English</th><th>Features</th></tr></thead>
   <tbody>
-    <tr><td>1</td><td><strong>Rigid Box – Book Shape</strong></td><td>翻盖精品盒</td><td>Magnetic or snap closure, premium feel, common for high-end gifts</td></tr>
-    <tr><td>2</td><td><strong>Rigid Box – Drawer</strong></td><td>抽屉盒</td><td>Pull-out design, great display effect, popular in Middle East premium</td></tr>
-    <tr><td>3</td><td><strong>Rigid Box – Top & Bottom</strong></td><td>天地盒</td><td>Classic two-piece lid, stable, common for gift packaging</td></tr>
-    <tr><td>4</td><td><strong>Cylinder Box</strong></td><td>圆筒盒</td><td>For round bottles, unique shape</td></tr>
-    <tr><td>5</td><td><strong>Wooden Box</strong></td><td>木盒</td><td>Luxury custom, premium collectible feel</td></tr>
-    <tr><td>6</td><td><strong>Folding Box</strong></td><td>折叠卡盒</td><td>Lower cost, retail-friendly, best for high volume</td></tr>
-    <tr><td>7</td><td><strong>Test Paper / Blotter</strong></td><td>试香纸</td><td>Used at trade shows or in-store for scent testing</td></tr>
-    <tr><td>8</td><td><strong>Paper Bag</strong></td><td>手提纸袋</td><td>Carry bag completing the full packaging experience</td></tr>
+    <tr><td>Aluminum Plate</td><td>Aluminum Label</td><td>Cost-effective, rich color printing possible, suitable for general custom</td></tr>
+    <tr><td>Stainless Steel</td><td>Stainless Steel Plate</td><td>Etching process, premium texture, higher cost</td></tr>
+    <tr><td>Zinc Alloy</td><td>Zamac Plate</td><td>Thick and heavy feel, pairs well with Zamac caps</td></tr>
   </tbody>
 </table>
-<div class="kc-img-grid">
-  <figure><img src="img/image42.png" alt="Book Box"><figcaption>Book Shape Box</figcaption></figure>
-  <figure><img src="img/image43.png" alt="Drawer Box"><figcaption>Drawer Box</figcaption></figure>
-  <figure><img src="img/image44.png" alt="Top Bottom Box"><figcaption>Top & Bottom Box</figcaption></figure>
-  <figure><img src="img/image45.png" alt="Wooden Box"><figcaption>Wooden Box</figcaption></figure>
-  <figure><img src="img/image46.png" alt="Cylinder Box"><figcaption>Cylinder Box</figcaption></figure>
-  <figure><img src="img/image47.png" alt="Folding Box"><figcaption>Folding Box</figcaption></figure>
-  <figure><img src="img/image48.png" alt="Blotter"><figcaption>Test Paper / Blotter</figcaption></figure>
-  <figure><img src="img/image49.png" alt="Paper Bag"><figcaption>Paper Bag</figcaption></figure>
-</div>`
+<table class="kc-table" style="margin-top:12px">
+  <thead><tr><th>Parameter</th><th>Specification</th></tr></thead>
+  <tbody>
+    <tr><td>MOQ</td><td>3,000 pcs (standard gold/silver)</td></tr>
+    <tr><td>Attachment</td><td>Adhesive backing (common) / Inset mounting</td></tr>
+    <tr><td>Surface Process</td><td>Plating, printing, hot stamping, embossing/debossing, etching</td></tr>
+  </tbody>
+</table>
+<div class="kc-intro" style="margin-top:16px">Product Images</div>
+<div class="kc-img-row"><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_015.jpg" class="kc-img" loading="lazy" alt="Aluminum Plate Sample"><p class="kc-img-caption">Aluminum Plate Sample</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_014.jpg" class="kc-img" loading="lazy" alt="Aluminum Plate on Bottle"><p class="kc-img-caption">Aluminum Plate on Bottle</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_013.jpg" class="kc-img" loading="lazy" alt="Stainless Steel Plate"><p class="kc-img-caption">Stainless Steel Plate</p></div></div></div>
+<div class="kc-img-row"><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_012.jpg" class="kc-img" loading="lazy" alt="Zinc Alloy Plate"><p class="kc-img-caption">Zinc Alloy Plate</p></div></div></div>`
     },
     {
-      headingZh: '常见盒子工艺', headingEn: 'Common Box Processes',
+      headingZh: `工艺详解（铝 / 不锈钢 / 锌合金）`, headingEn: `Process Details (Alu/Steel/Zamac)`,
       contentZh: `
-<div class="kc-process-grid">
-  <div class="kc-process-item"><div class="kc-process-name">烫金/烫色</div><div class="kc-process-en">Hot Stamping / Foil</div><div class="kc-process-desc">LOGO 或花纹烫印，金/银/彩色效果</div></div>
-  <div class="kc-process-item"><div class="kc-process-name">激凸/压凹</div><div class="kc-process-en">Embossing / Debossing</div><div class="kc-process-desc">立体压纹，凸出或凹入</div></div>
-  <div class="kc-process-item"><div class="kc-process-name">光胶</div><div class="kc-process-en">Glossy Lamination</div><div class="kc-process-desc">光亮覆膜，显色鲜艳</div></div>
-  <div class="kc-process-item"><div class="kc-process-name">哑胶</div><div class="kc-process-en">Matt Lamination</div><div class="kc-process-desc">磨砂覆膜，低调质感</div></div>
-  <div class="kc-process-item"><div class="kc-process-name">过 UV</div><div class="kc-process-en">UV Coating</div><div class="kc-process-desc">局部 UV 增加光泽感，配合哑胶效果强</div></div>
-  <div class="kc-process-item"><div class="kc-process-name">哑膜 + 局部 UV</div><div class="kc-process-en">Matt + UV Spot</div><div class="kc-process-desc">最常见高端组合：背景哑，LOGO 亮</div></div>
-</div>`,
+<div class="kc-intro">铝标牌常规工艺流程图解：</div>
+<table class="kc-table">
+  <thead><tr><th>工艺</th><th>英文</th><th>说明</th><th>工艺图</th></tr></thead>
+  <tbody>
+    <tr><td>平印</td><td>Off-set Printing</td><td>可印渐变色、4C叠加等图案；注意颜色偏差需与对版样对比</td><td><div class="kc-img-wrap"><img src="images/img_030.jpg" class="kc-img" loading="lazy" alt=""></div></td></tr>
+    <tr><td>UV 打印</td><td>Digital Printing</td><td>打印机打印在铝板上，油墨比较厚，墨点较大</td><td><div class="kc-img-wrap"><img src="images/img_029.jpg" class="kc-img" loading="lazy" alt=""></div></td></tr>
+    <tr><td>丝印</td><td>Silk-screen Printing</td><td>油墨厚度介于平印和UV打印之间；适合闪粉等颗粒大的油墨</td><td><div class="kc-img-wrap"><img src="images/img_028.jpg" class="kc-img" loading="lazy" alt=""></div></td></tr>
+    <tr><td>凸字 / 凹字</td><td>Embossing / Debossing</td><td>实现 3D 凸字/凹字 LOGO，需开字模</td><td><div class="kc-img-wrap"><img src="images/img_025.jpg" class="kc-img" loading="lazy" alt=""></div></td></tr>
+    <tr><td>冲压</td><td>Stamping</td><td>使产品成形，冲出客户所需形状</td><td><div class="kc-img-wrap"><img src="images/img_024.jpg" class="kc-img" loading="lazy" alt=""></div></td></tr>
+    <tr><td>光学镀</td><td>Lighting Coating</td><td>平面的 3D 立体效果，透明可掩盖印刷瑕疵</td><td><div class="kc-img-wrap"><img src="images/img_023.jpg" class="kc-img" loading="lazy" alt=""></div></td></tr>
+    <tr><td>氧化</td><td>Anodized</td><td>仅适用于铝材质；颜色可调整；注意：容易出现变色、色差</td><td><div class="kc-img-wrap"><img src="images/img_022.jpg" class="kc-img" loading="lazy" alt=""></div></td></tr>
+  </tbody>
+</table>
+<div class="kc-intro" style="margin-top:16px">不锈钢标牌工艺：</div>
+<table class="kc-table">
+  <thead><tr><th>工艺</th><th>英文</th><th>说明</th><th>工艺图</th></tr></thead>
+  <tbody>
+    <tr><td>腐蚀</td><td>Etching</td><td>地面有沙底效果，发白色哑光面；配合上色可做丰富效果</td><td><div class="kc-img-wrap"><img src="images/img_021.jpg" class="kc-img" loading="lazy" alt=""></div></td></tr>
+    <tr><td>电镀</td><td>Metalizing / Galvanization</td><td>金色/亮枪色等电镀处理，质感极佳</td><td><div class="kc-img-wrap"><img src="images/img_020.jpg" class="kc-img" loading="lazy" alt=""></div></td></tr>
+    <tr><td>上色 / 滴胶</td><td>Epoxy / Fill Up Colors</td><td>腐蚀后在凹槽填入颜色</td><td><div class="kc-img-wrap"><img src="images/img_019.jpg" class="kc-img" loading="lazy" alt=""></div></td></tr>
+  </tbody>
+</table>
+<div class="kc-intro" style="margin-top:16px">锌合金标牌工艺：</div>
+<table class="kc-table">
+  <thead><tr><th>工艺</th><th>英文</th><th>说明</th><th>工艺图</th></tr></thead>
+  <tbody>
+    <tr><td>压铸</td><td>Die Casting</td><td>锌合金熔液注入模具成型</td><td><div class="kc-img-wrap"><img src="images/img_018.jpg" class="kc-img" loading="lazy" alt=""></div></td></tr>
+    <tr><td>抛光</td><td>Polishing</td><td>去除毛坯氧化层和瑕疵，使表面光滑</td><td><div class="kc-img-wrap"><img src="images/img_017.jpg" class="kc-img" loading="lazy" alt=""></div></td></tr>
+    <tr><td>仿珐琅</td><td>Soft Enamel</td><td>珐琅胶打磨后与金属面齐平，区别于普通上色</td><td><div class="kc-img-wrap"><img src="images/img_016.jpg" class="kc-img" loading="lazy" alt=""></div></td></tr>
+  </tbody>
+</table>`,
       contentEn: `
-<div class="kc-process-grid">
-  <div class="kc-process-item"><div class="kc-process-name">Hot Stamping</div><div class="kc-process-en">烫金/烫色</div><div class="kc-process-desc">Foil stamp LOGO or pattern in gold/silver/color</div></div>
-  <div class="kc-process-item"><div class="kc-process-name">Embossing / Debossing</div><div class="kc-process-en">激凸/压凹</div><div class="kc-process-desc">3D raised or recessed texture effect</div></div>
-  <div class="kc-process-item"><div class="kc-process-name">Glossy Lamination</div><div class="kc-process-en">光胶</div><div class="kc-process-desc">Shiny coating, vivid colors</div></div>
-  <div class="kc-process-item"><div class="kc-process-name">Matt Lamination</div><div class="kc-process-en">哑胶</div><div class="kc-process-desc">Matte coating, understated quality</div></div>
-  <div class="kc-process-item"><div class="kc-process-name">UV Coating</div><div class="kc-process-en">过 UV</div><div class="kc-process-desc">Spot UV adds gloss — powerful contrast with matte base</div></div>
-  <div class="kc-process-item"><div class="kc-process-name">Matt + Spot UV</div><div class="kc-process-en">哑膜 + 局部UV</div><div class="kc-process-desc">Most popular premium combo: matte background, glossy LOGO</div></div>
-</div>`
+<div class="kc-intro">Aluminum plate standard processes:</div>
+<table class="kc-table">
+  <thead><tr><th>Process</th><th>English</th><th>Description</th><th>Photo</th></tr></thead>
+  <tbody>
+    <tr><td>Offset Printing</td><td>Off-set Printing</td><td>Can print gradients and 4C patterns; compare color against approved sample</td><td><div class="kc-img-wrap"><img src="images/img_030.jpg" class="kc-img" loading="lazy" alt=""></div></td></tr>
+    <tr><td>UV Printing</td><td>Digital Printing</td><td>Direct print on aluminum; thick ink with visible ink dots</td><td><div class="kc-img-wrap"><img src="images/img_029.jpg" class="kc-img" loading="lazy" alt=""></div></td></tr>
+    <tr><td>Silk Screen</td><td>Silk-screen Printing</td><td>Medium ink thickness; suitable for glitter and large-particle inks</td><td><div class="kc-img-wrap"><img src="images/img_028.jpg" class="kc-img" loading="lazy" alt=""></div></td></tr>
+    <tr><td>Embossing / Debossing</td><td>Embossing / Debossing</td><td>3D raised/recessed LOGO — requires character mold</td><td><div class="kc-img-wrap"><img src="images/img_025.jpg" class="kc-img" loading="lazy" alt=""></div></td></tr>
+    <tr><td>Stamping</td><td>Stamping</td><td>Shape-forming punch press</td><td><div class="kc-img-wrap"><img src="images/img_024.jpg" class="kc-img" loading="lazy" alt=""></div></td></tr>
+    <tr><td>Optical Coating</td><td>Lighting Coating</td><td>Flat 3D effect, transparent layer covers printing defects</td><td><div class="kc-img-wrap"><img src="images/img_023.jpg" class="kc-img" loading="lazy" alt=""></div></td></tr>
+    <tr><td>Anodizing</td><td>Anodized</td><td>Aluminum only; adjustable color; note: prone to discoloration and scratching</td><td><div class="kc-img-wrap"><img src="images/img_022.jpg" class="kc-img" loading="lazy" alt=""></div></td></tr>
+  </tbody>
+</table>
+<div class="kc-intro" style="margin-top:16px">Stainless Steel Plate Processes:</div>
+<table class="kc-table">
+  <thead><tr><th>Process</th><th>English</th><th>Description</th><th>Photo</th></tr></thead>
+  <tbody>
+    <tr><td>Etching</td><td>Etching</td><td>Sandy matte effect on surface; rich effects when combined with color fill</td><td><div class="kc-img-wrap"><img src="images/img_021.jpg" class="kc-img" loading="lazy" alt=""></div></td></tr>
+    <tr><td>Plating</td><td>Metalizing / Galvanization</td><td>Gold/gun-metal plating for premium texture</td><td><div class="kc-img-wrap"><img src="images/img_020.jpg" class="kc-img" loading="lazy" alt=""></div></td></tr>
+    <tr><td>Epoxy / Color Fill</td><td>Epoxy / Fill Up Colors</td><td>Fill color into etched recesses</td><td><div class="kc-img-wrap"><img src="images/img_019.jpg" class="kc-img" loading="lazy" alt=""></div></td></tr>
+  </tbody>
+</table>`
     }
   ]
 },
 
-// ── CH08 ────────────────────────────────────────────
+// ── CH08 ─────────────────────────────────────────────
 {
   id: 'ch08', order: 8,
-  titleZh: '业务规则与报价', titleEn: 'Business Rules & Pricing',
-  icon: '💼', estimatedMinutes: 10,
+  titleZh: '香水盒', titleEn: 'Perfume Box',
+  icon: '📦', estimatedMinutes: 12,
   sections: [
     {
-      headingZh: 'MOQ 关键数字', headingEn: 'Key MOQ Numbers',
+      headingZh: `盒型分类（8种）/ 工艺 / 产品图片`, headingEn: `Box Types (8) / Processes / Images`,
       contentZh: `
-<div class="kc-intro">以下数字是业务员接单过程中必须熟记的关键规则。</div>
+<div class="kc-intro">香水外盒是消费者拿到产品时接触的第一个包装，也是品牌形象最终完整呈现的载体。</div>
 <table class="kc-table">
-  <thead><tr><th>类别</th><th>数量/规则</th><th>说明</th></tr></thead>
+  <thead><tr><th>序号</th><th>英文名称</th><th>中文名称</th><th>特点与适用场景</th></tr></thead>
   <tbody>
-    <tr><td>公模 MOQ（标准款）</td><td><strong>10,000 pcs</strong></td><td>现有公模瓶型，最低起订量</td></tr>
-    <tr><td>定制款 MOQ</td><td><strong>20,000 – 30,000 pcs</strong></td><td>新开模定制款，数量更高</td></tr>
-    <tr><td>每种工艺/LOGO MOQ</td><td><strong>10,000 pcs/种</strong></td><td>多种颜色或多款 LOGO 各自独立计算；老客户可协商至 5,000 pcs</td></tr>
-    <tr><td>库存产品推荐门槛</td><td><strong>≥ 5,000 pcs</strong></td><td>5K–10K 之间推荐热销款（称「热销品」，不称库存）</td></tr>
-    <tr><td>中套 – 标准色 MOQ</td><td><strong>10,000 pcs</strong></td><td>金色 / 银色标准款</td></tr>
-    <tr><td>中套 – 定制色 MOQ</td><td><strong>30,000 pcs</strong></td><td>完全定制颜色</td></tr>
-    <tr><td>标牌 MOQ</td><td><strong>3,000 pcs</strong></td><td>标准金/银色起订量</td></tr>
+    <tr><td>1</td><td>Rigid Box – Book Shape</td><td>翻盖精品盒</td><td>磁吸或插扣开合，高档感强，常见于高端礼盒</td></tr>
+    <tr><td>2</td><td>Rigid Box – Drawer Shape</td><td>抽屉盒</td><td>抽拉式设计，展示感强，中东高端市场流行</td></tr>
+    <tr><td>3</td><td>Rigid Box – Top & Bottom</td><td>天地盒</td><td>上下盖形式，经典稳重，礼品装常用</td></tr>
+    <tr><td>4</td><td>Cylinder Box</td><td>圆筒盒</td><td>适合圆形瓶型，造型独特</td></tr>
+    <tr><td>5</td><td>Wooden Box</td><td>木盒</td><td>奢华定制，木料材质，高端收藏感</td></tr>
+    <tr><td>6</td><td>Folding Box / Soft Box</td><td>折叠卡盒</td><td>成本较低，适合零售单品，量大选择</td></tr>
+    <tr><td>7</td><td>Test Paper / Blotter</td><td>试香纸</td><td>展会或店头试香使用</td></tr>
+    <tr><td>8</td><td>Paper Bag</td><td>手提纸袋</td><td>配套提袋，完成整套包装体验</td></tr>
   </tbody>
 </table>
-<div class="kc-two-col" style="margin-top:1rem">
-  <div class="kc-col kc-col-a"><div class="kc-col-header">小单付款（金额 &lt; $10,000）</div><strong>订金 50%</strong><br>收到订金后安排生产</div>
-  <div class="kc-col kc-col-b"><div class="kc-col-header">大单付款（金额 ≥ $10,000）</div><strong>订金 30%</strong><br>尾款必须在出货前结清，无特殊约定不得先出货</div>
-</div>`,
-      contentEn: `
-<div class="kc-intro">These are the key numbers every sales person must memorize when taking orders.</div>
-<table class="kc-table">
-  <thead><tr><th>Category</th><th>Quantity / Rule</th><th>Notes</th></tr></thead>
+<table class="kc-table" style="margin-top:12px">
+  <thead><tr><th>工艺英文</th><th>工艺中文</th><th>说明</th></tr></thead>
   <tbody>
-    <tr><td>Stock Mold MOQ</td><td><strong>10,000 pcs</strong></td><td>Existing mold bottles, minimum order quantity</td></tr>
-    <tr><td>Custom Mold MOQ</td><td><strong>20,000 – 30,000 pcs</strong></td><td>New mold development, higher quantity required</td></tr>
-    <tr><td>Per Process/LOGO MOQ</td><td><strong>10,000 pcs/type</strong></td><td>Each color or LOGO counts separately; long-term clients may negotiate 5,000 pcs</td></tr>
-    <tr><td>Stock Product Threshold</td><td><strong>≥ 5,000 pcs</strong></td><td>5K–10K: recommend as "popular items" (never call it "stock")</td></tr>
-    <tr><td>Collar – Standard Color MOQ</td><td><strong>10,000 pcs</strong></td><td>Gold / Silver standard</td></tr>
-    <tr><td>Collar – Custom Color MOQ</td><td><strong>30,000 pcs</strong></td><td>Fully custom color</td></tr>
-    <tr><td>Name Plate MOQ</td><td><strong>3,000 pcs</strong></td><td>Standard gold/silver minimum order</td></tr>
+    <tr><td>Hot Stamping / Foil Stamping</td><td>热烫 / 烫色</td><td>LOGO 或花纹烫印，金/银/色铂效果</td></tr>
+    <tr><td>Embossing / Debossing</td><td>激凸 / 压凹</td><td>立体压纹效果</td></tr>
+    <tr><td>Glossy Lamination</td><td>光胶</td><td>光亮覆膜，显色鲜艳</td></tr>
+    <tr><td>Matt Lamination</td><td>哑胶</td><td>磨砂覆膜，低调质感</td></tr>
+    <tr><td>UV Coating</td><td>过 UV</td><td>局部 UV 增加光泽感，常与哑胶配合使用</td></tr>
+    <tr><td>CMYK / Pantone</td><td>四色 / 单色印刷</td><td>CMYK 全彩；Pantone 精确色号</td></tr>
+    <tr><td>Glossy + UV Spot</td><td>哑膜 + 局部 UV</td><td>最常见高端组合：背景哑，LOGO 亮</td></tr>
   </tbody>
 </table>
-<div class="kc-two-col" style="margin-top:1rem">
-  <div class="kc-col kc-col-a"><div class="kc-col-header">Small Order (< $10,000)</div><strong>50% Deposit</strong><br>Production starts after deposit received</div>
-  <div class="kc-col kc-col-b"><div class="kc-col-header">Large Order (≥ $10,000)</div><strong>30% Deposit</strong><br>Balance must be paid before shipment — no exceptions without special agreement</div>
-</div>`
-    },
-    {
-      headingZh: '报价类型', headingEn: 'Price Types (Incoterms)',
-      contentZh: `
-<table class="kc-table">
-  <thead><tr><th>缩写</th><th>全称</th><th>包含范围</th></tr></thead>
-  <tbody>
-    <tr><td><strong>EXW</strong></td><td>Ex Works / 出厂价</td><td>仅产品成本，不含任何运费；客户自行安排提货</td></tr>
-    <tr><td><strong>FOB</strong></td><td>Free On Board / 离岸价</td><td>产品 + 国内港口装船前所有费用（货代、报关、内陆运输等），约 ¥2,000</td></tr>
-    <tr><td><strong>CIF</strong></td><td>Cost, Insurance & Freight / 到岸价</td><td>FOB + 国际海运 / 空运费 + 保险费</td></tr>
-    <tr><td><strong>DDP</strong></td><td>Delivered Duty Paid / 门到门</td><td>全包：产品 + 国内货代 + 国际运费 + 目的地关税及当地税费</td></tr>
-  </tbody>
-</table>`,
+<div class="kc-highlight-box" style="margin-top:12px">⚠️ 注意：内托开槽须在瓶型确认后才能制作；出口欧洲须用欧规托盘 80×120mm。</div>
+<div class="kc-intro" style="margin-top:16px">产品图片</div>
+<div class="kc-img-row"><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_011.jpg" class="kc-img" loading="lazy" alt="翻盖盒（Book Shape）"><p class="kc-img-caption">翻盖盒（Book Shape）</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_010.jpg" class="kc-img" loading="lazy" alt="抽屉盒（Drawer）"><p class="kc-img-caption">抽屉盒（Drawer）</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_009.jpg" class="kc-img" loading="lazy" alt="天地盒（Top & Bottom）"><p class="kc-img-caption">天地盒（Top & Bottom）</p></div></div></div>
+<div class="kc-img-row"><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_008.jpg" class="kc-img" loading="lazy" alt="木盒（Wooden Box）"><p class="kc-img-caption">木盒（Wooden Box）</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_007.jpg" class="kc-img" loading="lazy" alt="圆筒盒（Cylinder）"><p class="kc-img-caption">圆筒盒（Cylinder）</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_006.jpg" class="kc-img" loading="lazy" alt="折叠盒（Soft Box）"><p class="kc-img-caption">折叠盒（Soft Box）</p></div></div></div>
+<div class="kc-img-row"><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_005.jpg" class="kc-img" loading="lazy" alt="试香纸（Blotter）"><p class="kc-img-caption">试香纸（Blotter）</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_004.jpg" class="kc-img" loading="lazy" alt="纸袋（Paper Bag）"><p class="kc-img-caption">纸袋（Paper Bag）</p></div></div></div>`,
       contentEn: `
+<div class="kc-intro">The perfume box is the first packaging the consumer touches, and the final complete presentation of the brand image.</div>
 <table class="kc-table">
-  <thead><tr><th>Term</th><th>Full Name</th><th>What's Included</th></tr></thead>
+  <thead><tr><th>#</th><th>English Name</th><th>Chinese Name</th><th>Features & Use</th></tr></thead>
   <tbody>
-    <tr><td><strong>EXW</strong></td><td>Ex Works</td><td>Product cost only, no freight — client arranges pickup</td></tr>
-    <tr><td><strong>FOB</strong></td><td>Free On Board</td><td>Product + all costs to load at Chinese port (forwarder, customs, inland transport) ~¥2,000</td></tr>
-    <tr><td><strong>CIF</strong></td><td>Cost, Insurance & Freight</td><td>FOB + international sea/air freight + insurance</td></tr>
-    <tr><td><strong>DDP</strong></td><td>Delivered Duty Paid</td><td>All-inclusive: product + domestic forwarder + international freight + destination duties & taxes</td></tr>
+    <tr><td>1</td><td>Rigid Box – Book Shape</td><td>翻盖精品盒</td><td>Magnetic or tuck closure, premium feel, common in high-end gift boxes</td></tr>
+    <tr><td>2</td><td>Rigid Box – Drawer Shape</td><td>抽屉盒</td><td>Pull-out design, strong display effect, popular in Middle East high-end market</td></tr>
+    <tr><td>3</td><td>Rigid Box – Top & Bottom</td><td>天地盒</td><td>Classic lid-base form, stable, common in gift packaging</td></tr>
+    <tr><td>4</td><td>Cylinder Box</td><td>圆筒盒</td><td>Suitable for round bottle shapes, unique style</td></tr>
+    <tr><td>5</td><td>Wooden Box</td><td>木盒</td><td>Luxury custom, wooden material, premium collectible feel</td></tr>
+    <tr><td>6</td><td>Folding Box / Soft Box</td><td>折叠卡盒</td><td>Lower cost, suitable for retail singles, good for large volumes</td></tr>
+    <tr><td>7</td><td>Test Paper / Blotter</td><td>试香纸</td><td>Used for fragrance testing at trade shows or stores</td></tr>
+    <tr><td>8</td><td>Paper Bag</td><td>手提纸袋</td><td>Complementary carry bag for complete packaging experience</td></tr>
   </tbody>
-</table>`
-    },
-    {
-      headingZh: '付款方式', headingEn: 'Payment Methods',
-      contentZh: `
-<table class="kc-table">
-  <thead><tr><th>类型</th><th>全称</th><th>说明与注意事项</th></tr></thead>
-  <tbody>
-    <tr><td><strong>TT</strong></td><td>Bank Transfer / 电汇</td><td>下单付 30% 定金，出货前付 70% 尾款；银行手续费约 $20–$50</td></tr>
-    <tr><td><strong>PayPal</strong></td><td>PayPal Online</td><td>⚠️ 手续费 4.5%，报价时须考虑</td></tr>
-    <tr><td><strong>WU</strong></td><td>Western Union / 西联</td><td>欧洲常见；适合小额 ≤ $2,000；手续费由客户承担</td></tr>
-    <tr><td><strong>L/C</strong></td><td>Letter of Credit / 信用证</td><td>按客户要求，条件需事前协商</td></tr>
-  </tbody>
-</table>`,
-      contentEn: `
-<table class="kc-table">
-  <thead><tr><th>Type</th><th>Full Name</th><th>Notes</th></tr></thead>
-  <tbody>
-    <tr><td><strong>TT</strong></td><td>Bank Transfer</td><td>30% deposit on order, 70% balance before shipment; bank fee ~$20–$50</td></tr>
-    <tr><td><strong>PayPal</strong></td><td>PayPal Online</td><td>⚠️ 4.5% transaction fee — must factor into quotation</td></tr>
-    <tr><td><strong>WU</strong></td><td>Western Union</td><td>Common in Europe; suitable for small amounts ≤ $2,000; fees borne by client</td></tr>
-    <tr><td><strong>L/C</strong></td><td>Letter of Credit</td><td>Per client requirements, terms must be negotiated upfront</td></tr>
-  </tbody>
-</table>`
-    },
-    {
-      headingZh: '电梯话术（一分钟公司介绍）', headingEn: 'Elevator Pitch (1-Minute Intro)',
-      contentZh: `
-<div class="kc-quote">
-  <div class="kc-quote-label">🇨🇳 中文参考话术</div>
-  「我们是 Fonli，专注高端香水包装超过 10 年，提供玻璃瓶、瓶盖、喷头、盒子的 ODM/OEM 定制服务，自有工厂和设计团队，主要服务欧美和中东的香水品牌。」
-</div>
-<div class="kc-quote" style="margin-top:.75rem">
-  <div class="kc-quote-label">🌍 English Reference</div>
-  "We are Fonli — your one-stop perfume packaging expert. We specialize in high-end ODM/OEM packaging, including glass bottles, caps, sprayers, and boxes. With over 10 years of experience, our own factory and design team serve premium fragrance brands in Europe, the US, and the Middle East."
-</div>`,
-      contentEn: `
-<div class="kc-quote">
-  <div class="kc-quote-label">🌍 English Elevator Pitch</div>
-  "We are Fonli — your one-stop perfume packaging expert. We specialize in high-end ODM/OEM packaging, including glass bottles, caps, sprayers, and boxes. With over 10 years of experience, our own factory and design team serve premium fragrance brands in Europe, the US, and the Middle East."
-</div>
-<div class="kc-quote" style="margin-top:.75rem">
-  <div class="kc-quote-label">🇨🇳 中文版本</div>
-  「我们是 Fonli，专注高端香水包装超过 10 年，提供玻璃瓶、瓶盖、喷头、盒子的 ODM/OEM 定制服务，自有工厂和设计团队，主要服务欧美和中东的香水品牌。」
-</div>`
+</table>
+<div class="kc-highlight-box" style="margin-top:12px">⚠️ Note: Insert tray can only be made after bottle shape is confirmed. Export to Europe requires EU pallet size 80×120mm.</div>
+<div class="kc-intro" style="margin-top:16px">Product Images</div>
+<div class="kc-img-row"><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_011.jpg" class="kc-img" loading="lazy" alt="Book Shape Box"><p class="kc-img-caption">Book Shape Box</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_010.jpg" class="kc-img" loading="lazy" alt="Drawer Box"><p class="kc-img-caption">Drawer Box</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_009.jpg" class="kc-img" loading="lazy" alt="Top & Bottom Box"><p class="kc-img-caption">Top & Bottom Box</p></div></div></div>
+<div class="kc-img-row"><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_008.jpg" class="kc-img" loading="lazy" alt="Wooden Box"><p class="kc-img-caption">Wooden Box</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_007.jpg" class="kc-img" loading="lazy" alt="Cylinder Box"><p class="kc-img-caption">Cylinder Box</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_006.jpg" class="kc-img" loading="lazy" alt="Soft Box (Folding)"><p class="kc-img-caption">Soft Box (Folding)</p></div></div></div>
+<div class="kc-img-row"><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_005.jpg" class="kc-img" loading="lazy" alt="Blotter (试香纸)"><p class="kc-img-caption">Blotter (试香纸)</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_004.jpg" class="kc-img" loading="lazy" alt="Paper Bag (纸袋)"><p class="kc-img-caption">Paper Bag (纸袋)</p></div></div></div>`
     }
   ]
 },
 
-// ── CH09 ────────────────────────────────────────────
+// ── CH09 ─────────────────────────────────────────────
 {
   id: 'ch09', order: 9,
-  titleZh: '中英文词汇手册', titleEn: 'Bilingual Glossary',
-  icon: '📖', estimatedMinutes: 12,
+  titleZh: '业务规则与词汇手册', titleEn: 'Business Rules & Glossary',
+  icon: '📋', estimatedMinutes: 15,
   sections: [
     {
-      headingZh: '产品中英文对照', headingEn: 'Product Vocabulary',
+      headingZh: `常见产品词汇（中英对照）`, headingEn: `Product Vocabulary (Bilingual)`,
       contentZh: `
+<div class="kc-intro">业务员必须熟记中英文对照词汇，与海外客户沟通时确保术语准确。</div>
 <table class="kc-table">
-  <thead><tr><th>英文</th><th>中文</th><th>海关编码</th></tr></thead>
+  <thead><tr><th>英文 (English)</th><th>中文</th><th>海关编码</th></tr></thead>
   <tbody>
     <tr><td>Flint bottles / Plain bottles</td><td>毛瓶（玻璃）</td><td>7010909000</td></tr>
-    <tr><td>White opal glass</td><td>高白料玻璃</td><td>—</td></tr>
-    <tr><td>Lid / Cap</td><td>盖子</td><td>—</td></tr>
-    <tr><td>Plastic Cap</td><td>塑料盖</td><td>3923500000</td></tr>
+    <tr><td>White Opal Glass</td><td>高白料玻璃</td><td>—</td></tr>
+    <tr><td>Cap / Lid</td><td>盖子</td><td>—</td></tr>
+    <tr><td>Zamac Cap (Zinc Alloy)</td><td>锌铝合金盖</td><td>8309900000</td></tr>
     <tr><td>Surlyn Cap</td><td>沙林盖</td><td>3923500000</td></tr>
-    <tr><td>K-Resin / K Materials</td><td>K 料盖</td><td>—</td></tr>
-    <tr><td>Zamac Cap (Zinc Alloy)</td><td>锌合金盖</td><td>8309900000</td></tr>
     <tr><td>Wooden Cap</td><td>木盖</td><td>4421909010</td></tr>
-    <tr><td>Aluminium Cap</td><td>电化铝盖</td><td>8309900000</td></tr>
-    <tr><td>Magnetic Cap</td><td>磁吸盖</td><td>—</td></tr>
     <tr><td>Collar / Ring</td><td>中套</td><td>9616 1000 00</td></tr>
     <tr><td>Pump / Sprayer</td><td>喷头</td><td>9616 1000 00</td></tr>
     <tr><td>Crimp Pump</td><td>卡口喷头</td><td>—</td></tr>
     <tr><td>Screw Neck</td><td>螺口</td><td>—</td></tr>
     <tr><td>Nozzle</td><td>喷嘴</td><td>—</td></tr>
-    <tr><td>Dip-tube</td><td>导管</td><td>—</td></tr>
-    <tr><td>Vial</td><td>小瓶（1–10 ml）</td><td>—</td></tr>
-    <tr><td>Tassel</td><td>流苏</td><td>3926400000</td></tr>
-    <tr><td>Swarovski crystals</td><td>施华洛世奇水晶</td><td>—</td></tr>
+    <tr><td>Dip-tube</td><td>吸管（导管）</td><td>—</td></tr>
+    <tr><td>Airless Pump</td><td>真空泵</td><td>—</td></tr>
+    <tr><td>OFC (Over Flow Capacity)</td><td>溢流容量</td><td>—</td></tr>
+    <tr><td>Tolerance</td><td>公差</td><td>—</td></tr>
+    <tr><td>Gasket</td><td>密封圈 / 垫圈</td><td>—</td></tr>
   </tbody>
 </table>`,
       contentEn: `
+<div class="kc-intro">业务员必须熟记中英文对照词汇，与海外客户沟通时确保术语准确。</div>
 <table class="kc-table">
-  <thead><tr><th>English</th><th>Chinese (中文)</th><th>HS Code</th></tr></thead>
+  <thead><tr><th>英文 (English)</th><th>Chinese</th><th>海关编码</th></tr></thead>
   <tbody>
     <tr><td>Flint bottles / Plain bottles</td><td>毛瓶（玻璃）</td><td>7010909000</td></tr>
-    <tr><td>White opal glass</td><td>高白料玻璃</td><td>—</td></tr>
-    <tr><td>Lid / Cap</td><td>盖子</td><td>—</td></tr>
-    <tr><td>Plastic Cap</td><td>塑料盖</td><td>3923500000</td></tr>
+    <tr><td>White Opal Glass</td><td>高白料玻璃</td><td>—</td></tr>
+    <tr><td>Cap / Lid</td><td>盖子</td><td>—</td></tr>
+    <tr><td>Zamac Cap (Zinc Alloy)</td><td>锌铝合金盖</td><td>8309900000</td></tr>
     <tr><td>Surlyn Cap</td><td>沙林盖</td><td>3923500000</td></tr>
-    <tr><td>Zamac Cap</td><td>锌合金盖</td><td>8309900000</td></tr>
     <tr><td>Wooden Cap</td><td>木盖</td><td>4421909010</td></tr>
     <tr><td>Collar / Ring</td><td>中套</td><td>9616 1000 00</td></tr>
     <tr><td>Pump / Sprayer</td><td>喷头</td><td>9616 1000 00</td></tr>
     <tr><td>Crimp Pump</td><td>卡口喷头</td><td>—</td></tr>
+    <tr><td>Screw Neck</td><td>螺口</td><td>—</td></tr>
     <tr><td>Nozzle</td><td>喷嘴</td><td>—</td></tr>
-    <tr><td>Dip-tube</td><td>导管</td><td>—</td></tr>
-    <tr><td>Vial</td><td>小瓶（1–10 ml）</td><td>—</td></tr>
-    <tr><td>Tassel</td><td>流苏</td><td>3926400000</td></tr>
+    <tr><td>Dip-tube</td><td>吸管（导管）</td><td>—</td></tr>
+    <tr><td>Airless Pump</td><td>真空泵</td><td>—</td></tr>
+    <tr><td>OFC (Over Flow Capacity)</td><td>溢流容量</td><td>—</td></tr>
+    <tr><td>Tolerance</td><td>公差</td><td>—</td></tr>
+    <tr><td>Gasket</td><td>密封圈 / 垫圈</td><td>—</td></tr>
   </tbody>
 </table>`
     },
     {
-      headingZh: '工艺中英文对照', headingEn: 'Process Vocabulary',
+      headingZh: `常见工艺词汇（中英对照）`, headingEn: `Process Vocabulary (Bilingual)`,
       contentZh: `
 <table class="kc-table">
-  <thead><tr><th>英文</th><th>中文</th></tr></thead>
+  <thead><tr><th>英文 (English)</th><th>中文</th></tr></thead>
+  <tbody>
+    <tr><td>Color coating / Lacquering</td><td>喷涂</td></tr>
+    <tr><td>Rubber coating / Soft touch</td><td>橡胶漆</td></tr>
+    <tr><td>Metalizing / Metallization</td><td>电镀（水镀）</td></tr>
+    <tr><td>Frosting / Frosted</td><td>蒙沙</td></tr>
+    <tr><td>Hot Stamping / Gold blocking</td><td>烫金</td></tr>
+    <tr><td>Silkscreen printing</td><td>丝印</td></tr>
+    <tr><td>Sand-blasting</td><td>喷沙</td></tr>
+    <tr><td>Etching / Etch</td><td>蚀刻</td></tr>
+    <tr><td>Transfer / Decal</td><td>转印 / 贴花</td></tr>
+    <tr><td>Flocking / Velvet</td><td>植绒</td></tr>
+    <tr><td>Embossing / Debossing</td><td>激凸 / 压凹</td></tr>
+    <tr><td>Hot Stamping / Foil Stamping</td><td>热烫 / 烫色</td></tr>
+    <tr><td>Glossy Lamination</td><td>光胶</td></tr>
+    <tr><td>Matt Lamination</td><td>哑胶</td></tr>
+    <tr><td>UV Coating</td><td>过 UV</td></tr>
+  </tbody>
+</table>`,
+      contentEn: `
+<table class="kc-table">
+  <thead><tr><th>英文 (English)</th><th>中文</th></tr></thead>
+  <tbody>
+    <tr><td>Color coating / Lacquering</td><td>喷涂</td></tr>
+    <tr><td>Rubber coating / Soft touch</td><td>橡胶漆</td></tr>
+    <tr><td>Metalizing / Metallization</td><td>电镀（水镀）</td></tr>
+    <tr><td>Frosting / Frosted</td><td>蒙沙</td></tr>
+    <tr><td>Hot Stamping / Gold blocking</td><td>烫金</td></tr>
+    <tr><td>Silkscreen printing</td><td>丝印</td></tr>
+    <tr><td>Sand-blasting</td><td>喷沙</td></tr>
+    <tr><td>Etching / Etch</td><td>蚀刻</td></tr>
+    <tr><td>Transfer / Decal</td><td>转印 / 贴花</td></tr>
+    <tr><td>Flocking / Velvet</td><td>植绒</td></tr>
+    <tr><td>Embossing / Debossing</td><td>激凸 / 压凹</td></tr>
+    <tr><td>Hot Stamping / Foil Stamping</td><td>热烫 / 烫色</td></tr>
+    <tr><td>Glossy Lamination</td><td>光胶</td></tr>
+    <tr><td>Matt Lamination</td><td>哑胶</td></tr>
+    <tr><td>UV Coating</td><td>过 UV</td></tr>
+  </tbody>
+</table>`
+    },
+    {
+      headingZh: `MOQ 与贸易术语`, headingEn: `MOQ & Trade Terms`,
+      contentZh: `
+<div class="kc-intro">关键 MOQ 和业务规则，接单必须熟记：</div>
+<table class="kc-table">
+  <thead><tr><th>类别</th><th>数量 / 规则</th><th>说明</th></tr></thead>
+  <tbody>
+    <tr><td>公模 MOQ（标准款）</td><td><strong>10,000 pcs</strong></td><td>现有瓶型，最低起订量</td></tr>
+    <tr><td>定制款 MOQ</td><td><strong>20,000–30,000 pcs</strong></td><td>新开模定制款，数量更高</td></tr>
+    <tr><td>每种工艺/LOGO MOQ</td><td><strong>10,000 pcs/种</strong></td><td>多种颜色或多款 LOGO 各自独立计算</td></tr>
+    <tr><td>中套标准色 MOQ</td><td>10,000 pcs</td><td>金色/银色标准款</td></tr>
+    <tr><td>中套定制色 MOQ</td><td>30,000 pcs</td><td>完全定制颜色</td></tr>
+    <tr><td>标牌 MOQ</td><td>3,000 pcs</td><td>标准金/银色</td></tr>
+    <tr><td>付款方式—小单</td><td>订金 50%（< $10,000）</td><td>收到订金后安排生产</td></tr>
+    <tr><td>付款方式—大单</td><td>订金 30%（≥ $10,000）</td><td>尾款必须在出货前结清</td></tr>
+  </tbody>
+</table>
+<table class="kc-table" style="margin-top:12px">
+  <thead><tr><th>缩写</th><th>全称</th><th>包含范围</th></tr></thead>
+  <tbody>
+    <tr><td><strong>EXW</strong></td><td>Ex Works / 出厂价</td><td>仅产品，客户自行提货，不含任何运费</td></tr>
+    <tr><td><strong>FOB</strong></td><td>Free On Board / 离岸价</td><td>产品 + 国内货代 + 出口港装船费</td></tr>
+    <tr><td><strong>CIF</strong></td><td>Cost, Insurance & Freight / 到岸价</td><td>FOB + 海运费 + 保险费</td></tr>
+    <tr><td><strong>DDP</strong></td><td>Delivered Duty Paid / 门到门价</td><td>全包：产品 + 货代 + 国际运费 + 目的地关税</td></tr>
+  </tbody>
+</table>`,
+      contentEn: `
+<div class="kc-intro">Key MOQ and business rules every sales person must memorize:</div>
+<table class="kc-table">
+  <thead><tr><th>Category</th><th>Quantity / Rule</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>Stock Mold MOQ</td><td><strong>10,000 pcs</strong></td><td>Existing bottle shapes, minimum order quantity</td></tr>
+    <tr><td>Custom Mold MOQ</td><td><strong>20,000–30,000 pcs</strong></td><td>New custom mold, higher quantity required</td></tr>
+    <tr><td>Per Process/LOGO MOQ</td><td><strong>10,000 pcs</strong></td><td>Each color or LOGO counted separately</td></tr>
+    <tr><td>Collar Standard Color MOQ</td><td>10,000 pcs</td><td>Gold/Silver standard</td></tr>
+    <tr><td>Collar Custom Color MOQ</td><td>30,000 pcs</td><td>Fully custom color</td></tr>
+    <tr><td>Name Plate MOQ</td><td>3,000 pcs</td><td>Standard gold/silver</td></tr>
+    <tr><td>Payment (small orders)</td><td>50% deposit (< $10,000)</td><td>Production starts after deposit received</td></tr>
+    <tr><td>Payment (large orders)</td><td>30% deposit (≥ $10,000)</td><td>Balance must be settled before shipment</td></tr>
+  </tbody>
+</table>
+<table class="kc-table" style="margin-top:12px">
+  <thead><tr><th>Term</th><th>Full Name</th><th>What's Included</th></tr></thead>
+  <tbody>
+    <tr><td><strong>EXW</strong></td><td>Ex Works</td><td>Product only — buyer arranges all transport</td></tr>
+    <tr><td><strong>FOB</strong></td><td>Free On Board</td><td>Product + domestic freight + export port loading</td></tr>
+    <tr><td><strong>CIF</strong></td><td>Cost, Insurance & Freight</td><td>FOB + international shipping + insurance</td></tr>
+    <tr><td><strong>DDP</strong></td><td>Delivered Duty Paid</td><td>All-in: product + freight + international shipping + destination duty</td></tr>
+  </tbody>
+</table>`
+    }
+  ]
+},
+{
+  id: 'ch10', order: 10,
+  titleZh: '双语词汇手册（附录A-D）', titleEn: 'Bilingual Glossary (Appendices A–D)',
+  icon: '🔤', estimatedMinutes: 20,
+  sections: [
+    {
+      headingZh: `附录A：常见产品中英文词汇`, headingEn: `Appendix A: Product Vocabulary`,
+      contentZh: `
+<div class="kc-intro">业务员必须熟记以下中英文对照，与海外客户沟通时确保术语准确。</div>
+<table class="kc-table">
+  <thead><tr><th>英文 (English)</th><th>中文</th><th>海关编码 (HS Code)</th></tr></thead>
+  <tbody>
+    <tr><td>Flint bottles / Plain bottles</td><td>毛瓶（玻璃）</td><td>7010909000</td></tr>
+    <tr><td>White Opal Glass</td><td>高白料（玻璃）</td><td>—</td></tr>
+    <tr><td>Lid / Cap</td><td>盖子</td><td>—</td></tr>
+    <tr><td>Plastic Cap</td><td>塑料盖子</td><td>3923500000</td></tr>
+    <tr><td>Surlyn Cap</td><td>沙林盖</td><td>3923500000</td></tr>
+    <tr><td>K-Resin / K Materials</td><td>K料盖子</td><td>—</td></tr>
+    <tr><td>Acrylic Cap</td><td>亚克力盖</td><td>3923500000</td></tr>
+    <tr><td>Crystal Cap</td><td>水晶盖</td><td>—</td></tr>
+    <tr><td>Zamac Cap (Zinc Alloy)</td><td>锌铝合金盖</td><td>8309900000</td></tr>
+    <tr><td>Wooden Cap</td><td>木盖</td><td>4421909010</td></tr>
+    <tr><td>Aluminium Cap</td><td>电化铝盖</td><td>8309900000</td></tr>
+    <tr><td>Collar / Ring</td><td>中套</td><td>9616100000</td></tr>
+    <tr><td>Pump / Sprayer</td><td>喷头</td><td>9616100000</td></tr>
+    <tr><td>Crimp Pump</td><td>卡口喷头</td><td>—</td></tr>
+    <tr><td>Crimp Neck</td><td>卡口</td><td>—</td></tr>
+    <tr><td>Screw Neck</td><td>螺口</td><td>—</td></tr>
+    <tr><td>Nozzle</td><td>喷嘴</td><td>—</td></tr>
+    <tr><td>Dip-tube</td><td>吸管（导管）</td><td>—</td></tr>
+    <tr><td>Airless Pump</td><td>真空泵</td><td>—</td></tr>
+    <tr><td>Crimping Machine</td><td>封口机</td><td>—</td></tr>
+    <tr><td>Vial</td><td>小瓶（1–10 ml）</td><td>—</td></tr>
+    <tr><td>Tassel</td><td>流苏</td><td>3926400000</td></tr>
+    <tr><td>Swarovski Crystals</td><td>施华洛世奇水晶</td><td>—</td></tr>
+    <tr><td>Surlyn Ring</td><td>沙林中套</td><td>—</td></tr>
+  </tbody>
+</table>`,
+      contentEn: `
+<div class="kc-intro">Sales reps must memorize the following bilingual glossary for accurate communication with overseas clients.</div>
+<table class="kc-table">
+  <thead><tr><th>English</th><th>Chinese</th><th>HS Code</th></tr></thead>
+  <tbody>
+    <tr><td>Flint bottles / Plain bottles</td><td>毛瓶（玻璃）</td><td>7010909000</td></tr>
+    <tr><td>White Opal Glass</td><td>高白料（玻璃）</td><td>—</td></tr>
+    <tr><td>Lid / Cap</td><td>盖子</td><td>—</td></tr>
+    <tr><td>Plastic Cap</td><td>塑料盖子</td><td>3923500000</td></tr>
+    <tr><td>Surlyn Cap</td><td>沙林盖</td><td>3923500000</td></tr>
+    <tr><td>K-Resin / K Materials</td><td>K料盖子</td><td>—</td></tr>
+    <tr><td>Acrylic Cap</td><td>亚克力盖</td><td>3923500000</td></tr>
+    <tr><td>Crystal Cap</td><td>水晶盖</td><td>—</td></tr>
+    <tr><td>Zamac Cap (Zinc Alloy)</td><td>锌铝合金盖</td><td>8309900000</td></tr>
+    <tr><td>Wooden Cap</td><td>木盖</td><td>4421909010</td></tr>
+    <tr><td>Aluminium Cap</td><td>电化铝盖</td><td>8309900000</td></tr>
+    <tr><td>Collar / Ring</td><td>中套</td><td>9616100000</td></tr>
+    <tr><td>Pump / Sprayer</td><td>喷头</td><td>9616100000</td></tr>
+    <tr><td>Crimp Pump</td><td>卡口喷头</td><td>—</td></tr>
+    <tr><td>Crimp Neck</td><td>卡口</td><td>—</td></tr>
+    <tr><td>Screw Neck</td><td>螺口</td><td>—</td></tr>
+    <tr><td>Nozzle</td><td>喷嘴</td><td>—</td></tr>
+    <tr><td>Dip-tube</td><td>吸管（导管）</td><td>—</td></tr>
+    <tr><td>Airless Pump</td><td>真空泵</td><td>—</td></tr>
+    <tr><td>Crimping Machine</td><td>封口机</td><td>—</td></tr>
+    <tr><td>Vial</td><td>小瓶（1–10 ml）</td><td>—</td></tr>
+    <tr><td>Tassel</td><td>流苏</td><td>3926400000</td></tr>
+    <tr><td>Swarovski Crystals</td><td>施华洛世奇水晶</td><td>—</td></tr>
+    <tr><td>Surlyn Ring</td><td>沙林中套</td><td>—</td></tr>
+  </tbody>
+</table>`
+    },
+    {
+      headingZh: `附录B：常见工艺中英文词汇`, headingEn: `Appendix B: Process Vocabulary`,
+      contentZh: `
+<table class="kc-table">
+  <thead><tr><th>英文 (English)</th><th>中文</th></tr></thead>
   <tbody>
     <tr><td>Color coating / Lacquering</td><td>喷涂</td></tr>
     <tr><td>Solid color coating</td><td>实色喷涂</td></tr>
-    <tr><td>Transparent color coating</td><td>透明喷涂</td></tr>
+    <tr><td>Transparent color coating</td><td>透明喷涂（透喷）</td></tr>
+    <tr><td>Gradient color coating</td><td>渐变喷涂</td></tr>
+    <tr><td>Rubber coating / Soft touch</td><td>橡胶漆</td></tr>
+    <tr><td>Metalizing / Metallization</td><td>电镀（水镀）</td></tr>
+    <tr><td>Vacuum metalizing</td><td>真空镀</td></tr>
+    <tr><td>Galvanized plating</td><td>电镀</td></tr>
+    <tr><td>Electroplating chrome</td><td>镀铬</td></tr>
+    <tr><td>Polished by hand</td><td>手工抛光</td></tr>
+    <tr><td>Frosting / Frosted</td><td>蒙沙</td></tr>
+    <tr><td>Hot Stamping / Gold blocking</td><td>烫金</td></tr>
+    <tr><td>Silkscreen printing / Silk print</td><td>丝印</td></tr>
+    <tr><td>Sand-blasting</td><td>喷沙</td></tr>
+    <tr><td>Etch</td><td>蚀刻</td></tr>
+    <tr><td>Decal / Burnt-out</td><td>烧花 / 贴花纸</td></tr>
+    <tr><td>Transfer</td><td>转印</td></tr>
+    <tr><td>Laser</td><td>激光</td></tr>
+    <tr><td>Flocking / Velvet</td><td>植绒</td></tr>
+    <tr><td>Engraving / Deboss</td><td>雕花（凹进去）</td></tr>
+    <tr><td>Embossing</td><td>压花（凸出来）</td></tr>
+    <tr><td>Epoxy</td><td>滴胶</td></tr>
+    <tr><td>Brush finished</td><td>拉丝</td></tr>
+    <tr><td>Cracking</td><td>裂纹效果</td></tr>
+    <tr><td>Enamel / Soft Enamel</td><td>珐琅 / 仿珐琅</td></tr>
+    <tr><td>Electrophoresis</td><td>电泳</td></tr>
+    <tr><td>Anodized</td><td>氧化（铝专用）</td></tr>
+    <tr><td>UV Printing</td><td>UV 打印</td></tr>
+    <tr><td>Off-set Printing</td><td>平印</td></tr>
+    <tr><td>Lighting Coating</td><td>光学镀</td></tr>
+  </tbody>
+</table>`,
+      contentEn: `
+<table class="kc-table">
+  <thead><tr><th>English</th><th>Chinese</th></tr></thead>
+  <tbody>
+    <tr><td>Color coating / Lacquering</td><td>喷涂</td></tr>
+    <tr><td>Solid color coating</td><td>实色喷涂</td></tr>
+    <tr><td>Transparent color coating</td><td>透明喷涂（透喷）</td></tr>
     <tr><td>Gradient color coating</td><td>渐变喷涂</td></tr>
     <tr><td>Rubber coating / Soft touch</td><td>橡胶漆</td></tr>
     <tr><td>Metalizing / Metallization</td><td>电镀（水镀）</td></tr>
@@ -819,592 +1004,901 @@ const CHAPTERS = [
     <tr><td>Silkscreen printing</td><td>丝印</td></tr>
     <tr><td>Sand-blasting</td><td>喷沙</td></tr>
     <tr><td>Etch</td><td>蚀刻</td></tr>
-    <tr><td>Transfer / Decal</td><td>转印 / 贴花</td></tr>
+    <tr><td>Decal / Transfer</td><td>转印 / 贴花</td></tr>
+    <tr><td>Laser</td><td>激光</td></tr>
     <tr><td>Flocking / Velvet</td><td>植绒</td></tr>
-    <tr><td>Engraving / Deboss</td><td>雕花（凹进）</td></tr>
-    <tr><td>Embossing</td><td>压花（凸出）</td></tr>
+    <tr><td>Engraving / Deboss</td><td>雕花（凹）</td></tr>
+    <tr><td>Embossing</td><td>压花（凸）</td></tr>
+    <tr><td>Epoxy</td><td>滴胶</td></tr>
+    <tr><td>Brush finished</td><td>拉丝</td></tr>
     <tr><td>Cracking</td><td>裂纹效果</td></tr>
+    <tr><td>Enamel / Soft Enamel</td><td>珐琅 / 仿珐琅</td></tr>
     <tr><td>Anodized</td><td>氧化（铝专用）</td></tr>
     <tr><td>UV Printing</td><td>UV 打印</td></tr>
-    <tr><td>Polished by hand</td><td>手工抛光</td></tr>
+  </tbody>
+</table>`
+    },
+    {
+      headingZh: `附录C：纸盒术语 & 通用行业术语`, headingEn: `Appendix C: Box & Industry Terms`,
+      contentZh: `
+<div class="kc-intro">纸盒类型与工艺术语：</div>
+<table class="kc-table">
+  <thead><tr><th>英文 (English)</th><th>中文</th><th>海关编码</th></tr></thead>
+  <tbody>
+    <tr><td>Top and bottom tuck carton / Folding box</td><td>折叠卡盒</td><td>4819200000</td></tr>
+    <tr><td>Rigid box</td><td>手工精品盒</td><td>4819200000</td></tr>
+    <tr><td>Lid and base box</td><td>天地盒</td><td>—</td></tr>
+    <tr><td>Cylinder box</td><td>圆筒盒</td><td>—</td></tr>
+    <tr><td>Wooden box</td><td>木盒</td><td>—</td></tr>
+    <tr><td>Paper Bag</td><td>纸袋</td><td>4819400000</td></tr>
+    <tr><td>Perfume scent cards / Blotter</td><td>试香纸</td><td>—</td></tr>
+    <tr><td>Corrugated paper</td><td>瓦楞纸 / 坑纸</td><td>—</td></tr>
+    <tr><td>EVA liner</td><td>EVA 内托</td><td>—</td></tr>
+    <tr><td>Hot stamping / Foil stamping</td><td>热烫 / 烫色</td><td>—</td></tr>
+    <tr><td>Embossing / Debossing</td><td>激凸 / 压凹</td><td>—</td></tr>
+    <tr><td>Glossy Lamination</td><td>光胶</td><td>—</td></tr>
+    <tr><td>Matt Lamination</td><td>哑胶</td><td>—</td></tr>
+    <tr><td>UV Coating</td><td>过 UV</td><td>—</td></tr>
+    <tr><td>CMYK</td><td>四色印刷</td><td>—</td></tr>
+    <tr><td>Pantone No.</td><td>单色印刷（潘通色号）</td><td>—</td></tr>
+  </tbody>
+</table>
+<div class="kc-intro" style="margin-top:16px">通用行业术语：</div>
+<table class="kc-table">
+  <thead><tr><th>英文 (English)</th><th>中文</th></tr></thead>
+  <tbody>
+    <tr><td>Tolerance</td><td>公差</td></tr>
+    <tr><td>OFC (Over Flow Capacity)</td><td>容量（溢流容量）</td></tr>
+    <tr><td>Brimful Capacity</td><td>满口容量</td></tr>
+    <tr><td>Joint Line</td><td>合模线</td></tr>
+    <tr><td>Bubbles</td><td>气泡</td></tr>
+    <tr><td>Cracks</td><td>破裂</td></tr>
+    <tr><td>Chips</td><td>碎裂</td></tr>
+    <tr><td>Rejection rate</td><td>报废率</td></tr>
+    <tr><td>Piston</td><td>活塞</td></tr>
+    <tr><td>Upper Spring</td><td>弹簧</td></tr>
+    <tr><td>Gasket</td><td>垫圈</td></tr>
+    <tr><td>Dip-tube length</td><td>吸管长度</td></tr>
+  </tbody>
+</table>`,
+      contentEn: `
+<div class="kc-intro">Box vocabulary:</div>
+<table class="kc-table">
+  <thead><tr><th>English</th><th>Chinese</th><th>HS Code</th></tr></thead>
+  <tbody>
+    <tr><td>Top and bottom tuck carton / Folding box</td><td>折叠卡盒</td><td>4819200000</td></tr>
+    <tr><td>Rigid box</td><td>手工精品盒</td><td>4819200000</td></tr>
+    <tr><td>Lid and base box</td><td>天地盒</td><td>—</td></tr>
+    <tr><td>Cylinder box</td><td>圆筒盒</td><td>—</td></tr>
+    <tr><td>Wooden box</td><td>木盒</td><td>—</td></tr>
+    <tr><td>Paper Bag</td><td>纸袋</td><td>4819400000</td></tr>
+    <tr><td>Perfume scent cards / Blotter</td><td>试香纸</td><td>—</td></tr>
+    <tr><td>Corrugated paper</td><td>瓦楞纸</td><td>—</td></tr>
+    <tr><td>EVA liner</td><td>EVA 内托</td><td>—</td></tr>
+    <tr><td>Glossy Lamination</td><td>光胶</td><td>—</td></tr>
+    <tr><td>Matt Lamination</td><td>哑胶</td><td>—</td></tr>
+    <tr><td>UV Coating</td><td>过 UV</td><td>—</td></tr>
+    <tr><td>CMYK</td><td>四色印刷</td><td>—</td></tr>
+    <tr><td>Pantone No.</td><td>单色印刷</td><td>—</td></tr>
+  </tbody>
+</table>
+<div class="kc-intro" style="margin-top:16px">General industry terms:</div>
+<table class="kc-table">
+  <thead><tr><th>English</th><th>Chinese</th></tr></thead>
+  <tbody>
+    <tr><td>Tolerance</td><td>公差</td></tr>
+    <tr><td>OFC (Over Flow Capacity)</td><td>溢流容量</td></tr>
+    <tr><td>Brimful Capacity</td><td>满口容量</td></tr>
+    <tr><td>Joint Line</td><td>合模线</td></tr>
+    <tr><td>Bubbles</td><td>气泡</td></tr>
+    <tr><td>Cracks</td><td>破裂</td></tr>
+    <tr><td>Chips</td><td>碎裂</td></tr>
+    <tr><td>Rejection rate</td><td>报废率</td></tr>
+    <tr><td>Piston</td><td>活塞</td></tr>
+    <tr><td>Gasket</td><td>垫圈</td></tr>
+  </tbody>
+</table>`
+    },
+    {
+      headingZh: `附录D：MOQ与关键业务规则`, headingEn: `Appendix D: MOQ & Key Business Rules`,
+      contentZh: `
+<div class="kc-intro">业务员在接单过程中必须掌握的关键数字和规则：</div>
+<table class="kc-table">
+  <thead><tr><th>类别</th><th>数量 / 规则</th><th>说明</th></tr></thead>
+  <tbody>
+    <tr><td>公模 MOQ（标准款）</td><td><strong>10,000 pcs</strong></td><td>公模现有瓶型，最低起订量</td></tr>
+    <tr><td>定制款 MOQ</td><td><strong>20,000 – 30,000 pcs</strong></td><td>新开模定制款，数量更高</td></tr>
+    <tr><td>每种工艺 / LOGO MOQ</td><td><strong>10,000 pcs / 种</strong></td><td>多种颜色或多款 LOGO 各自独立计算；老客户可协商至 5,000 pcs</td></tr>
+    <tr><td>库存产品推荐门槛</td><td>≥ 5,000 pcs</td><td>数量 5K–10K 之间推荐热销款；介绍时称「热销品」，不称库存</td></tr>
+    <tr><td>中套 – 标准色 MOQ</td><td>10,000 pcs</td><td>金色 / 银色标准款</td></tr>
+    <tr><td>中套 – 定制色 MOQ</td><td>30,000 pcs</td><td>完全定制颜色起订量</td></tr>
+    <tr><td>标牌（Custom Plate）MOQ</td><td>3,000 pcs</td><td>标准金 / 银色起订量</td></tr>
+    <tr><td>付款 – 小单</td><td>订金 <strong>50%</strong>（金额 < $10,000）</td><td>收到订金后安排生产</td></tr>
+    <tr><td>付款 – 大单</td><td>订金 <strong>30%</strong>（金额 ≥ $10,000）</td><td>尾款必须在出货前结清，无特殊约定不得先出货</td></tr>
+  </tbody>
+</table>
+<div class="kc-highlight-box" style="margin-top:16px">
+  <strong>一分钟公司介绍话术（电梯话术）</strong><br><br>
+  <em>中文参考话术：</em><br>
+  「我们是 Fonli（菲利包装），专注高端香水包装超过 10 年，提供玻璃瓶、瓶盖、喷头、盒子的 ODM/OEM 定制服务，自有工厂和设计团队，主要服务欧美和中东的香水品牌。」<br><br>
+  <em>English version:</em><br>
+  "We are Fonli — your one-stop perfume packaging expert. We specialize in high-end ODM/OEM packaging, including glass bottles, caps, sprayers, and boxes. With over 10 years of experience, our own factory and design team serve premium fragrance brands in Europe, the US, and the Middle East."
+</div>`,
+      contentEn: `
+<div class="kc-intro">Key numbers and rules every sales rep must master during order intake:</div>
+<table class="kc-table">
+  <thead><tr><th>Category</th><th>Quantity / Rule</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>Stock Mold MOQ</td><td><strong>10,000 pcs</strong></td><td>Existing bottle shapes, minimum order quantity</td></tr>
+    <tr><td>Custom Mold MOQ</td><td><strong>20,000 – 30,000 pcs</strong></td><td>New custom mold; higher quantity required</td></tr>
+    <tr><td>Per Process / LOGO MOQ</td><td><strong>10,000 pcs</strong></td><td>Each color or LOGO counted separately; existing clients may negotiate to 5,000 pcs</td></tr>
+    <tr><td>Stock product recommendation threshold</td><td>≥ 5,000 pcs</td><td>For 5K–10K orders, recommend bestsellers — never call them "stock"</td></tr>
+    <tr><td>Collar – Standard Color MOQ</td><td>10,000 pcs</td><td>Gold / silver standard</td></tr>
+    <tr><td>Collar – Custom Color MOQ</td><td>30,000 pcs</td><td>Fully custom color</td></tr>
+    <tr><td>Name Plate MOQ</td><td>3,000 pcs</td><td>Standard gold / silver</td></tr>
+    <tr><td>Payment – Small Orders</td><td><strong>50%</strong> deposit (< $10,000)</td><td>Production starts after deposit received</td></tr>
+    <tr><td>Payment – Large Orders</td><td><strong>30%</strong> deposit (≥ $10,000)</td><td>Balance must be cleared before shipment — no exceptions without prior agreement</td></tr>
+  </tbody>
+</table>
+<div class="kc-highlight-box" style="margin-top:16px">
+  <strong>1-Minute Company Pitch (Elevator Speech)</strong><br><br>
+  "We are Fonli — your one-stop perfume packaging expert. We specialize in high-end ODM/OEM packaging, including glass bottles, caps, sprayers, and boxes. With over 10 years of experience, our own factory and design team serve premium fragrance brands in Europe, the US, and the Middle East."<br><br>
+  <em>中文版：</em><br>
+  「我们是 Fonli（菲利包装），专注高端香水包装超过 10 年，提供玻璃瓶、瓶盖、喷头、盒子的 ODM/OEM 定制服务，自有工厂和设计团队，主要服务欧美和中东的香水品牌。」
+</div>`
+    }
+  ]
+},
+{
+  id: 'ch11', order: 11,
+  titleZh: '销售SOP标准流程', titleEn: 'Sales SOP Standard Process',
+  icon: '🗂️', estimatedMinutes: 25,
+  sections: [
+    {
+      headingZh: `公司定位与业务员三大目标`, headingEn: `Company Positioning & Sales Objectives`,
+      contentZh: `
+<div class="kc-intro">菲利包装的核心定位：我们不是"通用瓶子供应商"，而是「香水品牌的包装方案联合设计方 + 稳定生产基地」。</div>
+<div class="kc-highlight-box">
+  <strong>公司核心优势（必须能背出来）</strong><br>
+  ① 超过 10+ 年香水包材经验，深耕欧美、中东市场<br>
+  ② 自有工厂 + 设计团队，从设计到量产全掌控<br>
+  ③ ODM/OEM 定制能力，服务中高端品牌
+</div>
+<table class="kc-table">
+  <thead><tr><th>目标</th><th>说明</th></tr></thead>
+  <tbody>
+    <tr><td><strong>目标 1：高质量项目数</strong></td><td>有清晰需求、进入打样/开模阶段的项目数量</td></tr>
+    <tr><td><strong>目标 2：高客单 & 高毛利</strong></td><td>以中高端客户为主，强调设计与工艺价值，避免纯价格战</td></tr>
+    <tr><td><strong>目标 3：重点市场深耕</strong></td><td>在欧美、中东建立并维护有持续新品计划的核心客户</td></tr>
+  </tbody>
+</table>
+<div class="kc-highlight-box" style="margin-top:12px">
+  <strong>目标客户优先级</strong><br>
+  ✅ 一级：自有香水品牌（欧美/中东）、香水代工厂（OEM/ODM）<br>
+  ✅ 二级：区域代理/贸易商、国外香水包材设计公司<br>
+  ❌ 不优先：单次小散客、仅问价无明确项目计划者
+</div>`,
+      contentEn: `
+<div class="kc-intro">Fonli's core positioning: Not just a "generic bottle supplier" — we are a fragrance brand's <strong>packaging co-design partner + reliable production base</strong>.</div>
+<div class="kc-highlight-box">
+  <strong>Core Advantages (memorize these)</strong><br>
+  ① 10+ years in perfume packaging, expertise in EU, US & Middle East markets<br>
+  ② Own factory + design team — full control from design to mass production<br>
+  ③ ODM/OEM customization capability for mid-to-high-end brands
+</div>
+<table class="kc-table">
+  <thead><tr><th>Goal</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Goal 1: High-quality project count</strong></td><td>Projects with clear requirements that have entered sampling/tooling stage</td></tr>
+    <tr><td><strong>Goal 2: High value & high margin</strong></td><td>Focus on mid-to-high-end clients; emphasize design value, avoid price wars</td></tr>
+    <tr><td><strong>Goal 3: Key market depth</strong></td><td>Build and maintain core clients in EU/US and Middle East with ongoing new product plans</td></tr>
+  </tbody>
+</table>
+<div class="kc-highlight-box" style="margin-top:12px">
+  <strong>Target Client Priority</strong><br>
+  ✅ Tier 1: Own fragrance brands (EU/US/Middle East), OEM/ODM factories<br>
+  ✅ Tier 2: Regional distributors, overseas packaging design companies<br>
+  ❌ De-prioritize: One-time small buyers, price-only inquiries with no clear project
+</div>`
+    },
+    {
+      headingZh: `六大SOP阶段总览`, headingEn: `6 SOP Stages Overview`,
+      contentZh: `
+<div class="kc-intro">业务员的工作分为 6 个标准阶段，必须熟记整条主线：</div>
+<div class="kc-step"><div class="kc-step-num">01</div><div class="kc-step-body"><div class="kc-step-title">市场与客户定位</div><div class="kc-step-desc">确定目标客户类型优先级，了解市场定位（欧美/中东，中高端）</div></div></div>
+<div class="kc-step"><div class="kc-step-num">02</div><div class="kc-step-body"><div class="kc-step-title">线索获取与初筛</div><div class="kc-step-desc">来源管理（展会/转介绍等），按优先级筛选：有明确时间表、接受定制、有预算</div></div></div>
+<div class="kc-step"><div class="kc-step-num">03</div><div class="kc-step-body"><div class="kc-step-title">深度需求沟通与方案销售</div><div class="kc-step-desc">必问清单：品牌定位、香水类型/容量、风格偏好、出口国家、量与预算；输出专业包装方案</div></div></div>
+<div class="kc-step kc-step-highlight"><div class="kc-step-num">04</div><div class="kc-step-body"><div class="kc-step-title">打样 / 开模项目管理</div><div class="kc-step-desc">打样前邮件确认3D/效果图、LOGO位置、颜色、容量；打样中拍照更新进度；每套样品有编号</div></div></div>
+<div class="kc-step"><div class="kc-step-num">05</div><div class="kc-step-body"><div class="kc-step-title">大货生产与交付管理</div><div class="kc-step-desc">大货前确认：对版样、规格工艺、包装方式；掌握3个关键节点：开始/中期/完工；出货前抽检并拍照</div></div></div>
+<div class="kc-step"><div class="kc-step-num">06</div><div class="kc-step-body"><div class="kc-step-title">复盘与长期客户维护</div><div class="kc-step-desc">A级客户每月沟通+每季度新品推荐；B级每1-2个月推送；C级节日/展会前后联系</div></div></div>`,
+      contentEn: `
+<div class="kc-intro">The sales workflow is divided into 6 standard stages — memorize the full process flow:</div>
+<div class="kc-step"><div class="kc-step-num">01</div><div class="kc-step-body"><div class="kc-step-title">Market & Client Positioning</div><div class="kc-step-desc">Identify target client priority tiers; understand market positioning (EU/US/Middle East, mid-to-high-end)</div></div></div>
+<div class="kc-step"><div class="kc-step-num">02</div><div class="kc-step-body"><div class="kc-step-title">Lead Generation & Pre-screening</div><div class="kc-step-desc">Manage sources (trade shows, referrals etc.); prioritize leads with clear timelines, custom requirements, and budget</div></div></div>
+<div class="kc-step"><div class="kc-step-num">03</div><div class="kc-step-body"><div class="kc-step-title">In-depth Needs Analysis & Solution Selling</div><div class="kc-step-desc">Must-ask checklist: brand positioning, fragrance type/volume, style preference, export country, MOQ and budget; deliver professional packaging proposals</div></div></div>
+<div class="kc-step kc-step-highlight"><div class="kc-step-num">04</div><div class="kc-step-body"><div class="kc-step-title">Sampling / Tooling Project Management</div><div class="kc-step-desc">Confirm via email before sampling: 3D renders, logo placement, color, volume; send photos during sampling; each sample set must be numbered</div></div></div>
+<div class="kc-step"><div class="kc-step-num">05</div><div class="kc-step-body"><div class="kc-step-title">Mass Production & Delivery</div><div class="kc-step-desc">Pre-production checks: counter sample, spec & process, packaging method; track 3 key milestones: start/mid-point/completion; inspect and photograph before shipment</div></div></div>
+<div class="kc-step"><div class="kc-step-num">06</div><div class="kc-step-body"><div class="kc-step-title">Review & Long-term Client Care</div><div class="kc-step-desc">A-tier: monthly communication + quarterly new product recommendations; B-tier: push every 1–2 months; C-tier: contact around holidays and trade shows</div></div></div>`
+    },
+    {
+      headingZh: `日常行为标准`, headingEn: `Daily & Weekly Work Standards`,
+      contentZh: `
+<table class="kc-table">
+  <thead><tr><th>频率</th><th>必做事项</th></tr></thead>
+  <tbody>
+    <tr><td><strong>每日</strong></td><td>① 处理所有未回复邮件/消息（当天清零）<br>② 更新每个项目状态（至少一句话：进度/下一步）<br>③ 主动触达至少 5 个高潜在客户</td></tr>
+    <tr><td><strong>每周</strong></td><td>① 梳理在手项目（按阶段：需求中/打样中/等确认/大货中/已收货）<br>② 向主管汇报：新立项数、推进阶段数、遇到的阻碍</td></tr>
+  </tbody>
+</table>
+<div class="kc-highlight-box" style="margin-top:12px">
+  <strong>行为底线（不可逾越）</strong><br>
+  ❌ 不随意承诺交期与工艺效果——所有承诺基于工厂确认<br>
+  ❌ 不一味压价，损害长期合作与项目质量<br>
+  ✅ 帮助客户理解"为什么这个包装值得这个价格"
+</div>
+<div class="kc-highlight-box" style="margin-top:12px">
+  <strong>展会现场必问三个问题</strong><br>
+  1. 您是品牌方 / 工厂 / 贸易商？<br>
+  2. 主要市场是哪里？定位中端还是高端？<br>
+  3. 近期有新系列或新品牌的上新计划吗？
+</div>`,
+      contentEn: `
+<table class="kc-table">
+  <thead><tr><th>Frequency</th><th>Required Actions</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Daily</strong></td><td>① Reply to all pending emails/messages (zero backlog each day)<br>② Update every project status (at least one line: progress/next step)<br>③ Proactively reach out to at least 5 high-potential clients</td></tr>
+    <tr><td><strong>Weekly</strong></td><td>① Review all active projects by stage (needs assessment / sampling / awaiting confirmation / mass production / delivered)<br>② Report to manager: new projects started, projects advanced, blockers encountered</td></tr>
+  </tbody>
+</table>
+<div class="kc-highlight-box" style="margin-top:12px">
+  <strong>Non-negotiable Standards</strong><br>
+  ❌ Never promise delivery dates or process results without factory confirmation<br>
+  ❌ Never cut prices to the point of damaging quality or long-term relationships<br>
+  ✅ Help clients understand why this packaging is worth the price
+</div>
+<div class="kc-highlight-box" style="margin-top:12px">
+  <strong>3 Must-Ask Questions at Trade Shows</strong><br>
+  1. Are you a brand owner, factory, or trading company?<br>
+  2. What is your main market? Mid-range or high-end positioning?<br>
+  3. Do you have any new series or brand launches planned soon?
+</div>`
+    }
+  ]
+},
+{
+  id: 'ch12', order: 12,
+  titleZh: '常见问题解答（FAQ）', titleEn: 'Frequently Asked Questions',
+  icon: '💡', estimatedMinutes: 20,
+  sections: [
+    {
+      headingZh: `客户沟通类常见问题`, headingEn: `Client Communication FAQs`,
+      contentZh: `
+<div class="kc-intro">以下是实际业务中最常遇到的问题与标准处理方法，新人必须熟记。</div>
+<table class="kc-table">
+  <thead><tr><th>#</th><th>问题</th><th>标准处理方法</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td><strong>什么时候要客户提供 LOGO？</strong></td><td>① 客户有明确项目且有合作意向时<br>② 客户发来设计稿要我们帮设计时<br>③ 客户确认瓶子报价后，要LOGO做效果图激发下单意愿<br>❌ 切忌一开始就要LOGO</td></tr>
+    <tr><td>2</td><td><strong>什么时候加客户 WhatsApp？</strong></td><td>① 邮件来回多次且客户积极互动时<br>② 客户邮件回复很及时<br>③ 客户签名中有手机号可主动添加<br>⚠️ 新业务员建议暂不用WhatsApp，容易出错</td></tr>
+    <tr><td>3</td><td><strong>如何判断目标客户？</strong></td><td>优先：灌装公司、国外化妆品贸易公司、Niche品牌、国外香水包材设计公司<br>⚠️ 香精公司不一定是目标客户</td></tr>
+    <tr><td>4</td><td><strong>客户数量达不到MOQ怎么办？</strong></td><td>① 推荐热销品（库存款）——介绍时说"热销品"而非"库存"<br>② 说出行业MOQ和同行标准，引导增加数量<br>③ 对比1万和5千的报价，让客户自选</td></tr>
+    <tr><td>5</td><td><strong>客户要很多样品怎么回复？</strong></td><td>① 尽量满足客户所选样品<br>② 转被动为主动：推我们常做的热销品<br>③ 寄样最少3–5款，必须符合客户市场风格</td></tr>
+    <tr><td>6</td><td><strong>报价后客户没有回复怎么办？</strong></td><td>① 从多方面分析客户性质（中间商/终端商）<br>② 跟进3封邮件无回复，可提出寄样吸引注意<br>③ 有新设计热销品可发给客户看<br>④ 长期不回复：每月跟进一次，关注社媒动态</td></tr>
+    <tr><td>7</td><td><strong>客户礼貌性回复"以后有机会合作"怎么跟进？</strong></td><td>① 回复时必须抛出1–2个问题深入了解客户（网站、市场、社媒等）<br>② 客户不回问题也要继续问，不问永远不会了解</td></tr>
+    <tr><td>8</td><td><strong>客户在没有任何信息时要求我们帮忙设计？</strong></td><td>① 答应帮忙，但先请客户简单介绍自己（公司名、网站、市场）<br>② 新客户最多只免费设计1款<br>③ 贸易公司：1款免费，多出来的收费（下单后可返还设计费）</td></tr>
+  </tbody>
+</table>`,
+      contentEn: `
+<div class="kc-intro">Most common situations in real business and the standard response for each.</div>
+<table class="kc-table">
+  <thead><tr><th>#</th><th>Question</th><th>Standard Approach</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td><strong>When to ask for the client's LOGO?</strong></td><td>① When there's a clear project and cooperation intent<br>② When client sends design files asking for our help<br>③ After client confirms bottle and price — get LOGO for a mockup to motivate ordering<br>❌ Never ask for LOGO at the very first contact</td></tr>
+    <tr><td>2</td><td><strong>When to add client on WhatsApp?</strong></td><td>① After multiple email exchanges with active client engagement<br>② Client replies to emails promptly<br>③ Phone number in client's email signature<br>⚠️ New sales staff: avoid WhatsApp early — easy to make mistakes</td></tr>
+    <tr><td>3</td><td><strong>How to identify target clients?</strong></td><td>Priority: filling companies, overseas cosmetics trading companies, niche brands, overseas packaging design companies<br>⚠️ Fragrance formula companies are not always target clients</td></tr>
+    <tr><td>4</td><td><strong>Client quantity below MOQ — what to do?</strong></td><td>① Recommend stock products ("best sellers" not "stock")<br>② State industry MOQ standards to guide client to increase quantity<br>③ Show price comparison at 10K vs 5K to let client choose</td></tr>
+    <tr><td>5</td><td><strong>Client wants many samples — how to respond?</strong></td><td>① Accommodate client's selections as much as possible<br>② Shift from reactive to proactive: push our bestselling styles<br>③ Send minimum 3–5 samples matching client's market style</td></tr>
+    <tr><td>6</td><td><strong>No reply after sending quotation — what to do?</strong></td><td>① Analyze client type (intermediary vs. end brand)<br>② After 3 follow-up emails with no reply, offer samples to regain attention<br>③ Share new designs or hot products that fit their market<br>④ Long-term silence: follow up monthly, monitor social media</td></tr>
+    <tr><td>7</td><td><strong>Client gives polite "maybe later" reply?</strong></td><td>① Always include 1–2 questions to learn more about the client<br>② Even if they don't answer, keep asking — it's the only way to know</td></tr>
+    <tr><td>8</td><td><strong>Client asks for design with zero info provided?</strong></td><td>① Agree to help but first ask for brief introduction (company, website, market)<br>② New clients: maximum 1 free design<br>③ Trading companies: 1 free design, charge for extras (refundable after order)</td></tr>
+  </tbody>
+</table>`
+    },
+    {
+      headingZh: `出货与报价类常见问题`, headingEn: `Shipping & Quoting FAQs`,
+      contentZh: `
+<table class="kc-table">
+  <thead><tr><th>#</th><th>问题</th><th>标准处理方法</th></tr></thead>
+  <tbody>
+    <tr><td>9</td><td><strong>每种工艺/LOGO MOQ 是多少？</strong></td><td>一般 10,000 pcs 一个工艺；老客户/新客户对价格不敏感时可灵活降至 5,000 pcs</td></tr>
+    <tr><td>10</td><td><strong>如何避免装货出错？</strong></td><td>① 装货前打印装箱单，提前核对一遍<br>② 装完柜后仔细核对数量<br>③ 确认无误后再封柜（封条卡上后不能再开柜）</td></tr>
+    <tr><td>11</td><td><strong>出口时有哪些特殊要求需注意？</strong></td><td>① 沙特阿拉伯：必须有CO证书，外箱必须有 MADE IN CHINA 字样<br>② CIF：必须加上目的港；FOB：必须加上出口港<br>③ 出口欧洲：必须使用欧洲规格托盘（80×120mm）<br>④ 货量约8个托盘但不足一个20尺柜：建议走整柜，散货目的港清关费用很高</td></tr>
+    <tr><td>12</td><td><strong>PI / Quotation / Sales Contract 需注意什么？</strong></td><td>① 核查金额是否正确<br>② 所有单证显示报价条款（EXW/FOB/CIF），金额一致<br>③ 付款方式：金额 < $10,000 → 订金50%；≥ $10,000 → 订金30%</td></tr>
+    <tr><td>13</td><td><strong>什么时候主动发 PI 给客户？</strong></td><td>客户对价格、质量等各方面都已确认时，主动发PI可加快进程</td></tr>
+    <tr><td>14</td><td><strong>谈妥1万数量后客户实际只有几千，如何跟进？</strong></td><td>① 转换问题：提议打手板(mockup)给客户确认，转移注意力<br>② 提供1万 vs 5千的报价对比，促使客户达到MOQ</td></tr>
+    <tr><td>15</td><td><strong>如何让邮件标题更吸引大客户？</strong></td><td>标题中加入：容量（如50ml）+ 材质特征（如锌合金盖）+ 工艺细节（如滴胶）</td></tr>
   </tbody>
 </table>`,
       contentEn: `
 <table class="kc-table">
-  <thead><tr><th>English</th><th>Chinese (中文)</th></tr></thead>
+  <thead><tr><th>#</th><th>Question</th><th>Standard Approach</th></tr></thead>
   <tbody>
-    <tr><td>Color coating / Lacquering</td><td>喷涂</td></tr>
-    <tr><td>Solid color coating</td><td>实色喷涂</td></tr>
-    <tr><td>Gradient color coating</td><td>渐变喷涂</td></tr>
-    <tr><td>Rubber coating / Soft touch</td><td>橡胶漆</td></tr>
-    <tr><td>Metalizing / Metallization</td><td>电镀</td></tr>
-    <tr><td>Frosting</td><td>蒙沙</td></tr>
-    <tr><td>Hot Stamping</td><td>烫金</td></tr>
-    <tr><td>Silkscreen printing</td><td>丝印</td></tr>
-    <tr><td>Sand-blasting</td><td>喷沙</td></tr>
-    <tr><td>Etching</td><td>蚀刻</td></tr>
-    <tr><td>Transfer / Decal</td><td>转印</td></tr>
-    <tr><td>Flocking / Velvet</td><td>植绒</td></tr>
-    <tr><td>Embossing</td><td>压花（凸）</td></tr>
-    <tr><td>Debossing / Engraving</td><td>雕花（凹）</td></tr>
-    <tr><td>Cracking</td><td>裂纹效果</td></tr>
-    <tr><td>Anodized</td><td>氧化（铝）</td></tr>
-    <tr><td>UV Printing</td><td>UV 打印</td></tr>
+    <tr><td>9</td><td><strong>MOQ per process/LOGO?</strong></td><td>Generally 10,000 pcs per process; can be flexible to 5,000 pcs for existing clients or price-insensitive new clients</td></tr>
+    <tr><td>10</td><td><strong>How to avoid loading errors?</strong></td><td>① Print packing list before loading and verify<br>② Double-check quantities after loading the container<br>③ Only seal container after confirming everything (cannot re-open once sealed)</td></tr>
+    <tr><td>11</td><td><strong>Special export requirements to know?</strong></td><td>① Saudi Arabia: CO certificate required; outer box must say MADE IN CHINA<br>② CIF: must include destination port; FOB: must include export port<br>③ Europe: must use European pallet size (80×120mm)<br>④ ~8 pallets but under a 20ft container: recommend full container; LCL destination clearance fees are high</td></tr>
+    <tr><td>12</td><td><strong>What to check in PI/Quotation/Contract?</strong></td><td>① Verify amounts are correct<br>② All documents show trade terms (EXW/FOB/CIF) and amounts match<br>③ Payment: &lt;$10,000 → 50% deposit; ≥$10,000 → 30% deposit</td></tr>
+    <tr><td>13</td><td><strong>When to proactively send PI?</strong></td><td>When client has confirmed price, quality, and all details — sending PI proactively speeds up the process</td></tr>
+    <tr><td>14</td><td><strong>Client agreed to 10K but can only do a few thousand?</strong></td><td>① Pivot: propose a physical mockup (hand model) to refocus client<br>② Show price comparison at 10K vs 5K to motivate reaching MOQ</td></tr>
+    <tr><td>15</td><td><strong>How to make email subject lines catch big clients' attention?</strong></td><td>Include in subject: volume (e.g. 50ml) + material feature (e.g. zinc alloy cap) + process detail (e.g. epoxy)</td></tr>
   </tbody>
 </table>`
     }
   ]
-}
+},
+{
+  id: 'ch13', order: 13,
+  titleZh: '金属产品重量计算（附录E）', titleEn: 'Metal Weight Calculation (Appendix E)',
+  icon: '⚖️', estimatedMinutes: 10,
+  sections: [
+    {
+      headingZh: `材料密度 & 重量计算公式`, headingEn: `Material Density & Weight Formula`,
+      contentZh: `
+<div class="kc-intro">计算金属标牌、盖子等金属产品重量，有助于核对报价和物流运费。</div>
+<div class="kc-highlight-box">
+  <strong>重量计算公式：</strong><br>
+  <code>长（mm）× 宽（mm）× 厚度（mm）× 密度 ÷ 1000 = 重量（g）</code><br><br>
+  <em>示例：铝标牌 50×30mm，厚度 1.5mm</em><br>
+  → 50 × 30 × 1.5 × 2.79 ÷ 1000 = <strong>6.28 g</strong>
+</div>
+<table class="kc-table" style="margin-top:16px">
+  <thead><tr><th>材料</th><th>密度 (g/cm³)</th><th>常见应用</th></tr></thead>
+  <tbody>
+    <tr><td><strong>铝 (Aluminium)</strong></td><td>2.79</td><td>铝标牌、中套、电化铝盖</td></tr>
+    <tr><td><strong>铁 / 不锈钢 (Iron / Stainless Steel)</strong></td><td>7.9</td><td>不锈钢标牌</td></tr>
+    <tr><td><strong>铜 (Copper)</strong></td><td>8.9</td><td>特殊定制件（较少用）</td></tr>
+    <tr><td><strong>锌合金 (Zamac / Zinc Alloy)</strong></td><td>6.8</td><td>锌合金盖、锌合金标牌</td></tr>
+  </tbody>
+</table>
+<div class="kc-intro" style="margin-top:16px"><strong>常用铝标牌厚度规格：</strong></div>
+<table class="kc-table">
+  <thead><tr><th>用途</th><th>厚度</th></tr></thead>
+  <tbody>
+    <tr><td>常规铝标牌</td><td>0.3 mm</td></tr>
+    <tr><td>立体感（凸字/凹字）</td><td>0.4 – 0.5 mm</td></tr>
+    <tr><td>锌合金标牌</td><td>1.5 – 3 mm</td></tr>
+  </tbody>
+</table>`,
+      contentEn: `
+<div class="kc-intro">Calculating metal weights helps verify quotations and estimate shipping costs.</div>
+<div class="kc-highlight-box">
+  <strong>Weight Formula:</strong><br>
+  <code>Length (mm) × Width (mm) × Thickness (mm) × Density ÷ 1000 = Weight (g)</code><br><br>
+  <em>Example: Aluminum plate 50×30mm, thickness 1.5mm</em><br>
+  → 50 × 30 × 1.5 × 2.79 ÷ 1000 = <strong>6.28 g</strong>
+</div>
+<table class="kc-table" style="margin-top:16px">
+  <thead><tr><th>Material</th><th>Density (g/cm³)</th><th>Common Uses</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Aluminium</strong></td><td>2.79</td><td>Aluminum plates, collars, aluminum caps</td></tr>
+    <tr><td><strong>Iron / Stainless Steel</strong></td><td>7.9</td><td>Stainless steel name plates</td></tr>
+    <tr><td><strong>Copper</strong></td><td>8.9</td><td>Special custom parts (rare)</td></tr>
+    <tr><td><strong>Zamac / Zinc Alloy</strong></td><td>6.8</td><td>Zamac caps and name plates</td></tr>
+  </tbody>
+</table>
+<div class="kc-intro" style="margin-top:16px"><strong>Common aluminum plate thicknesses:</strong></div>
+<table class="kc-table">
+  <thead><tr><th>Use</th><th>Thickness</th></tr></thead>
+  <tbody>
+    <tr><td>Standard aluminum plate</td><td>0.3 mm</td></tr>
+    <tr><td>3D effect (emboss/deboss)</td><td>0.4 – 0.5 mm</td></tr>
+    <tr><td>Zamac plate</td><td>1.5 – 3 mm</td></tr>
+  </tbody>
+</table>`
+    }
+  ]
+},
+{
+  id: 'ch14', order: 14,
+  titleZh: '付款方式与报价类型（附录F+G）', titleEn: 'Payment Methods & Pricing Terms (Appendix F+G)',
+  icon: '💳', estimatedMinutes: 15,
+  sections: [
+    {
+      headingZh: `附录F：付款方式类型`, headingEn: `Appendix F: Payment Methods`,
+      contentZh: `
+<div class="kc-intro">公司接受的收款方式分为以下 4 种：</div>
+<table class="kc-table">
+  <thead><tr><th>类型</th><th>全称</th><th>说明与注意事项</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>TT</strong></td>
+      <td>Bank Transfer / 电汇</td>
+      <td>最常用方式。一般为下单后付 30% 定金，出货前付 70% 尾款。银行转账手续费约 20–50 美金（基于付款金额和合作情况决定是否收取）</td>
+    </tr>
+    <tr>
+      <td><strong>PayPal</strong></td>
+      <td>PayPal Online Payment</td>
+      <td>给客户 PayPal 账号付款，或在 PayPal 后台制作付款账单。<br>⚠️ <strong>注意：手续费为 4.5%</strong>，需在报价时将此费用考虑进去</td>
+    </tr>
+    <tr>
+      <td><strong>WU</strong></td>
+      <td>Western Union / 西联汇款</td>
+      <td>欧洲市场常见。提供收款人名称即可接收。适合 <strong>小额付款（2,000 美金以下）</strong>，手续费由客户方承担</td>
+    </tr>
+    <tr>
+      <td><strong>L/C</strong></td>
+      <td>Letter of Credit / 信用证</td>
+      <td>按照客户要求处理，具体情况具体分析。我们可接受信用证付款，条件需事前协商</td>
+    </tr>
+  </tbody>
+</table>`,
+      contentEn: `
+<div class="kc-intro">The company accepts 4 types of payment:</div>
+<table class="kc-table">
+  <thead><tr><th>Type</th><th>Full Name</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>TT</strong></td>
+      <td>Bank Transfer / 电汇</td>
+      <td>Most common. Typically 30% deposit upon order, 70% balance before shipment. Bank transfer fee approx. $20–50 (may or may not be charged depending on amount and relationship)</td>
+    </tr>
+    <tr>
+      <td><strong>PayPal</strong></td>
+      <td>PayPal Online Payment</td>
+      <td>Client pays to our PayPal account or via PayPal invoice.<br>⚠️ <strong>Fee: 4.5%</strong> — must factor into the quoted price</td>
+    </tr>
+    <tr>
+      <td><strong>WU</strong></td>
+      <td>Western Union</td>
+      <td>Common in European market. Only requires recipient name. Best for <strong>small payments (under $2,000)</strong>. Transfer fees borne by the client.</td>
+    </tr>
+    <tr>
+      <td><strong>L/C</strong></td>
+      <td>Letter of Credit / 信用证</td>
+      <td>Handled case by case per client requirements. We can accept L/C — terms must be negotiated in advance.</td>
+    </tr>
+  </tbody>
+</table>`
+    },
+    {
+      headingZh: `附录G：客户报价的价格类型`, headingEn: `Appendix G: Price / Trade Term Types`,
+      contentZh: `
+<div class="kc-intro">报价一般含以下 4 种价格类型，需根据客户要求选择合适的报价方式：</div>
+<table class="kc-table">
+  <thead><tr><th>缩写</th><th>全称</th><th>包含范围与说明</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>EXW</strong></td>
+      <td>Ex Works / 出厂价</td>
+      <td>做完货后的价格，不含任何运费、税费等；客户自行安排提货</td>
+    </tr>
+    <tr>
+      <td><strong>FOB</strong></td>
+      <td>Free On Board / 离岸价</td>
+      <td>产品成本 + 在国内港口装船前产生的所有费用（货代、报关、内陆运输等），约 2,000 RMB 左右</td>
+    </tr>
+    <tr>
+      <td><strong>CIF</strong></td>
+      <td>Cost, Insurance & Freight / 到岸价</td>
+      <td>FOB 基础上 + 海运或空运到客户国家的运费 + 保险费；具体运费需按货量咨询</td>
+    </tr>
+    <tr>
+      <td><strong>DDP</strong></td>
+      <td>Delivered Duty Paid / 门到门价</td>
+      <td>所有费用全包：产品成本 + 国内货代 + 国际运费 + 目的地关税及当地税费</td>
+    </tr>
+  </tbody>
+</table>`,
+      contentEn: `
+<div class="kc-intro">Quotations generally include 4 price types. Choose the appropriate one based on the client's requirements:</div>
+<table class="kc-table">
+  <thead><tr><th>Term</th><th>Full Name</th><th>What's Included</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>EXW</strong></td>
+      <td>Ex Works</td>
+      <td>Product price only — no freight or taxes. Client arranges their own collection.</td>
+    </tr>
+    <tr>
+      <td><strong>FOB</strong></td>
+      <td>Free On Board</td>
+      <td>Product cost + all domestic charges up to loading at the export port (freight forwarder, customs, inland transport) — approx. RMB 2,000</td>
+    </tr>
+    <tr>
+      <td><strong>CIF</strong></td>
+      <td>Cost, Insurance & Freight</td>
+      <td>FOB + international sea/air freight to client's country + insurance — actual freight depends on cargo volume</td>
+    </tr>
+    <tr>
+      <td><strong>DDP</strong></td>
+      <td>Delivered Duty Paid</td>
+      <td>All-in price: product cost + domestic freight + international shipping + destination duties and local taxes</td>
+    </tr>
+  </tbody>
+</table>`
+    }
+  ]
+},
+{
+  id: 'ch15', order: 15,
+  titleZh: '客户成单12步流程（附录H）', titleEn: 'Order Completion Process — 12 Steps (Appendix H)',
+  icon: '📋', estimatedMinutes: 15,
+  sections: [
+    {
+      headingZh: `完整成单流程（12步）`, headingEn: `Full Order Process (12 Steps)`,
+      contentZh: `
+<div class="kc-intro">从询盘到订单归档的完整标准流程，每个步骤都有明确的动作要求：</div>
+<div class="kc-step"><div class="kc-step-num">01</div><div class="kc-step-body"><div class="kc-step-title">客户询盘 Inquire</div><div class="kc-step-desc">了解客户具体需求信息：产品类型、数量、设计要求、目标市场等</div></div></div>
+<div class="kc-step"><div class="kc-step-num">02</div><div class="kc-step-body"><div class="kc-step-title">客户报价 Quotation</div><div class="kc-step-desc">基于客户询盘做出报价，并协商交期、付款方式、包装方式等</div></div></div>
+<div class="kc-step kc-step-highlight"><div class="kc-step-num">03</div><div class="kc-step-body"><div class="kc-step-title">确认订单 PI or Invoice</div><div class="kc-step-desc">给客户做形式合同（PI / Proforma Invoice）或商业发票（CI / Invoice）</div></div></div>
+<div class="kc-step"><div class="kc-step-num">04</div><div class="kc-step-body"><div class="kc-step-title">客户付定金 Deposit</div><div class="kc-step-desc">一般为 30% 定金；特殊情况特殊处理，客户也可一次性付清</div></div></div>
+<div class="kc-step kc-step-highlight"><div class="kc-step-num">05</div><div class="kc-step-body"><div class="kc-step-title">下单生产 Produce</div><div class="kc-step-desc">跟单生产，注意产品质量和交期，随时告知客户具体生产情况（拍照/视频更新）</div></div></div>
+<div class="kc-step"><div class="kc-step-num">06</div><div class="kc-step-body"><div class="kc-step-title">产品完成 Finished</div><div class="kc-step-desc">通知客户付尾款（如谈的是见提单付款则省略此步）</div></div></div>
+<div class="kc-step"><div class="kc-step-num">07</div><div class="kc-step-body"><div class="kc-step-title">询问货代 Forwarder</div><div class="kc-step-desc">确认运输方式（海运 / 空运 / 快递 / 国内交货）；询问客户是否有指定货代；快递需提前确认客户国际快递账号</div></div></div>
+<div class="kc-step kc-step-highlight"><div class="kc-step-num">08</div><div class="kc-step-body"><div class="kc-step-title">订舱报关 Booking</div><div class="kc-step-desc">联系货代订舱，填写订舱单；提供客户合同发票、装箱单；通知报关公司制作报关资料</div></div></div>
+<div class="kc-step"><div class="kc-step-num">09</div><div class="kc-step-body"><div class="kc-step-title">入仓交货 Delivery</div><div class="kc-step-desc">联系司机入仓，到仓库交单卸货</div></div></div>
+<div class="kc-step"><div class="kc-step-num">10</div><div class="kc-step-body"><div class="kc-step-title">开船跟单 Sailing</div><div class="kc-step-desc">开船后联系货代索取提单；如客户需要 FA 或其他相关证件，通知货代协助制作</div></div></div>
+<div class="kc-step kc-step-highlight"><div class="kc-step-num">11</div><div class="kc-step-body"><div class="kc-step-title">领取提单 B/L</div><div class="kc-step-desc">领取提单并寄给客户（通知客户付尾款，如已付则略）；电放提单则发邮件给客户</div></div></div>
+<div class="kc-step"><div class="kc-step-num">12</div><div class="kc-step-body"><div class="kc-step-title">订单完成 Done</div><div class="kc-step-desc">确认客户收货，订单归档</div></div></div>
+<div class="kc-highlight-box" style="margin-top:16px">
+  <strong>关键节点提醒：</strong><br>
+  ⚠️ 步骤3（PI）：所有细节确认后才开单——数量、工艺、颜色、包装均需书面确认<br>
+  ⚠️ 步骤4（定金）：<strong>收到定金后才安排生产</strong>，切勿提前生产<br>
+  ⚠️ 步骤8（报关）：出口沙特须有CO证书；出口欧洲须用欧规托盘（80×120mm）<br>
+  ⚠️ 步骤11（提单）：正本提单控货，未收到尾款前不可放单（除非约定电放）
+</div>`,
+      contentEn: `
+<div class="kc-intro">Complete standard order flow from inquiry to archive — each step has clear required actions:</div>
+<div class="kc-step"><div class="kc-step-num">01</div><div class="kc-step-body"><div class="kc-step-title">Inquire</div><div class="kc-step-desc">Understand client's specific requirements: product type, quantity, design requirements, target market, etc.</div></div></div>
+<div class="kc-step"><div class="kc-step-num">02</div><div class="kc-step-body"><div class="kc-step-title">Quotation</div><div class="kc-step-desc">Issue quotation based on client inquiry; negotiate lead time, payment terms, and packaging requirements</div></div></div>
+<div class="kc-step kc-step-highlight"><div class="kc-step-num">03</div><div class="kc-step-body"><div class="kc-step-title">Confirm Order — PI or Invoice</div><div class="kc-step-desc">Issue Proforma Invoice (PI) or Commercial Invoice (CI) to client — all specs, processes, colors, and packaging must be confirmed in writing</div></div></div>
+<div class="kc-step"><div class="kc-step-num">04</div><div class="kc-step-body"><div class="kc-step-title">Deposit Payment</div><div class="kc-step-desc">Typically 30% deposit; special situations handled case by case; client may also pay in full</div></div></div>
+<div class="kc-step kc-step-highlight"><div class="kc-step-num">05</div><div class="kc-step-body"><div class="kc-step-title">Production</div><div class="kc-step-desc">Follow up production closely — monitor quality and delivery timeline; keep client updated with photos/videos throughout</div></div></div>
+<div class="kc-step"><div class="kc-step-num">06</div><div class="kc-step-body"><div class="kc-step-title">Production Complete</div><div class="kc-step-desc">Notify client to pay balance (skip if payment terms are "against B/L")</div></div></div>
+<div class="kc-step"><div class="kc-step-num">07</div><div class="kc-step-body"><div class="kc-step-title">Freight Forwarder</div><div class="kc-step-desc">Confirm shipping method (sea / air / express / local delivery); ask if client has designated forwarder; for express, confirm client's international courier account in advance</div></div></div>
+<div class="kc-step kc-step-highlight"><div class="kc-step-num">08</div><div class="kc-step-body"><div class="kc-step-title">Booking & Customs</div><div class="kc-step-desc">Contact forwarder to book space; provide commercial invoice and packing list; notify customs broker to prepare export documents</div></div></div>
+<div class="kc-step"><div class="kc-step-num">09</div><div class="kc-step-body"><div class="kc-step-title">Delivery to Warehouse</div><div class="kc-step-desc">Arrange truck to deliver to warehouse; hand over goods and documents</div></div></div>
+<div class="kc-step"><div class="kc-step-num">10</div><div class="kc-step-body"><div class="kc-step-title">Sailing</div><div class="kc-step-desc">After departure, request Bill of Lading from forwarder; arrange any additional certificates (FA, CO, etc.) as required by client</div></div></div>
+<div class="kc-step kc-step-highlight"><div class="kc-step-num">11</div><div class="kc-step-body"><div class="kc-step-title">Bill of Lading (B/L)</div><div class="kc-step-desc">Obtain B/L and send to client (notify client to pay balance if not yet paid); for telex release, send email confirmation to client</div></div></div>
+<div class="kc-step"><div class="kc-step-num">12</div><div class="kc-step-body"><div class="kc-step-title">Order Complete</div><div class="kc-step-desc">Confirm client received goods; archive the order</div></div></div>
+<div class="kc-highlight-box" style="margin-top:16px">
+  <strong>Key Checkpoints:</strong><br>
+  ⚠️ Step 3 (PI): Issue only after ALL details confirmed in writing — specs, process, color, packaging<br>
+  ⚠️ Step 4 (Deposit): <strong>Never start production before deposit is received</strong><br>
+  ⚠️ Step 8 (Customs): Saudi Arabia requires CO certificate; Europe requires EU standard pallets (80×120mm)<br>
+  ⚠️ Step 11 (B/L): Original B/L controls cargo release — do not release without balance payment (unless telex release was agreed)
+</div>`
+    }
+  ]
+},
 
-]; // end CHAPTERS
+];
 
-// ── Question Bank ────────────────────────────────────
+// ── QUESTION BANK (interim - to be replaced after V3 approval) ──
 const QUESTIONS = [
-  { id:'q001', chapterId:'ch01', type:'single', difficulty:'easy',
-    questionZh:'菲利包装的主营业务是什么？',
-    questionEn:'What is Fonli Packaging\'s main business?',
-    options:[
-      {zh:'香水液体研发',en:'Perfume liquid R&D'},
-      {zh:'高端香水包装 ODM/OEM 定制',en:'High-end perfume packaging ODM/OEM'},
-      {zh:'零售连锁店管理',en:'Retail chain management'},
-      {zh:'香水品牌运营',en:'Perfume brand operation'}
-    ], answer:1,
-    explanationZh:'菲利包装专注高端香水及化妆品包装的 ODM/OEM 定制，提供玻璃瓶、瓶盖、喷头、盒子一站式服务。',
-    explanationEn:'Fonli Packaging specializes in high-end perfume and cosmetic packaging ODM/OEM, providing one-stop service for bottles, caps, pumps, and boxes.' },
 
-  { id:'q002', chapterId:'ch01', type:'single', difficulty:'easy',
-    questionZh:'菲利包装的生产基地位于哪里？',
-    questionEn:'Where is Fonli Packaging\'s production base located?',
-    options:[
-      {zh:'上海市浦东新区',en:'Pudong, Shanghai'},
-      {zh:'广州市番禺区',en:'Panyu, Guangzhou'},
-      {zh:'东莞市虎门镇',en:'Humen Town, Dongguan'},
-      {zh:'深圳市南山区',en:'Nanshan, Shenzhen'}
-    ], answer:2,
-    explanationZh:'菲利包装的生产基地位于中国东莞市虎门镇。',
-    explanationEn:'Fonli Packaging\'s production base is in Humen Town, Dongguan City, China.' },
+  // ── CH10: 扩展双语词汇 ──
+  {
+    id: 'q_ch10_01', chapterId: 'ch10', type: 'single', difficulty: 'easy',
+    questionZh: '"Zamac Cap" 对应的中文是什么？',
+    questionEn: 'What is the Chinese term for "Zamac Cap"?',
+    optionsZh: ['沙林盖', '锌铝合金盖', '木盖', '亚克力盖'],
+    optionsEn: ['Surlyn Cap', 'Zinc Alloy Cap', 'Wooden Cap', 'Acrylic Cap'],
+    answer: 1,
+    explanationZh: 'Zamac / Zamak 即锌铝合金，其盖子质感厚重，常用于高端香水。',
+    explanationEn: 'Zamac/Zamak is zinc alloy — heavy and premium feel, commonly used for high-end perfume caps.'
+  },
+  {
+    id: 'q_ch10_02', chapterId: 'ch10', type: 'single', difficulty: 'easy',
+    questionZh: '"Transparent color coating" 对应哪种中文工艺？',
+    questionEn: 'Which Chinese process does "Transparent color coating" correspond to?',
+    optionsZh: ['实喷', '透喷', '渐变喷涂', '橡胶漆'],
+    optionsEn: ['Solid coating', 'Transparent coating', 'Gradient coating', 'Rubber coating'],
+    answer: 1,
+    explanationZh: '透喷即透明喷涂，可透过瓶身看到玻璃内部，英文为 Transparent color coating。',
+    explanationEn: 'Transparent color coating (透喷) allows you to see through the glass — distinct from solid (实喷) or gradient (渐变) coatings.'
+  },
+  {
+    id: 'q_ch10_03', chapterId: 'ch10', type: 'single', difficulty: 'easy',
+    questionZh: '"Flocking / Velvet" 对应哪种工艺？',
+    questionEn: 'What does "Flocking / Velvet" refer to?',
+    optionsZh: ['蒙砂', '植绒', '橡胶漆', '电镀'],
+    optionsEn: ['Frosting', 'Flocking', 'Rubber coating', 'Metalizing'],
+    answer: 1,
+    explanationZh: '植绒（Flocking/Velvet）是在表面黏附短绒纤维，形成绒布质感。',
+    explanationEn: 'Flocking/Velvet applies short fiber onto the surface to create a velvet texture.'
+  },
+  {
+    id: 'q_ch10_04', chapterId: 'ch10', type: 'single', difficulty: 'medium',
+    questionZh: '"Crimp Pump" 与 "Screw Neck" 的区别是什么？',
+    questionEn: 'What is the difference between "Crimp Pump" and "Screw Neck"?',
+    optionsZh: ['前者是卡口式，后者是螺口式', '前者是螺口式，后者是卡口式', '两者相同，只是叫法不同', '前者用于大瓶，后者用于小瓶'],
+    optionsEn: ['Crimp = crimp neck style, Screw = screw neck style', 'Crimp = screw style, Screw = crimp style', 'Same thing, different names', 'Crimp for large bottles, Screw for small'],
+    answer: 0,
+    explanationZh: 'Crimp Pump（卡口式）需用封口机压合；Screw Neck（螺口式）可直接拧入，无需封口机。',
+    explanationEn: 'Crimp pumps need a crimping machine to seal; Screw neck pumps thread in directly without a crimping machine.'
+  },
+  {
+    id: 'q_ch10_05', chapterId: 'ch10', type: 'single', difficulty: 'medium',
+    questionZh: '"Frosting / Frosted" 对应哪种工艺？',
+    questionEn: 'What process does "Frosting / Frosted" describe?',
+    optionsZh: ['烫金', '蒙砂', '植绒', '渐变喷涂'],
+    optionsEn: ['Hot Stamping', 'Frosting', 'Flocking', 'Gradient coating'],
+    answer: 1,
+    explanationZh: '蒙砂（Frosting）是对玻璃表面进行磨砂处理，形成哑光不透明质感。',
+    explanationEn: 'Frosting treats the glass surface to create a matte, translucent effect.'
+  },
+  {
+    id: 'q_ch10_06', chapterId: 'ch10', type: 'single', difficulty: 'medium',
+    questionZh: '以下哪个英文术语表示"试香纸"？',
+    questionEn: 'Which English term means 试香纸 (fragrance test strip)?',
+    optionsZh: ['Blotter / Scent card', 'Corrugated paper', 'Sleeve', 'Die Line'],
+    optionsEn: ['Blotter / Scent card', 'Corrugated paper', 'Sleeve', 'Die Line'],
+    answer: 0,
+    explanationZh: '试香纸英文为 Blotter 或 Perfume scent card，用于让客户闻香。',
+    explanationEn: 'Blotter or Perfume scent card is used for customers to test fragrance — not corrugated paper which is 瓦楞纸 for packaging.'
+  },
+  {
+    id: 'q_ch10_07', chapterId: 'ch10', type: 'single', difficulty: 'medium',
+    questionZh: '"Epoxy"在香水包材中指哪种工艺？',
+    questionEn: 'What does "Epoxy" refer to in perfume packaging?',
+    optionsZh: ['电镀', '滴胶', '珐琅', '蚀刻'],
+    optionsEn: ['Metalizing', 'Epoxy / resin fill', 'Enamel', 'Etching'],
+    answer: 1,
+    explanationZh: '滴胶（Epoxy）是将透明树脂滴入 LOGO 凹槽，固化后呈现立体亮面效果。',
+    explanationEn: 'Epoxy involves filling a recessed logo area with clear resin that cures to a glossy raised finish.'
+  },
+  {
+    id: 'q_ch10_08', chapterId: 'ch10', type: 'single', difficulty: 'easy',
+    questionZh: '"Lid and base box" 对应哪种纸盒？',
+    questionEn: 'What box type is "Lid and base box"?',
+    optionsZh: ['抽屉盒', '折叠盒', '天地盒', '圆筒盒'],
+    optionsEn: ['Drawer box', 'Folding box', 'Lid and base box', 'Cylinder box'],
+    answer: 2,
+    explanationZh: '天地盒（Lid and base box）由盒盖（天）和盒底（地）两部分组成，常见于礼盒包装。',
+    explanationEn: 'Lid and base box (天地盒) has a separate lid and base — commonly used for gift packaging.'
+  },
+  {
+    id: 'q_ch10_09', chapterId: 'ch10', type: 'single', difficulty: 'hard',
+    questionZh: '"OFC"（Over Flow Capacity）与"Brimful Capacity"有何区别？',
+    questionEn: 'What is the difference between OFC (Over Flow Capacity) and Brimful Capacity?',
+    optionsZh: ['OFC是溢流容量，Brimful是满口容量，两者意义相近但测量方式不同', '两者完全相同', 'OFC用于玻璃瓶，Brimful用于金属瓶', '只有Brimful是正式术语'],
+    optionsEn: ['OFC = overflow capacity, Brimful = filled to rim — similar but measured differently', 'They are identical', 'OFC for glass bottles, Brimful for metal', 'Only Brimful is a formal term'],
+    answer: 0,
+    explanationZh: 'OFC（溢流容量）和满口容量（Brimful）都指装满瓶子的最大容量，是报关和规格确认时的重要参数。',
+    explanationEn: 'Both refer to maximum fill capacity. These are important for customs documentation and spec confirmation.'
+  },
+  {
+    id: 'q_ch10_10', chapterId: 'ch10', type: 'boolean', difficulty: 'easy',
+    questionZh: '"Matt Lamination"（哑胶）比"Glossy Lamination"（光胶）的光泽度更高。',
+    questionEn: '"Matt Lamination" has higher gloss than "Glossy Lamination."',
+    optionsZh: ['正确', '错误'],
+    optionsEn: ['True', 'False'],
+    answer: 1,
+    explanationZh: '错误。哑胶（Matt Lamination）是哑光低光泽；光胶（Glossy Lamination）才是高光泽效果。',
+    explanationEn: 'False. Matt Lamination is matte (low gloss); Glossy Lamination is the high-gloss option.'
+  },
+  {
+    id: 'q_ch10_11', chapterId: 'ch10', type: 'single', difficulty: 'medium',
+    questionZh: '"Gradient color coating" 对应哪种工艺？',
+    questionEn: 'Which process does "Gradient color coating" describe?',
+    optionsZh: ['实喷', '透喷', '渐变喷涂', '局部喷涂'],
+    optionsEn: ['Solid coating', 'Transparent coating', 'Gradient coating', 'Partial coating'],
+    answer: 2,
+    explanationZh: '渐变喷涂（Gradient color coating）是颜色由深至浅或由一色过渡到另一色，常用于高端香水瓶。',
+    explanationEn: 'Gradient color coating transitions from one color to another (or dark to light), common in high-end perfume bottle designs.'
+  },
+  {
+    id: 'q_ch10_12', chapterId: 'ch10', type: 'single', difficulty: 'hard',
+    questionZh: '"FEA 15"指的是什么？',
+    questionEn: 'What does "FEA 15" refer to?',
+    optionsZh: ['一种喷头型号，卡口口径15mm', '一种盖子材料规格', '一种玻璃瓶容量规格', '一种纸盒标准'],
+    optionsEn: ['A crimp pump neck diameter of 15mm', 'A cap material specification', 'A glass bottle volume standard', 'A box packaging standard'],
+    answer: 0,
+    explanationZh: 'FEA 13/15/18/20 是欧标卡口（Crimp）喷头的口径规格，单位为毫米，FEA15 即口径15mm。',
+    explanationEn: 'FEA 13/15/18/20 are European standard crimp neck diameters in millimeters — FEA 15 means 15mm crimp neck.'
+  },
 
-  { id:'q003', chapterId:'ch01', type:'single', difficulty:'medium',
-    questionZh:'以下哪类客户优先级最高（★★★）？',
-    questionEn:'Which customer type has the highest priority (★★★)?',
-    options:[
-      {zh:'小散客/仅问价',en:'One-off price inquiries'},
-      {zh:'国外香水包材设计公司',en:'Foreign packaging design companies'},
-      {zh:'自有香水品牌（欧美、中东）',en:'Own perfume brands (EU/Middle East)'},
-      {zh:'灌装公司/区域代理商',en:'Filling companies / regional distributors'}
-    ], answer:2,
-    explanationZh:'自有香水品牌客户有清晰定位与新品计划，是最优质的客户，优先级最高。',
-    explanationEn:'Own fragrance brands have clear positioning and new product plans — highest quality clients, top priority.' },
+  // ── CH11: 销售SOP ──
+  {
+    id: 'q_ch11_01', chapterId: 'ch11', type: 'single', difficulty: 'easy',
+    questionZh: '菲利包装的核心定位是什么？',
+    questionEn: 'What is Fonli Packaging\'s core positioning?',
+    optionsZh: ['通用瓶子供应商', '香水品牌的包装方案联合设计方 + 稳定生产基地', '最低价格的代工厂', '专门做公模的经销商'],
+    optionsEn: ['Generic bottle supplier', 'Fragrance brand packaging co-design partner + reliable production base', 'Lowest-price OEM factory', 'Stock mold distributor'],
+    answer: 1,
+    explanationZh: '核心定位是"包装方案联合设计方 + 稳定生产基地"，不是通用瓶子供应商。',
+    explanationEn: 'Core positioning is "packaging co-design partner + reliable production base" — not a generic bottle supplier.'
+  },
+  {
+    id: 'q_ch11_02', chapterId: 'ch11', type: 'single', difficulty: 'easy',
+    questionZh: '以下哪个是一级目标客户？',
+    questionEn: 'Which of the following is a Tier 1 target client?',
+    optionsZh: ['只问价格的单次散客', '自有香水品牌（欧美/中东）', '没有项目计划的新品牌', '只买库存款的贸易商'],
+    optionsEn: ['One-time buyer asking for lowest price', 'Own fragrance brand (EU/US/Middle East)', 'New brand with no project plan', 'Trading company buying stock only'],
+    answer: 1,
+    explanationZh: '一级目标客户是自有香水品牌或香水 OEM/ODM 工厂，有清晰定位和新品计划。',
+    explanationEn: 'Tier 1 clients are own fragrance brands or OEM/ODM factories with clear positioning and new product plans.'
+  },
+  {
+    id: 'q_ch11_03', chapterId: 'ch11', type: 'single', difficulty: 'medium',
+    questionZh: 'SOP 阶段 3 的核心任务是什么？',
+    questionEn: 'What is the core task of SOP Stage 3?',
+    optionsZh: ['出货与单证准备', '深度需求沟通与方案销售', '打样前确认3D图', '客户维护与复购'],
+    optionsEn: ['Shipment and documentation', 'In-depth needs analysis and solution selling', 'Pre-sample 3D confirmation', 'Client retention and repeat orders'],
+    answer: 1,
+    explanationZh: '阶段3是深度需求沟通：必问品牌定位、风格、容量、量级等，并输出专业包装方案。',
+    explanationEn: 'Stage 3 is in-depth needs analysis: ask about brand positioning, style, volume, MOQ, and deliver a professional packaging proposal.'
+  },
+  {
+    id: 'q_ch11_04', chapterId: 'ch11', type: 'single', difficulty: 'medium',
+    questionZh: '以下哪项是展会现场的必问问题之一？',
+    questionEn: 'Which of the following is one of the 3 must-ask questions at trade shows?',
+    optionsZh: ['您的公司创立了多少年？', '您近期有新系列或新品牌的上新计划吗？', '您目前的供应商是谁？', '您的工厂在哪里？'],
+    optionsEn: ['How many years has your company been in business?', 'Do you have any new series or brand launches planned soon?', 'Who is your current supplier?', 'Where is your factory?'],
+    answer: 1,
+    explanationZh: '展会三必问：①您是品牌方/工厂/贸易商？②主要市场在哪里？定位中端还是高端？③近期有新系列上新计划吗？',
+    explanationEn: 'The 3 must-ask questions: ① Brand/factory/trading company? ② Main market, mid or high-end? ③ Any new products planned soon?'
+  },
+  {
+    id: 'q_ch11_05', chapterId: 'ch11', type: 'boolean', difficulty: 'easy',
+    questionZh: '打样完成后，业务员可以根据自己的判断承诺客户交期，无需先与工厂确认。',
+    questionEn: 'After sampling, a sales rep can promise delivery timelines based on personal judgment without checking with the factory first.',
+    optionsZh: ['正确', '错误'],
+    optionsEn: ['True', 'False'],
+    answer: 1,
+    explanationZh: '错误。行为底线之一：不随意承诺交期与工艺效果，所有承诺必须基于工厂确认。',
+    explanationEn: 'False. One of the non-negotiable standards: never promise delivery or process results without factory confirmation.'
+  },
+  {
+    id: 'q_ch11_06', chapterId: 'ch11', type: 'single', difficulty: 'medium',
+    questionZh: 'A级客户的维护频率是什么？',
+    questionEn: 'What is the client maintenance cadence for Tier A clients?',
+    optionsZh: ['每季度联系一次', '每月至少一次沟通 + 每季度提供新品推荐', '节日前后联系', '每1–2个月推送新款'],
+    optionsEn: ['Contact once per quarter', 'At least monthly communication + quarterly new product recommendations', 'Contact around holidays', 'Push new products every 1–2 months'],
+    answer: 1,
+    explanationZh: 'A级客户（核心品牌/大代工厂）：每月至少一次沟通，每季度提供新品包装趋势 + 新瓶型/工艺推荐。',
+    explanationEn: 'A-tier clients: monthly communication minimum, quarterly updates on packaging trends and new product/process recommendations.'
+  },
+  {
+    id: 'q_ch11_07', chapterId: 'ch11', type: 'single', difficulty: 'medium',
+    questionZh: '大货生产前，必须完成哪3项最终确认？',
+    questionEn: 'What 3 items must be confirmed before mass production begins?',
+    optionsZh: ['3D图 + 颜色 + 价格', '对版样确认 + 规格工艺确认 + 包装方式确认', '客户签字 + 工厂签字 + 物流确认', 'LOGO + 尺寸 + 重量'],
+    optionsEn: ['3D render + color + price', 'Counter sample + spec/process + packaging method confirmation', 'Client signature + factory signature + logistics confirmation', 'LOGO + dimensions + weight'],
+    answer: 1,
+    explanationZh: '大货前三项必确认：①对版样（含照片/视频/实物）②规格与工艺③包装方式（内托/彩盒/外箱）。',
+    explanationEn: '3 pre-production must-confirms: ① counter sample (photo/video/physical) ② specs & processes ③ packaging method (insert/box/outer carton).'
+  },
+  {
+    id: 'q_ch11_08', chapterId: 'ch11', type: 'single', difficulty: 'easy',
+    questionZh: '业务员每日必须完成哪3件事？',
+    questionEn: 'Which 3 things must a sales rep do every day?',
+    optionsZh: ['发邮件 + 报价 + 打电话', '处理所有未回复邮件 + 更新项目状态 + 触达5个高潜在客户', '整理样品 + 更新报价单 + 参加会议', '跟进大货 + 准备单证 + 拍照'],
+    optionsEn: ['Send emails + quote + call clients', 'Reply all emails + update project status + reach 5 high-potential clients', 'Organize samples + update quotation + attend meetings', 'Follow up production + prepare docs + take photos'],
+    answer: 1,
+    explanationZh: '每日三必做：①处理所有未回复邮件（当天清零）②更新每个项目状态 ③主动触达至少5个高潜在客户。',
+    explanationEn: 'Daily 3 must-dos: ① clear all unanswered emails ② update every project status ③ proactively reach 5+ high-potential clients.'
+  },
+  {
+    id: 'q_ch11_09', chapterId: 'ch11', type: 'single', difficulty: 'hard',
+    questionZh: '打样时，样品寄出后应在多少天内要求客户给出反馈？',
+    questionEn: 'After shipping samples, within how many days should client feedback be expected?',
+    optionsZh: ['1–3天', '3–7天', '7–14天', '1个月'],
+    optionsEn: ['1–3 days', '3–7 days', '7–14 days', '1 month'],
+    answer: 1,
+    explanationZh: '约定收到样品后 3–7 天内给出反馈，这是标准SOP要求，避免项目拖延。',
+    explanationEn: 'SOP standard: agree with client to give feedback within 3–7 days of receiving samples, to avoid project delays.'
+  },
+  {
+    id: 'q_ch11_10', chapterId: 'ch11', type: 'boolean', difficulty: 'medium',
+    questionZh: '向主管的每周汇报内容应包括：本周新立项项目数、推进到新阶段的项目数、遇到的阻碍。',
+    questionEn: 'The weekly manager report should include: new projects started, projects advanced to new stages, and blockers encountered.',
+    optionsZh: ['正确', '错误'],
+    optionsEn: ['True', 'False'],
+    answer: 0,
+    explanationZh: '正确。这是每周汇报的三项标准内容，让主管掌握团队整体推进情况。',
+    explanationEn: 'True. These are the 3 standard weekly report items to keep management informed on team progress.'
+  },
 
-  { id:'q004', chapterId:'ch02', type:'single', difficulty:'easy',
-    questionZh:'定制项目流程第几步是"报价确认"？',
-    questionEn:'In the custom project process, which step is "Cost Analysis / Quotation Confirmation"?',
-    options:[{zh:'第2步',en:'Step 2'},{zh:'第3步',en:'Step 3'},{zh:'第4步',en:'Step 4'},{zh:'第5步',en:'Step 5'}],
-    answer:2,
-    explanationZh:'流程：01设计构思→02原型渲染→03 3D打样→04报价确认→05模具与样品→06大货生产。',
-    explanationEn:'Process: 01 Design Concept → 02 Prototyping → 03 3D Mockup → 04 Cost Analysis → 05 Mould & Sample → 06 Mass Production.' },
+  // ── CH12: FAQ ──
+  {
+    id: 'q_ch12_01', chapterId: 'ch12', type: 'single', difficulty: 'easy',
+    questionZh: '第一次联系新客户时，应该主动要求对方提供 LOGO 吗？',
+    questionEn: 'Should you ask a new client for their LOGO on first contact?',
+    optionsZh: ['是，越早拿到越好', '不，切忌一开始就要LOGO', '只要客户是品牌方就可以要', '看情况，随时可以要'],
+    optionsEn: ['Yes, the sooner the better', 'No — never ask for LOGO at first contact', 'Only if the client is a brand', 'Depends, can ask anytime'],
+    answer: 1,
+    explanationZh: '切忌一开始就要客户LOGO。应在有明确合作意向时，或确认瓶型/报价后才请客户提供。',
+    explanationEn: 'Never ask for LOGO at first contact. Request it only when there is clear cooperation intent or after bottle/pricing is confirmed.'
+  },
+  {
+    id: 'q_ch12_02', chapterId: 'ch12', type: 'single', difficulty: 'medium',
+    questionZh: '客户数量达到5000 pcs 但未到10000 pcs MOQ 时，正确做法是？',
+    questionEn: 'Client wants 5,000 pcs but MOQ is 10,000. What is the correct approach?',
+    optionsZh: ['直接拒绝', '推荐热销品（库存款），介绍时称为"热销品"而非"库存"', '降低MOQ到5000', '不接这个客户'],
+    optionsEn: ['Decline directly', 'Recommend bestsellers (stock items) — call them "bestsellers" not "stock"', 'Lower MOQ to 5,000', 'Reject this client'],
+    answer: 1,
+    explanationZh: '库存产品介绍给客户时，要说"热销品"，切忌说成"库存"。5000 pcs可推荐热销品满足需求。',
+    explanationEn: 'Introduce stock items as "bestsellers" — never as "stock." For 5,000 pcs, recommend bestsellers to accommodate the client.'
+  },
+  {
+    id: 'q_ch12_03', chapterId: 'ch12', type: 'single', difficulty: 'medium',
+    questionZh: '出口到沙特阿拉伯的货物有哪些特殊要求？',
+    questionEn: 'What special requirements apply to shipments to Saudi Arabia?',
+    optionsZh: ['必须有CE认证', '必须有CO证书，外箱必须标注 MADE IN CHINA', '必须使用欧洲规格托盘', '必须走整柜'],
+    optionsEn: ['Must have CE certification', 'Must have CO certificate; outer box must state MADE IN CHINA', 'Must use European pallet size', 'Must be full container load'],
+    answer: 1,
+    explanationZh: '沙特要求：①必须提供CO（产地证）②外箱必须有 MADE IN CHINA 字样，否则清关会被阻。',
+    explanationEn: 'Saudi Arabia requires: ① CO (Certificate of Origin) ② MADE IN CHINA printed on outer cartons — otherwise customs clearance will be blocked.'
+  },
+  {
+    id: 'q_ch12_04', chapterId: 'ch12', type: 'single', difficulty: 'medium',
+    questionZh: '订单金额小于10,000美金时，订金比例是多少？',
+    questionEn: 'For orders under $10,000, what is the deposit percentage?',
+    optionsZh: ['30%', '50%', '20%', '100%'],
+    optionsEn: ['30%', '50%', '20%', '100%'],
+    answer: 1,
+    explanationZh: '小单（< $10,000）：订金50%；大单（≥ $10,000）：订金30%。尾款必须在出货前结清。',
+    explanationEn: 'Small orders (< $10,000): 50% deposit. Large orders (≥ $10,000): 30% deposit. Balance must be cleared before shipment.'
+  },
+  {
+    id: 'q_ch12_05', chapterId: 'ch12', type: 'single', difficulty: 'easy',
+    questionZh: '寄样时，每次寄出的样品最少应该有几款？',
+    questionEn: 'When shipping samples, what is the minimum number of styles to send?',
+    optionsZh: ['1款', '2款', '3–5款', '10款以上'],
+    optionsEn: ['1 style', '2 styles', '3–5 styles', '10+ styles'],
+    answer: 2,
+    explanationZh: '寄样最少3–5款，且必须是符合客户市场风格的款式，不要只寄一个样品。',
+    explanationEn: 'Always send minimum 3–5 samples, and they must match the client\'s market style — never send just 1 sample.'
+  },
+  {
+    id: 'q_ch12_06', chapterId: 'ch12', type: 'single', difficulty: 'medium',
+    questionZh: '如何让邮件主题更容易吸引大客户打开？',
+    questionEn: 'How to make email subject lines more likely to be opened by key clients?',
+    optionsZh: ['写公司名称和联系方式', '加入容量 + 材质特征 + 工艺细节（如：50ml 锌合金盖 滴胶）', '只写"New product"', '标题越短越好'],
+    optionsEn: ['Write company name and contact info', 'Include volume + material feature + process detail (e.g. 50ml zinc alloy cap epoxy)', 'Just write "New product"', 'Shorter is better'],
+    answer: 1,
+    explanationZh: '邮件标题要有具体产品信息：容量（如50ml）+ 材质（如锌合金盖）+ 工艺（如滴胶），才能引起专业客户兴趣。',
+    explanationEn: 'Effective subject lines include specific product info: volume (50ml) + material (zinc alloy cap) + process (epoxy) to attract professional buyers.'
+  },
+  {
+    id: 'q_ch12_07', chapterId: 'ch12', type: 'boolean', difficulty: 'medium',
+    questionZh: '出口欧洲时，必须使用欧洲规格托盘（80×120mm）。',
+    questionEn: 'Shipments to Europe must use European standard pallets (80×120mm).',
+    optionsZh: ['正确', '错误'],
+    optionsEn: ['True', 'False'],
+    answer: 0,
+    explanationZh: '正确。出口欧洲必须使用欧洲规格托盘（80×120cm）；中国标准托盘尺寸不同，使用错误会影响清关和上架。',
+    explanationEn: 'True. Europe requires 80×120cm standard pallets. Chinese standard pallets are different sizes and can cause customs/warehouse issues.'
+  },
+  {
+    id: 'q_ch12_08', chapterId: 'ch12', type: 'single', difficulty: 'hard',
+    questionZh: '在没有任何客户信息的情况下客户要求设计，对于贸易公司客户，正确做法是？',
+    questionEn: 'A trading company client asks for design with no info provided. What is the correct approach?',
+    optionsZh: ['免费提供所有设计', '做1款免费，多的收费，下单后可返还设计费', '直接拒绝设计服务', '先要求客户提供所有信息才开始'],
+    optionsEn: ['Provide all designs for free', 'First design free, charge for extras — refundable after order', 'Refuse design service directly', 'Require all info before starting'],
+    answer: 1,
+    explanationZh: '贸易公司：1款免费设计，多的收费；同时要深挖其客户信息，了解市场，下单后可返还设计费。',
+    explanationEn: 'For trading companies: 1 free design, charge for extras (refundable after order); probe deeper to understand their end client and market.'
+  },
+  {
+    id: 'q_ch12_09', chapterId: 'ch12', type: 'single', difficulty: 'medium',
+    questionZh: '客户谈妥1万数量后，实际只有几千，最好的跟进策略是？',
+    questionEn: 'Client agreed to 10K but can only do a few thousand. Best follow-up strategy?',
+    optionsZh: ['直接要求客户达到MOQ', '转换话题：提议打手板给客户确认，或对比1万vs5千的报价', '降低MOQ接受订单', '停止跟进此客户'],
+    optionsEn: ['Demand client meets MOQ', 'Pivot: propose a physical mockup to refocus, or show 10K vs 5K price comparison', 'Accept lower MOQ', 'Stop following up'],
+    answer: 1,
+    explanationZh: '数量僵持时不要针锋相对：①提议打手板转移注意力 ②提供1万 vs 5千报价对比，让客户自己选择。',
+    explanationEn: 'Don\'t confront directly: ① Offer a physical mockup to shift focus ② Show 10K vs 5K price comparison to let client decide.'
+  },
+  {
+    id: 'q_ch12_10', chapterId: 'ch12', type: 'single', difficulty: 'hard',
+    questionZh: '货量约8个托盘但不足一个20尺柜时，推荐的运输方式是？',
+    questionEn: 'Cargo is about 8 pallets but doesn\'t fill a 20ft container — which shipping method is recommended?',
+    optionsZh: ['走散货（LCL），更经济', '建议走整柜（FCL），因为目的港散货清关费用很高', '空运更划算', '根据客户要求决定'],
+    optionsEn: ['LCL (less than container load) — more economical', 'Recommend FCL (full container) — destination port LCL clearance fees are high', 'Air freight is more cost-effective', 'Decide based on client preference'],
+    answer: 1,
+    explanationZh: '约8个托盘建议走整柜：目的港散货（LCL）清关费用极高，整柜虽略贵但综合更划算。',
+    explanationEn: 'For ~8 pallets, recommend FCL: LCL destination clearance fees are very high, making FCL more cost-effective overall despite slightly higher freight.'
+  }
 
-  { id:'q005', chapterId:'ch03', type:'single', difficulty:'easy',
-    questionZh:'香水瓶最常见的颈口规格（FEA）是多少？',
-    questionEn:'What is the most common FEA neck size for perfume bottles?',
-    options:[{zh:'FEA 13mm',en:'FEA 13mm'},{zh:'FEA 15mm',en:'FEA 15mm'},{zh:'FEA 18mm',en:'FEA 18mm'},{zh:'FEA 20mm',en:'FEA 20mm'}],
-    answer:1,
-    explanationZh:'15mm 是最常规的标准颈口规格。',
-    explanationEn:'15mm is the most standard neck size.' },
-
-  { id:'q006', chapterId:'ch03', type:'single', difficulty:'medium',
-    questionZh:'"高白料玻璃"的英文是？',
-    questionEn:'What is the English term for "高白料玻璃"?',
-    options:[
-      {zh:'Flint Glass',en:'Flint Glass'},
-      {zh:'White Opal Glass',en:'White Opal Glass'},
-      {zh:'Crystal Glass',en:'Crystal Glass'},
-      {zh:'Borosilicate Glass',en:'Borosilicate Glass'}
-    ], answer:1,
-    explanationZh:'高白料玻璃英文为 White Opal Glass，透明度高，折射效果好，适合高端定制。',
-    explanationEn:'White Opal Glass — high clarity, excellent refraction, suitable for premium custom products.' },
-
-  { id:'q007', chapterId:'ch03', type:'single', difficulty:'medium',
-    questionZh:'卡口（Crimp）和螺口（Screw）有什么重要区别？',
-    questionEn:'What is an important difference between Crimp and Screw neck types?',
-    options:[
-      {zh:'只有尺寸不同',en:'Only different in size'},
-      {zh:'两者可以互换使用',en:'They can be used interchangeably'},
-      {zh:'不可互换，下单前必须与客户确认',en:'Not interchangeable — must confirm with client before ordering'},
-      {zh:'螺口比卡口贵',en:'Screw type is more expensive than Crimp'}
-    ], answer:2,
-    explanationZh:'卡口和螺口结构完全不同，不可互换。下单前务必与客户确认封口方式，否则会导致产品无法组装。',
-    explanationEn:'Crimp and Screw have completely different structures and cannot be swapped. Must confirm with client before ordering to avoid assembly issues.' },
-
-  { id:'q008', chapterId:'ch03', type:'single', difficulty:'hard',
-    questionZh:'"OFC" 代表什么？',
-    questionEn:'What does "OFC" stand for?',
-    options:[
-      {zh:'Official Functional Capacity',en:'Official Functional Capacity'},
-      {zh:'Over Flow Capacity（溢流容量）',en:'Over Flow Capacity'},
-      {zh:'Original Factory Code',en:'Original Factory Code'},
-      {zh:'Output Final Check',en:'Output Final Check'}
-    ], answer:1,
-    explanationZh:'OFC = Over Flow Capacity（溢流容量），是香水瓶容量的标准计量方式，不同于满口容量（Brimful Capacity）。',
-    explanationEn:'OFC = Over Flow Capacity — the standard measurement for perfume bottle volume, different from Brimful Capacity.' },
-
-  { id:'q009', chapterId:'ch04', type:'single', difficulty:'easy',
-    questionZh:'中东高端市场最常用的盖子材料是？',
-    questionEn:'Which cap material is most popular in the Middle East high-end market?',
-    options:[
-      {zh:'Wood（木盖）',en:'Wood'},
-      {zh:'Surlyn（沙林）',en:'Surlyn'},
-      {zh:'Zamak（锌合金）',en:'Zamak (Zinc Alloy)'},
-      {zh:'PP（聚丙烯）',en:'PP'}
-    ], answer:2,
-    explanationZh:'Zamak 锌合金重量感好，电镀效果出色，代表品质感，是中东高端市场常用材料。',
-    explanationEn:'Zamak zinc alloy has good weight and excellent plating — the weight feel represents quality, making it popular in Middle East premium market.' },
-
-  { id:'q010', chapterId:'ch04', type:'single', difficulty:'medium',
-    questionZh:'磁吸盖的常规磁力规格是？',
-    questionEn:'What are the common magnet strength specifications for magnetic caps?',
-    options:[
-      {zh:'N20 / N30',en:'N20 / N30'},
-      {zh:'N42 / N52',en:'N42 / N52'},
-      {zh:'N60 / N72',en:'N60 / N72'},
-      {zh:'N10 / N15',en:'N10 / N15'}
-    ], answer:1,
-    explanationZh:'磁吸盖常规磁力大小为 N42 / N52，需在打样阶段确认，磁力过强或过弱都会影响体验。',
-    explanationEn:'Standard magnet strength for magnetic caps is N42 / N52. Must be confirmed at sampling stage — too strong or weak will affect user experience.' },
-
-  { id:'q011', chapterId:'ch05', type:'single', difficulty:'easy',
-    questionZh:'喷头（Spray Pump）最标准的颈口尺寸是？',
-    questionEn:'What is the most standard neck size for spray pumps?',
-    options:[{zh:'13mm',en:'13mm'},{zh:'15mm',en:'15mm'},{zh:'18mm',en:'18mm'},{zh:'20mm',en:'20mm'}],
-    answer:1,
-    explanationZh:'15mm 是最常规的标准喷头颈口规格。',
-    explanationEn:'15mm is the most standard neck size for spray pumps.' },
-
-  { id:'q012', chapterId:'ch05', type:'single', difficulty:'medium',
-    questionZh:'以下哪种喷头适合旅行装/航空限制规格？',
-    questionEn:'Which type of pump is suitable for travel size / airline-restricted products?',
-    options:[
-      {zh:'卡口式（Crimp Pump）',en:'Crimp Pump'},
-      {zh:'螺口式（Screw Type）',en:'Screw Type'},
-      {zh:'两种都可以',en:'Both'},
-      {zh:'真空泵（Airless Pump）',en:'Airless Pump'}
-    ], answer:1,
-    explanationZh:'螺口式喷头可以锁定，防止旅行中误喷，适合旅行装和航空限制规格产品。',
-    explanationEn:'Screw type can be locked to prevent accidental spray during travel — suitable for travel size and airline-compliant products.' },
-
-  { id:'q013', chapterId:'ch07', type:'single', difficulty:'easy',
-    questionZh:'以下哪种盒子成本最低，适合大量零售单品？',
-    questionEn:'Which box type has the lowest cost and is best for high-volume retail products?',
-    options:[
-      {zh:'翻盖精品盒 Book Shape',en:'Rigid Box – Book Shape'},
-      {zh:'木盒 Wooden Box',en:'Wooden Box'},
-      {zh:'抽屉盒 Drawer',en:'Rigid Box – Drawer'},
-      {zh:'折叠卡盒 Folding Box',en:'Folding Box / Soft Box'}
-    ], answer:3,
-    explanationZh:'折叠卡盒成本较低，适合零售单品，量大首选。',
-    explanationEn:'Folding Box (Soft Box) has lower cost, suitable for retail single items, best choice for high volumes.' },
-
-  { id:'q014', chapterId:'ch08', type:'single', difficulty:'easy',
-    questionZh:'公模现货款（标准款）的最低起订量（MOQ）是多少？',
-    questionEn:'What is the minimum order quantity (MOQ) for stock mold (standard) products?',
-    options:[
-      {zh:'5,000 pcs',en:'5,000 pcs'},
-      {zh:'10,000 pcs',en:'10,000 pcs'},
-      {zh:'20,000 pcs',en:'20,000 pcs'},
-      {zh:'30,000 pcs',en:'30,000 pcs'}
-    ], answer:1,
-    explanationZh:'公模现有瓶型 MOQ 为 10,000 pcs；定制开模款 MOQ 为 20,000–30,000 pcs。',
-    explanationEn:'Stock mold MOQ is 10,000 pcs; custom new mold MOQ is 20,000–30,000 pcs.' },
-
-  { id:'q015', chapterId:'ch08', type:'single', difficulty:'medium',
-    questionZh:'PayPal 付款需要注意什么？',
-    questionEn:'What should you be aware of when the client pays by PayPal?',
-    options:[
-      {zh:'没有手续费，非常划算',en:'No fee, very cost-effective'},
-      {zh:'有 4.5% 手续费，报价时须考虑',en:'4.5% transaction fee — must factor into quotation'},
-      {zh:'只能用于欧洲客户',en:'Only for European clients'},
-      {zh:'最低付款额为 $5,000',en:'Minimum payment is $5,000'}
-    ], answer:1,
-    explanationZh:'PayPal 手续费为 4.5%，在对客户报价时需要考虑进去，否则会影响利润。',
-    explanationEn:'PayPal charges 4.5% transaction fee — this must be factored into the client quotation to protect profit margins.' },
-
-  { id:'q016', chapterId:'ch08', type:'single', difficulty:'hard',
-    questionZh:'"DDP" 报价包含哪些内容？',
-    questionEn:'What does a "DDP" quotation include?',
-    options:[
-      {zh:'仅产品成本',en:'Product cost only'},
-      {zh:'产品 + 国内港口装船费',en:'Product + domestic port loading costs'},
-      {zh:'产品 + 国内费用 + 国际运费',en:'Product + domestic costs + international freight'},
-      {zh:'全包：产品 + 货代 + 国际运费 + 目的地关税及税费',en:'All-inclusive: product + forwarder + international freight + destination duties & taxes'}
-    ], answer:3,
-    explanationZh:'DDP = Delivered Duty Paid，是门到门报价，包括所有费用：产品成本 + 国内货代 + 国际运费 + 目的地关税及当地税费。',
-    explanationEn:'DDP = Delivered Duty Paid — door-to-door pricing including all costs: product + domestic forwarder + international freight + destination duties and local taxes.' },
-
-  { id:'q017', chapterId:'ch09', type:'single', difficulty:'easy',
-    questionZh:'"Dip-tube" 中文是？',
-    questionEn:'What is the Chinese term for "Dip-tube"?',
-    options:[{zh:'喷嘴',en:'Nozzle'},{zh:'弹簧',en:'Spring'},{zh:'导管（吸管）',en:'Dip-tube (导管)'},{zh:'密封圈',en:'Gasket'}],
-    answer:2,
-    explanationZh:'Dip-tube = 导管（吸管），是伸入瓶底吸取香水液体的细管。',
-    explanationEn:'Dip-tube = 导管，the thin tube extending into the bottle bottom to draw out perfume liquid.' },
-
-  { id:'q018', chapterId:'ch09', type:'single', difficulty:'easy',
-    questionZh:'"Frosting" 对应的中文工艺是？',
-    questionEn:'What is the Chinese term for "Frosting"?',
-    options:[{zh:'烫金',en:'Hot Stamping'},{zh:'植绒',en:'Flocking'},{zh:'蒙沙/喷沙',en:'Frosting (蒙沙)'},{zh:'丝印',en:'Silk Screen'}],
-    answer:2,
-    explanationZh:'Frosting / Frosted = 蒙沙，产生磨砂质感，低调奢华，欧美市场常见。',
-    explanationEn:'Frosting = 蒙沙 — creates a matte texture, understated luxury, common in European and US markets.' },
-
-  { id:'q019', chapterId:'ch03', type:'single', difficulty:'hard',
-    questionZh:'玻璃瓶 A 结构和 B 结构的主要区别是？',
-    questionEn:'What is the main difference between bottle Structure A and Structure B?',
-    options:[
-      {zh:'A 结构有盖子，B 结构没有盖子',en:'Type A has a cap, Type B does not'},
-      {zh:'A 结构带肩套和铝牌，B 结构带中套',en:'Type A has shoulder + plate, Type B has collar'},
-      {zh:'A 结构用于圆瓶，B 结构用于方瓶',en:'Type A for round bottles, Type B for square bottles'},
-      {zh:'A 结构更贵，B 结构更便宜',en:'Type A is more expensive, Type B is cheaper'}
-    ], answer:1,
-    explanationZh:'A 结构：盖子 + 喷头 + 肩套（Shoulder）+ 瓶子 + 铝牌，中东风格常见。B 结构：盖子 + 喷头 + 中套（Collar）+ 瓶子，欧美风格常见。',
-    explanationEn:'Type A: Cap + Pump + Shoulder + Bottle + Name Plate (common in Middle East style). Type B: Cap + Pump + Collar + Bottle (common in European/US style).' },
-
-  { id:'q020', chapterId:'ch08', type:'single', difficulty:'medium',
-    questionZh:'中套定制颜色的 MOQ 是多少？',
-    questionEn:'What is the MOQ for custom-color collars?',
-    options:[
-      {zh:'5,000 pcs',en:'5,000 pcs'},
-      {zh:'10,000 pcs',en:'10,000 pcs'},
-      {zh:'20,000 pcs',en:'20,000 pcs'},
-      {zh:'30,000 pcs',en:'30,000 pcs'}
-    ], answer:3,
-    explanationZh:'中套标准金/银色 MOQ 为 10,000 pcs；完全定制颜色 MOQ 更高，为 30,000 pcs。',
-    explanationEn:'Collar standard gold/silver MOQ is 10,000 pcs; fully custom color MOQ is higher at 30,000 pcs.' },
-
-  // ── CH01 补充题 ───────────────────────────────────────
-  { id:'q021', chapterId:'ch01', type:'single', difficulty:'easy',
-    questionZh:'菲利包装的价格定位是？',
-    questionEn:'How is Fonli Packaging positioned in terms of pricing?',
-    options:[
-      {zh:'低价大众市场',en:'Low-price mass market'},
-      {zh:'中高端，强调设计与工艺价值，非价格战',en:'Mid-to-high end, emphasizing design & craft value, not price war'},
-      {zh:'超奢侈品专用',en:'Ultra-luxury only'},
-      {zh:'只服务国内品牌',en:'Domestic brands only'}
-    ], answer:1,
-    explanationZh:'菲利包装定位中高端，核心竞争力在于设计能力与工艺水平，而非低价竞争。',
-    explanationEn:'Fonli Packaging is positioned mid-to-high end. Core competitiveness lies in design capability and craftsmanship, not price competition.' },
-
-  { id:'q022', chapterId:'ch01', type:'single', difficulty:'easy',
-    questionZh:'菲利包装的主要目标市场包括？',
-    questionEn:'Which markets does Fonli Packaging primarily target?',
-    options:[
-      {zh:'仅中国国内市场',en:'China domestic market only'},
-      {zh:'欧洲、美国、中东、亚洲',en:'Europe, USA, Middle East, Asia'},
-      {zh:'仅欧洲和北美',en:'Europe and North America only'},
-      {zh:'仅东南亚',en:'Southeast Asia only'}
-    ], answer:1,
-    explanationZh:'菲利包装的主要目标市场为欧洲、美国、中东和亚洲，覆盖全球高端香水市场。',
-    explanationEn:'Fonli\'s primary target markets are Europe, USA, Middle East, and Asia — covering global premium perfume markets.' },
-
-  // ── CH02 补充题 ───────────────────────────────────────
-  { id:'q023', chapterId:'ch02', type:'single', difficulty:'easy',
-    questionZh:'定制项目流程共分几个步骤？',
-    questionEn:'How many steps are there in the custom project process?',
-    options:[
-      {zh:'4步',en:'4 steps'},
-      {zh:'5步',en:'5 steps'},
-      {zh:'6步',en:'6 steps'},
-      {zh:'8步',en:'8 steps'}
-    ], answer:2,
-    explanationZh:'定制流程共6步：01设计构思 → 02原型渲染 → 03 3D打样 → 04报价确认 → 05模具与样品 → 06大货生产。',
-    explanationEn:'The custom process has 6 steps: 01 Design Brief → 02 Prototype Rendering → 03 3D Mockup → 04 Cost & Quotation → 05 Mould & Sample → 06 Mass Production.' },
-
-  { id:'q024', chapterId:'ch02', type:'single', difficulty:'easy',
-    questionZh:'"模具开制与样品确认"是定制流程的第几步？',
-    questionEn:'"Mould & Sample Confirmation" is which step of the custom process?',
-    options:[{zh:'第3步',en:'Step 3'},{zh:'第4步',en:'Step 4'},{zh:'第5步',en:'Step 5'},{zh:'第6步',en:'Step 6'}],
-    answer:2,
-    explanationZh:'第5步是模具开制与样品确认。大货生产前必须完成此步骤并获得客户书面确认。',
-    explanationEn:'Step 5 is Mould & Sample Confirmation. This must be completed with written client approval before mass production.' },
-
-  { id:'q025', chapterId:'ch02', type:'single', difficulty:'medium',
-    questionZh:'定制流程第一步"设计构思/客户简报"最重要的收集内容是？',
-    questionEn:'In Step 1 "Design Brief", what is the most important information to collect?',
-    options:[
-      {zh:'客户的手机号码',en:'Client\'s phone number'},
-      {zh:'品牌风格、目标市场、容量、预算等需求信息',en:'Brand style, target market, volume, budget and other requirements'},
-      {zh:'客户过去合作的工厂名单',en:'List of client\'s past supplier factories'},
-      {zh:'竞争对手的产品价格',en:'Competitor product prices'}
-    ], answer:1,
-    explanationZh:'设计简报阶段需收集：品牌调性、目标市场、容量规格、预算范围、时间节点等关键需求，才能准确报价和设计。',
-    explanationEn:'Design brief stage: collect brand style, target market, volume specs, budget range, timeline — key info for accurate quotation and design.' },
-
-  { id:'q026', chapterId:'ch02', type:'single', difficulty:'medium',
-    questionZh:'"公模现货"和"私模定制"最大的区别是？',
-    questionEn:'What is the biggest difference between "stock mold" and "custom private mold"?',
-    options:[
-      {zh:'公模颜色更多',en:'Stock mold has more colors'},
-      {zh:'私模需要开模费用和更高 MOQ，但外形完全专属',en:'Private mold requires tooling fee and higher MOQ, but shape is fully exclusive'},
-      {zh:'公模只能做圆瓶',en:'Stock mold is only for round bottles'},
-      {zh:'私模交期更短',en:'Private mold has shorter lead time'}
-    ], answer:1,
-    explanationZh:'私模（定制开模）需支付一次性开模费，MOQ 通常为 20,000–30,000 pcs，但瓶型完全属于客户专属。公模现货 MOQ 低（10,000 pcs），但瓶型与其他品牌共用。',
-    explanationEn:'Private mold requires one-time tooling fee, MOQ 20,000–30,000 pcs, but the shape is fully exclusive to the client. Stock mold has lower MOQ (10,000 pcs) but shared shapes.' },
-
-  { id:'q027', chapterId:'ch02', type:'single', difficulty:'hard',
-    questionZh:'客户要求"大货与样品完全一致"，以下哪项操作最重要？',
-    questionEn:'A client requires "mass production to exactly match the approved sample." Which action is most critical?',
-    options:[
-      {zh:'提高报价',en:'Increase the quotation'},
-      {zh:'要求客户提供更多图片',en:'Ask the client for more photos'},
-      {zh:'在样品确认单上注明关键参数并获取客户书面签字',en:'Note key parameters on sample approval form and get client written sign-off'},
-      {zh:'加快大货生产速度',en:'Speed up mass production'}
-    ], answer:2,
-    explanationZh:'样品确认单需包含关键参数（颜色、工艺、尺寸、重量），客户书面确认后，大货按此标准执行，有争议时有据可查。',
-    explanationEn:'Sample approval form must include key specs (color, finish, dimensions, weight). Written client sign-off is essential — it becomes the binding standard for mass production.' },
-
-  // ── CH04 补充题 ───────────────────────────────────────
-  { id:'q028', chapterId:'ch04', type:'single', difficulty:'easy',
-    questionZh:'PP（聚丙烯）盖主要适用于什么场景？',
-    questionEn:'PP (Polypropylene) caps are most suitable for which scenario?',
-    options:[
-      {zh:'超高端奢侈品',en:'Ultra-luxury products'},
-      {zh:'成本敏感/大批量/日化类产品',en:'Cost-sensitive / high-volume / daily cosmetic products'},
-      {zh:'中东礼品装',en:'Middle East gift sets'},
-      {zh:'欧美小众香水',en:'European niche perfumery'}
-    ], answer:1,
-    explanationZh:'PP 盖成本低、工艺简单，适合大批量日化产品。高端香水通常选用 Zamak、Surlyn 或木盖。',
-    explanationEn:'PP caps are low-cost and simple to produce, ideal for high-volume daily cosmetics. Premium perfumes typically use Zamak, Surlyn, or wood caps.' },
-
-  { id:'q029', chapterId:'ch04', type:'single', difficulty:'medium',
-    questionZh:'Surlyn（沙林）盖的最大优势是？',
-    questionEn:'What is the biggest advantage of Surlyn caps?',
-    options:[
-      {zh:'重量感强，代表高端质感',en:'Heavy weight, representing premium quality'},
-      {zh:'透明度高，可做渐变色/内嵌装饰，欧美市场常见',en:'High transparency, can do gradient colors/inlay, popular in European/US market'},
-      {zh:'价格最低，适合低端市场',en:'Lowest cost, for budget market'},
-      {zh:'防水性最好',en:'Best waterproof performance'}
-    ], answer:1,
-    explanationZh:'Surlyn（杜邦沙林树脂）透明感好，可做渐变色和内嵌装饰效果，是欧美市场中高端香水的常见选择。',
-    explanationEn:'Surlyn (DuPont resin) offers excellent transparency, gradient colors, and inlay decoration — a popular choice for mid-to-high end European/US perfume brands.' },
-
-  { id:'q030', chapterId:'ch04', type:'single', difficulty:'medium',
-    questionZh:'木盖（Wood Cap）最常搭配哪类市场产品？',
-    questionEn:'Wood caps are most commonly used with which type of market product?',
-    options:[
-      {zh:'低价日用品',en:'Low-price daily-use products'},
-      {zh:'天然/有机/东方风格高端香水',en:'Natural / organic / oriental-style premium perfume'},
-      {zh:'运动类香水',en:'Sports fragrance'},
-      {zh:'儿童香水',en:'Children\'s fragrance'}
-    ], answer:1,
-    explanationZh:'木盖给人天然、有机、东方美学的感觉，常用于天然香氛或东方风格的高端香水产品。',
-    explanationEn:'Wood caps convey a natural, organic, oriental aesthetic — commonly used for natural fragrance or oriental-style premium perfume products.' },
-
-  // ── CH05 补充题 ───────────────────────────────────────
-  { id:'q031', chapterId:'ch05', type:'single', difficulty:'easy',
-    questionZh:'中套（Collar）安装在瓶子的哪个部位？',
-    questionEn:'Where is a Collar installed on the perfume bottle?',
-    options:[
-      {zh:'瓶底',en:'Bottle bottom'},
-      {zh:'瓶身正面',en:'Bottle front'},
-      {zh:'瓶口连接喷头与瓶身之间',en:'Between the pump and the bottle neck'},
-      {zh:'瓶盖内部',en:'Inside the cap'}
-    ], answer:2,
-    explanationZh:'中套（Collar）套在瓶口处，连接喷头与瓶身，起到美化连接处、遮盖喷头底部金属件的作用。',
-    explanationEn:'The Collar fits around the bottle neck, connecting the pump to the bottle body, concealing the pump base and beautifying the transition area.' },
-
-  { id:'q032', chapterId:'ch05', type:'single', difficulty:'medium',
-    questionZh:'喷头的标准出液量（Dosage）通常是多少？',
-    questionEn:'What is the standard dosage (output per actuation) for a spray pump?',
-    options:[
-      {zh:'0.05 ml/次',en:'0.05 ml per press'},
-      {zh:'0.10–0.12 ml/次',en:'0.10–0.12 ml per press'},
-      {zh:'0.50 ml/次',en:'0.50 ml per press'},
-      {zh:'1.00 ml/次',en:'1.00 ml per press'}
-    ], answer:1,
-    explanationZh:'标准香水喷头出液量为 0.10–0.12 ml/次，若客户有特殊需求（如旅行装节省用量）可定制更低出液量。',
-    explanationEn:'Standard perfume pump dosage is 0.10–0.12 ml per actuation. Custom lower dosage is possible for travel size or economical use cases.' },
-
-  { id:'q033', chapterId:'ch05', type:'single', difficulty:'hard',
-    questionZh:'真空泵（Airless Pump）与普通喷泵的主要区别是？',
-    questionEn:'What is the main difference between an Airless Pump and a standard spray pump?',
-    options:[
-      {zh:'真空泵只能用于玻璃瓶',en:'Airless pumps can only be used with glass bottles'},
-      {zh:'真空泵完全隔绝空气，防止内容物氧化变质',en:'Airless pumps completely isolate contents from air, preventing oxidation'},
-      {zh:'真空泵出液量更大',en:'Airless pumps dispense more per press'},
-      {zh:'两者没有区别',en:'There is no difference between them'}
-    ], answer:1,
-    explanationZh:'真空泵通过活塞结构使内容物与空气完全隔绝，防止氧化变质，适合高端精华类护肤品或需要长保质期的产品。',
-    explanationEn:'Airless pumps use a piston mechanism to fully isolate contents from air, preventing oxidation — ideal for premium serums or products requiring long shelf life.' },
-
-  // ── CH06 补充题（全新，原来为0题）──────────────────────
-  { id:'q034', chapterId:'ch06', type:'single', difficulty:'easy',
-    questionZh:'香水铝牌（Name Plate）通常安装在瓶子的哪个位置？',
-    questionEn:'Where is a perfume Name Plate typically installed?',
-    options:[
-      {zh:'瓶盖顶部',en:'Top of the cap'},
-      {zh:'瓶子正面瓶身',en:'Front of the bottle body'},
-      {zh:'瓶底',en:'Bottom of the bottle'},
-      {zh:'喷头上方',en:'Above the pump'}
-    ], answer:1,
-    explanationZh:'香水铝牌（Name Plate）通常粘贴或嵌入在瓶子正面，展示品牌名称、Logo 或装饰图案。',
-    explanationEn:'Perfume name plates are typically adhered or inlaid on the front of the bottle, displaying the brand name, logo, or decorative pattern.' },
-
-  { id:'q035', chapterId:'ch06', type:'single', difficulty:'easy',
-    questionZh:'铝牌最常见的表面工艺是？',
-    questionEn:'What are the most common surface treatments for name plates?',
-    options:[
-      {zh:'喷涂 + 磨沙',en:'Spray coating + frosting'},
-      {zh:'丝印（Silk Screen）、激光雕刻（Laser Engraving）、电镀（Plating）',en:'Silk Screen, Laser Engraving, Plating'},
-      {zh:'植绒 + 烤漆',en:'Flocking + baking varnish'},
-      {zh:'UV打印 + 转印',en:'UV printing + transfer'}
-    ], answer:1,
-    explanationZh:'铝牌常见工艺：丝印（印刷品牌文字/图案）、激光雕刻（精细Logo刻线）、电镀（金银色调）。可组合使用。',
-    explanationEn:'Name plate common processes: Silk Screen (print brand text/pattern), Laser Engraving (fine logo lines), Plating (gold/silver tones) — can be combined.' },
-
-  { id:'q036', chapterId:'ch06', type:'single', difficulty:'medium',
-    questionZh:'"激光雕刻"（Laser Engraving）工艺的特点是？',
-    questionEn:'What are the characteristics of the Laser Engraving process?',
-    options:[
-      {zh:'只能做直线图案',en:'Can only create straight-line patterns'},
-      {zh:'精度高，无需油墨，适合精细 Logo 和文字',en:'High precision, no ink required, ideal for detailed logos and text'},
-      {zh:'成本最低，适合大批量',en:'Lowest cost, ideal for large volumes'},
-      {zh:'必须配合喷涂才能显色',en:'Must be combined with spray coating to show color'}
-    ], answer:1,
-    explanationZh:'激光雕刻通过激光束直接在铝牌表面刻出图案，精度极高，无油墨脱落风险，适合品牌 Logo、精细纹样。',
-    explanationEn:'Laser engraving uses a laser beam to directly etch patterns on the plate surface — ultra-high precision, no ink to fade, ideal for brand logos and fine patterns.' },
-
-  { id:'q037', chapterId:'ch06', type:'single', difficulty:'medium',
-    questionZh:'铝牌的标准打样周期通常是多少天？',
-    questionEn:'What is the standard sampling lead time for name plates?',
-    options:[
-      {zh:'1–3 天',en:'1–3 days'},
-      {zh:'7–14 天',en:'7–14 days'},
-      {zh:'30–45 天',en:'30–45 days'},
-      {zh:'60 天以上',en:'60+ days'}
-    ], answer:1,
-    explanationZh:'铝牌打样周期通常为 7–14 天，含图稿确认、制版和样品制作。复杂工艺（如多色丝印+激光）可能更长。',
-    explanationEn:'Name plate sampling typically takes 7–14 days, including artwork confirmation, plate making, and sample production. Complex processes (multi-color + laser) may take longer.' },
-
-  { id:'q038', chapterId:'ch06', type:'single', difficulty:'hard',
-    questionZh:'以下哪种情况需要重新开版（制版）？',
-    questionEn:'Which situation requires creating a new printing plate?',
-    options:[
-      {zh:'客户只改变了订购数量',en:'Client only changes the order quantity'},
-      {zh:'客户更换了付款方式',en:'Client changes the payment method'},
-      {zh:'客户修改了 Logo 字体或图案内容',en:'Client modifies the logo font or pattern content'},
-      {zh:'客户提前了交期',en:'Client moves up the delivery date'}
-    ], answer:2,
-    explanationZh:'丝印版（制版）与图案内容直接绑定。任何字体、图案、颜色的修改都需要重新制版，会产生额外费用和时间。',
-    explanationEn:'Silk screen plates are directly tied to the artwork content. Any change to font, pattern, or color requires a new plate, incurring additional cost and time.' },
-
-  // ── CH07 补充题 ───────────────────────────────────────
-  { id:'q039', chapterId:'ch07', type:'single', difficulty:'easy',
-    questionZh:'精品硬盒（Rigid Box）和折叠卡盒（Folding Box）的主要区别是？',
-    questionEn:'What is the main difference between a Rigid Box and a Folding Box?',
-    options:[
-      {zh:'精品盒有盖子，折叠盒没有',en:'Rigid box has a lid, folding box does not'},
-      {zh:'精品盒有硬质板材衬里，不可折叠；折叠卡盒轻薄可折叠运输',en:'Rigid box has stiff board lining, cannot fold; Folding box is lightweight and foldable for shipping'},
-      {zh:'精品盒只能做黑色',en:'Rigid box can only be black'},
-      {zh:'折叠盒不可印刷',en:'Folding box cannot be printed'}
-    ], answer:1,
-    explanationZh:'精品硬盒（Rigid Box）内含硬质灰板，结构稳固、档次高，不可折叠。折叠卡盒成本低，可平铺运输节省物流费用。',
-    explanationEn:'Rigid box has a stiff greyboard interior — sturdy, premium, non-collapsible. Folding box is lower cost and ships flat, saving on freight.' },
-
-  { id:'q040', chapterId:'ch07', type:'single', difficulty:'easy',
-    questionZh:'抽屉盒（Drawer Box）的主要特点是？',
-    questionEn:'What is the key characteristic of a Drawer Box?',
-    options:[
-      {zh:'成本最低，适合大批量零售',en:'Lowest cost, suitable for high-volume retail'},
-      {zh:'开合体验独特，适合礼盒套装，提升品牌感',en:'Unique opening experience, ideal for gift sets, enhances brand feel'},
-      {zh:'不能加内托',en:'Cannot include inner tray'},
-      {zh:'只适合圆形产品',en:'Only suitable for round products'}
-    ], answer:1,
-    explanationZh:'抽屉盒采用推拉设计，开合体验感强，适合礼品套装，能有效提升品牌档次和馈赠仪式感。',
-    explanationEn:'Drawer box uses a push-pull design with a distinctive opening experience — ideal for gift sets, effectively elevating brand prestige and gifting ritual.' },
-
-  { id:'q041', chapterId:'ch07', type:'single', difficulty:'medium',
-    questionZh:'香水外盒通常需要印刷哪些法规要求信息？',
-    questionEn:'What regulatory information is typically required on a perfume outer box?',
-    options:[
-      {zh:'仅品牌名称',en:'Brand name only'},
-      {zh:'品牌名、容量（ml/oz）、成分表、条形码、原产地',en:'Brand name, volume (ml/oz), ingredient list, barcode, country of origin'},
-      {zh:'只需印制价格',en:'Price only'},
-      {zh:'生产工厂地址即可',en:'Factory address only'}
-    ], answer:1,
-    explanationZh:'各国法规要求香水外盒须包含：品牌名、净含量（ml/oz）、成分表（INCI）、条形码、原产地、批次号等信息。',
-    explanationEn:'Regulations require perfume boxes to include: brand name, net content (ml/oz), ingredient list (INCI), barcode, country of origin, batch number, etc.' },
-
-  { id:'q042', chapterId:'ch07', type:'single', difficulty:'hard',
-    questionZh:'外盒内托（Insert）最常见的材质是？',
-    questionEn:'What is the most common material for box inserts (inner tray)?',
-    options:[
-      {zh:'金属铝片',en:'Aluminum sheet'},
-      {zh:'EVA泡棉 / 植绒内托 / 纸板内托',en:'EVA foam / flocked tray / paperboard tray'},
-      {zh:'玻璃纤维',en:'Fiberglass'},
-      {zh:'硅胶',en:'Silicone'}
-    ], answer:1,
-    explanationZh:'外盒内托常见材质：EVA 泡棉（保护性好）、植绒内托（高档感）、纸板内托（成本低）。根据产品定位和预算选择。',
-    explanationEn:'Common insert materials: EVA foam (good protection), flocked tray (premium feel), paperboard tray (low cost). Choice depends on product positioning and budget.' },
-
-  // ── CH08 补充题 ───────────────────────────────────────
-  { id:'q043', chapterId:'ch08', type:'single', difficulty:'medium',
-    questionZh:'"FOB" 报价包含哪些内容？',
-    questionEn:'What does an "FOB" quotation include?',
-    options:[
-      {zh:'仅产品成本',en:'Product cost only'},
-      {zh:'产品 + 国内货代 + 至出口港装船费，不含国际运费',en:'Product + domestic forwarder + loading at export port, excludes international freight'},
-      {zh:'全包：产品 + 国际运费 + 目的地关税',en:'All-inclusive: product + international freight + destination duties'},
-      {zh:'产品 + 国际运费，不含关税',en:'Product + international freight, excluding duties'}
-    ], answer:1,
-    explanationZh:'FOB（Free On Board）= 产品成本 + 国内货代费 + 出口港装船费。国际运费和目的地费用由买方承担。',
-    explanationEn:'FOB (Free On Board) = product cost + domestic forwarder + loading at export port. International freight and destination costs are the buyer\'s responsibility.' },
-
-  // ── CH09 补充题 ───────────────────────────────────────
-  { id:'q044', chapterId:'ch09', type:'single', difficulty:'easy',
-    questionZh:'"MOQ" 的全称是什么？',
-    questionEn:'What does "MOQ" stand for?',
-    options:[
-      {zh:'Maximum Order Quantity（最大订购量）',en:'Maximum Order Quantity'},
-      {zh:'Minimum Order Quantity（最低起订量）',en:'Minimum Order Quantity'},
-      {zh:'Monthly Order Quota（月度订单配额）',en:'Monthly Order Quota'},
-      {zh:'Multiple Order Quantity（倍数起订量）',en:'Multiple Order Quantity'}
-    ], answer:1,
-    explanationZh:'MOQ = Minimum Order Quantity（最低起订量），是供应商接受单次订单的最小数量。',
-    explanationEn:'MOQ = Minimum Order Quantity — the minimum number of units a supplier will accept in a single order.' },
-
-  { id:'q045', chapterId:'ch09', type:'single', difficulty:'easy',
-    questionZh:'"Zamak" 中文是什么？',
-    questionEn:'What is the Chinese term for "Zamak"?',
-    options:[
-      {zh:'铝合金',en:'Aluminum alloy'},
-      {zh:'不锈钢',en:'Stainless steel'},
-      {zh:'锌合金',en:'Zinc alloy'},
-      {zh:'铜合金',en:'Copper alloy'}
-    ], answer:2,
-    explanationZh:'Zamak 是锌合金（Zinc Alloy）的商品名，常用于制作高档香水盖，重量感好，电镀效果出色。',
-    explanationEn:'Zamak is the trade name for Zinc Alloy, commonly used for premium perfume caps — excellent weight feel and plating quality.' },
-
-  { id:'q046', chapterId:'ch09', type:'single', difficulty:'medium',
-    questionZh:'"Crimp" 和 "Screw" 分别对应什么结构？',
-    questionEn:'What structures do "Crimp" and "Screw" refer to?',
-    options:[
-      {zh:'Crimp = 压制瓶盖；Screw = 螺旋瓶盖',en:'Crimp = press-on cap; Screw = screw cap'},
-      {zh:'Crimp = 卡口（压接）封口；Screw = 螺口封口',en:'Crimp = crimp-sealed neck; Screw = screw-thread neck'},
-      {zh:'两者都指喷头类型',en:'Both refer to pump types'},
-      {zh:'Crimp = 进口材料；Screw = 国产材料',en:'Crimp = imported; Screw = domestic'}
-    ], answer:1,
-    explanationZh:'Crimp（卡口）指用机器压接固定喷头的封口方式；Screw（螺口）指喷头与瓶口通过螺纹连接。两者不可互换，下单前必须与客户确认。',
-    explanationEn:'Crimp = machine-crimped pump seal; Screw = thread-connected pump neck. They are NOT interchangeable — always confirm with client before ordering.' },
-
-  { id:'q047', chapterId:'ch09', type:'single', difficulty:'medium',
-    questionZh:'"OEM" 和 "ODM" 的区别是？',
-    questionEn:'What is the difference between "OEM" and "ODM"?',
-    options:[
-      {zh:'两者完全相同，可以互换使用',en:'They are identical and interchangeable'},
-      {zh:'OEM = 按客户设计生产；ODM = 由供应商提供设计并生产',en:'OEM = manufacture per client design; ODM = supplier provides design + manufacture'},
-      {zh:'OEM 比 ODM 更贵',en:'OEM is more expensive than ODM'},
-      {zh:'ODM 不能使用客户品牌',en:'ODM cannot use the client\'s brand'}
-    ], answer:1,
-    explanationZh:'OEM（原始设备制造）：按客户提供的设计和规格生产，贴客户品牌。ODM（原始设计制造）：供应商自主设计，客户选择方案后贴自己品牌。',
-    explanationEn:'OEM: manufacture products per client\'s design/specs, with client\'s branding. ODM: supplier provides their own design, client selects and applies their own brand.' }
 ];
