@@ -156,12 +156,10 @@ function shuffle(arr) {
   return a;
 }
 
-// Build question set for a single chapter quiz
+// Build question set for a single chapter quiz (in original order, all questions)
 function buildChapterQuizSet(chapterId) {
-  const pool = (typeof QUESTIONS !== 'undefined' ? QUESTIONS : [])
+  return (typeof QUESTIONS !== 'undefined' ? QUESTIONS : [])
     .filter(q => q.chapterId === chapterId);
-  const shuffled = shuffle(pool);
-  return shuffled.slice(0, EXAM_CONFIG.quiz.questionsPerChapter);
 }
 
 // Build mock exam question set (evenly distributed across chapters)
