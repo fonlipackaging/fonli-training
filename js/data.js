@@ -1,11 +1,6 @@
-// ═══════════════════════════════════════════════════════
-//  FONLI TRAINING SYSTEM — Knowledge Base
-//  Source: DOC-001 香水包装产品知识手册 V3.0  (2026.07.04)
-// ═══════════════════════════════════════════════════════
 
 const CHAPTERS = [
 
-// ── CH01 ─────────────────────────────────────────────
 {
   id: 'ch01', order: 1,
   titleZh: '关于菲利包装', titleEn: 'About Fonli Packaging',
@@ -79,7 +74,6 @@ const CHAPTERS = [
   ]
 },
 
-// ── CH02 ─────────────────────────────────────────────
 {
   id: 'ch02', order: 2,
   titleZh: '定制项目流程', titleEn: 'Custom Project Process',
@@ -138,7 +132,6 @@ const CHAPTERS = [
   ]
 },
 
-// ── CH03 ─────────────────────────────────────────────
 {
   id: 'ch03', order: 3,
   titleZh: '玻璃瓶', titleEn: 'Glass Bottle',
@@ -349,7 +342,6 @@ const CHAPTERS = [
   ]
 },
 
-// ── CH04 ─────────────────────────────────────────────
 {
   id: 'ch04', order: 4,
   titleZh: '香水盖', titleEn: 'Perfume Cap',
@@ -428,7 +420,6 @@ const CHAPTERS = [
   ]
 },
 
-// ── CH05 ─────────────────────────────────────────────
 {
   id: 'ch05', order: 5,
   titleZh: '喷头', titleEn: 'Spray Pump',
@@ -515,7 +506,6 @@ const CHAPTERS = [
   ]
 },
 
-// ── CH06 ─────────────────────────────────────────────
 {
   id: 'ch06', order: 6,
   titleZh: '中套', titleEn: 'Collar / Ring',
@@ -555,7 +545,6 @@ const CHAPTERS = [
   ]
 },
 
-// ── CH07 ─────────────────────────────────────────────
 {
   id: 'ch07', order: 7,
   titleZh: '香水标牌', titleEn: 'Name Plate',
@@ -667,7 +656,6 @@ const CHAPTERS = [
   ]
 },
 
-// ── CH08 ─────────────────────────────────────────────
 {
   id: 'ch08', order: 8,
   titleZh: '香水盒', titleEn: 'Perfume Box',
@@ -731,7 +719,6 @@ const CHAPTERS = [
   ]
 },
 
-// ── CH09 ─────────────────────────────────────────────
 {
   id: 'ch09', order: 9,
   titleZh: '业务规则与词汇手册', titleEn: 'Business Rules & Glossary',
@@ -1576,10 +1563,8 @@ const CHAPTERS = [
 
 ];
 
-// ── QUESTION BANK (interim - to be replaced after V3 approval) ──
 const QUESTIONS = [
 
-  // ── CH10: 扩展双语词汇 ──
   {
     id: 'q_ch10_01', chapterId: 'ch10', type: 'single', difficulty: 'easy',
     questionZh: '"Zamac Cap" 对应的中文是什么？',
@@ -1701,7 +1686,6 @@ const QUESTIONS = [
     explanationEn: 'FEA 13/15/18/20 are European standard crimp neck diameters in millimeters — FEA 15 means 15mm crimp neck.'
   },
 
-  // ── CH11: 销售SOP ──
   {
     id: 'q_ch11_01', chapterId: 'ch11', type: 'single', difficulty: 'easy',
     questionZh: '菲利包装的核心定位是什么？',
@@ -1803,7 +1787,6 @@ const QUESTIONS = [
     explanationEn: 'True. These are the 3 standard weekly report items to keep management informed on team progress.'
   },
 
-  // ── CH12: FAQ ──
   {
     id: 'q_ch12_01', chapterId: 'ch12', type: 'single', difficulty: 'easy',
     questionZh: '第一次联系新客户时，应该主动要求对方提供 LOGO 吗？',
@@ -1906,7 +1889,6 @@ const QUESTIONS = [
   }
 ,
 
-  // ── CH13: 金属产品重量计算（附录E）──
   {
     id: 'q_ch13_01', chapterId: 'ch13', type: 'single', difficulty: 'easy',
     questionZh: '铝（Aluminium）的密度是多少 g/cm³？',
@@ -1978,7 +1960,6 @@ const QUESTIONS = [
     explanationEn: 'True. Zamac density (6.8) is ~2.4× that of aluminium (2.79), so same-size Zamac is significantly heavier.'
   },
 
-  // ── CH14: 付款方式与报价类型（附录F+G）──
   {
     id: 'q_ch14_01', chapterId: 'ch14', type: 'single', difficulty: 'easy',
     questionZh: '公司接受哪几种付款方式？',
@@ -2070,7 +2051,6 @@ const QUESTIONS = [
     explanationEn: 'False. PayPal fees (4.5%) are charged to the receiver (us), so they must be included in the quote to avoid losses.'
   },
 
-  // ── CH15: 客户成单12步流程（附录H）──
   {
     id: 'q_ch15_01', chapterId: 'ch15', type: 'single', difficulty: 'easy',
     questionZh: '客户成单标准流程共有几个步骤？',
