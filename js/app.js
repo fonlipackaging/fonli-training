@@ -42,6 +42,9 @@ auth.onAuthStateChanged(async user => {
   initSidebar();
   navigate('dashboard');
   applyI18n();
+  // Hide loading screen now that app is ready
+  const ld = document.getElementById('appLoading');
+  if (ld) ld.style.display = 'none';
 });
 
 // ── Load chapters from Firestore (with data.js fallback) ─
