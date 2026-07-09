@@ -402,17 +402,15 @@ function renderQuizChapterList() {
     var score   = scores[ch.id];
     var qCount  = allQs.filter(function(q){ return q.chapterId === ch.id; }).length;
     var hasQ    = qCount > 0;
-    var dispQ   = Math.min(qCount, 5);
-
     var metaText;
     if (!isAvail) {
       metaText = t('请先完成本章学习', 'Complete chapter first');
     } else if (!hasQ) {
       metaText = t('题目筹备中…', 'Questions coming soon…');
     } else if (score !== undefined) {
-      metaText = t('上次','Last') + ': ' + score + t('分','pts') + ' | ' + dispQ + t('题','Q');
+      metaText = t('上次','Last') + ': ' + score + t('分','pts') + ' | ' + qCount + t('题','Q');
     } else {
-      metaText = dispQ + t('题，立即答题','Q, start now');
+      metaText = qCount + t('题，顺序作答','Q, answer in order');
     }
 
     var clickable = isAvail && hasQ;
