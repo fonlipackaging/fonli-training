@@ -49,11 +49,15 @@ async function loadChapters() {
   try {
     const snap = await db.collection('chapters').orderBy('order').get();
     if (!snap.empty) {
-      appChapters = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      const fsChapters = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      // Only use Firestore data if chapters have valid content
+      const valid = fsChapters.filter(c => c.titleZh && Array.isArray(c.sections));
+      appChapters = valid.length > 0 ? valid : CHAPTERS;
     } else {
-      appChapters = CHAPTERS; // fallback: static data in data.js
+      appChapters = CHAPTERS; // Firestore empty → use static data.js
     }
   } catch(e) {
+    console.warn('Firestore chapters load failed, using static data:', e);
     appChapters = CHAPTERS;  // fallback on error
   }
 }
@@ -196,17 +200,23 @@ function renderDashboard() {
 // ── Learn ─────────────────────────────────────────────
 function renderLearnList() {
   const done = userProgress.completedChapters || [];
+  if (!appChapters || appChapters.length === 0) {
+    document.getElementById('chapterList').innerHTML =
+      `<div class="alert alert-info">${t('章节加载中，请稍候或刷新页面…','Loading chapters, please wait or refresh…')}</div>`;
+    return;
+  }
   let html = '';
   appChapters.forEach((ch, i) => {
     const isComplete = done.includes(ch.id);
     const isLocked   = i > 0 && !done.includes(appChapters[i-1].id);
+    const secCount   = (ch.sections || []).length;
     html += `
       <div class="chapter-item ${isComplete ? 'completed' : ''} ${isLocked ? 'locked' : ''}"
            onclick="${isLocked ? '' : `openChapter('${ch.id}')`}">
         <div class="chapter-num">${ch.order}</div>
         <div class="chapter-info">
           <div class="chapter-title">${getLang()==='zh' ? ch.titleZh : ch.titleEn}</div>
-          <div class="chapter-meta">${ch.sections.length} ${t('节','sections')} · ${t('约','~')}${ch.estimatedMinutes}${t('分钟','min')}</div>
+          <div class="chapter-meta">${secCount} ${t('节','sections')} · ${t('约','~')}${ch.estimatedMinutes}${t('分钟','min')}</div>
         </div>
         <div class="chapter-status">${isComplete ? '✅' : (isLocked ? '🔒' : '📖')}</div>
       </div>`;
