@@ -393,28 +393,44 @@ function navigateChapter(dir) {
 
 // ── Chapter Quiz ──────────────────────────────────────
 function renderQuizChapterList() {
-  const done  = userProgress.completedChapters || [];
+  const done   = userProgress.completedChapters || [];
   const scores = userProgress.quizScores || {};
+  const allQs  = typeof QUESTIONS !== 'undefined' ? QUESTIONS : [];
   let html = '';
   appChapters.forEach(ch => {
-    const isAvail = done.includes(ch.id);
-    const score   = scores[ch.id];
+    const isAvail  = done.includes(ch.id);
+    const score    = scores[ch.id];
+    const qCount   = allQs.filter(q => q.chapterId === ch.id).length;
+    const hasQ     = qCount > 0;
+    const metaText = !isAvail
+      ? t('请先完成本章学习', 'Complete chapter first')
+      : !hasQ
+        ? t('题目筹备中…', 'Questions coming soon…')
+        : score !== undefined
+          ? `${t('上次','Last')}: ${score}${t('分','pts')} | ${Math.min(qCount, 5)}${t('题','Q')}`
+          : `${Math.min(qCount, 5)}${t('题，立即答题','Q, start now')}`;
+    const clickable = isAvail && hasQ;
     html += `
-      <div class="chapter-item ${!isAvail ? 'locked' : ''}" onclick="${isAvail ? `startChapterQuiz('${ch.id}')` : ''}">
+      <div class="chapter-item ${!isAvail ? 'locked' : ''}" ${clickable ? `onclick="startChapterQuiz('${ch.id}')" style="cursor:pointer;"` : !isAvail ? '' : 'style="opacity:.55;cursor:default;"'}>
         <div class="chapter-num" style="background:${isAvail ? 'var(--pale-blue)' : 'var(--gray)'};">${ch.order}</div>
         <div class="chapter-info">
           <div class="chapter-title">${getLang()==='zh' ? ch.titleZh : ch.titleEn}</div>
-          <div class="chapter-meta">${isAvail ? (score !== undefined ? `${t('上次','Last')}: ${score}${t('分','pts')}` : t('5题，立即答题','5 questions, answer now')) : t('请先完成本章学习','Complete chapter first')}</div>
+          <div class="chapter-meta">${metaText}</div>
         </div>
-        <div class="chapter-status">${!isAvail ? '🔒' : (score >= 60 ? '✅' : (score !== undefined ? '⚠️' : '▶️'))}</div>
+        <div class="chapter-status">${!isAvail ? '🔒' : !hasQ ? '⏳' : (score >= 60 ? '✅' : (score !== undefined ? '⚠️' : '▶️'))}</div>
       </div>`;
   });
   document.getElementById('quizChapterList').innerHTML = html;
 }
 
 function startChapterQuiz(chapterId) {
+  const qs = buildChapterQuizSet(chapterId);
+  if (!qs || qs.length === 0) {
+    toast(t('该章节暂无题目，请联系管理员', 'No questions available for this chapter yet'), 'warning');
+    return;
+  }
   sessionMode      = 'quiz';
-  sessionQuestions = buildChapterQuizSet(chapterId);
+  sessionQuestions = qs;
   currentChapterId = chapterId;
   sessionAnswers   = {};
   currentQIndex    = 0;
@@ -542,7 +558,7 @@ function startMock() {
 
   showView('view-exam-session');
   document.getElementById('sessionTitle').textContent = t('模拟测试','Mock Exam');
-  startExamSession(EXAM_CONFIG.mockExam.timeMinutes * 60);
+  startExamSession(EXAM_CONFIG.mock.timeMinutes * 60);
 }
 
 // ── Final Exam ────────────────────────────────────────
