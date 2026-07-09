@@ -55,22 +55,11 @@ auth.onAuthStateChanged(async user => {
   }
 });
 
-// ── Load chapters from Firestore (with data.js fallback) ─
+// ── Load chapters: always use data.js (Firestore only stores progress/users) ─
 async function loadChapters() {
-  try {
-    const snap = await db.collection('chapters').orderBy('order').get();
-    if (!snap.empty) {
-      const fsChapters = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      // Only use Firestore data if chapters have valid content
-      const valid = fsChapters.filter(c => c.titleZh && Array.isArray(c.sections));
-      appChapters = valid.length > 0 ? valid : CHAPTERS;
-    } else {
-      appChapters = CHAPTERS; // Firestore empty → use static data.js
-    }
-  } catch(e) {
-    console.warn('Firestore chapters load failed, using static data:', e);
-    appChapters = CHAPTERS;  // fallback on error
-  }
+  // Always use the static data.js CHAPTERS — Firestore content may be stale.
+  // Firestore is only used for user progress and exam records.
+  appChapters = CHAPTERS;
 }
 
 async function loadUserData() {
