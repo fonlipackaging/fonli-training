@@ -307,7 +307,7 @@ const CHAPTERS = [
   </tbody>
 </table>
 <div class="kc-intro" style="margin-top:16px">产品图片</div>
-<div class="kc-img-row"><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_000.jpg" class="kc-img" loading="lazy" alt="透喷渐变"><p class="kc-img-caption">透喷渐变</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_050.jpg" class="kc-img" loading="lazy" alt="实喷效果"><p class="kc-img-caption">实喷效果</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_003.jpg" class="kc-img" loading="lazy" alt="玻璃瓶总览"><p class="kc-img-caption">玻璃瓶总览</p></div></div></div>
+<div class="kc-img-row"><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_000.jpg" class="kc-img" loading="lazy" alt="透明喷涂"><p class="kc-img-caption">透明喷涂</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_050.jpg" class="kc-img" loading="lazy" alt="实喷效果"><p class="kc-img-caption">实喷效果</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_003.jpg" class="kc-img" loading="lazy" alt="玻璃瓶总览"><p class="kc-img-caption">玻璃瓶总览</p></div></div></div>
 <div class="kc-img-row"><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_049.jpg" class="kc-img" loading="lazy" alt="UV 电镀（金属光泽）"><p class="kc-img-caption">UV 电镀（金属光泽）</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_048.jpg" class="kc-img" loading="lazy" alt="蒙砂（雾面效果）"><p class="kc-img-caption">蒙砂（雾面效果）</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_047.jpg" class="kc-img" loading="lazy" alt="植绒（绒布触感）"><p class="kc-img-caption">植绒（绒布触感）</p></div></div></div>
 <div class="kc-img-row"><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_046.jpg" class="kc-img" loading="lazy" alt="裂纹工艺"><p class="kc-img-caption">裂纹工艺</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_045.jpg" class="kc-img" loading="lazy" alt="烫金工艺"><p class="kc-img-caption">烫金工艺</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_044.jpg" class="kc-img" loading="lazy" alt="丝印工艺"><p class="kc-img-caption">丝印工艺</p></div></div></div>
 <div class="kc-img-row"><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_043.jpg" class="kc-img" loading="lazy" alt="橡胶漆（哑面）"><p class="kc-img-caption">橡胶漆（哑面）</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_042.jpg" class="kc-img" loading="lazy" alt="镭射工艺"><p class="kc-img-caption">镭射工艺</p></div></div><div class="kc-img-cell"><div class="kc-img-wrap"><img src="images/img_041.jpg" class="kc-img" loading="lazy" alt="转印工艺"><p class="kc-img-caption">转印工艺</p></div></div></div>
@@ -2195,9 +2195,9 @@ const QUESTIONS = [
     difficulty: 'easy',
     questionZh: `图中香水瓶瓶身呈均匀透明蓝色，可透过玻璃看到内部，这属于（___）工艺。`,
     questionEn: `图中香水瓶瓶身呈均匀透明蓝色，可透过玻璃看到内部，这属于（___）工艺。`,
-    answer: `透喷（Transparent Color Coating）`,
-    explanationZh: `透喷工艺保留玻璃透明感，瓶身颜色均匀透明；与实喷（不透明）和渐变喷涂（透→有色过渡）不同。`,
-    explanationEn: `透喷工艺保留玻璃透明感，瓶身颜色均匀透明；与实喷（不透明）和渐变喷涂（透→有色过渡）不同。`,
+    answer: `透明喷涂（Transparent Color Coating）`,
+    explanationZh: `透明喷涂工艺保留玻璃透明感，瓶身颜色均匀透明；与实喷（不透明）和渐变喷涂（透→有色过渡）不同。`,
+    explanationEn: `透明喷涂工艺保留玻璃透明感，瓶身颜色均匀透明；与实喷（不透明）和渐变喷涂（透→有色过渡）不同。`,
   },
   {
     id: 'q_ch03_050',
@@ -4179,7 +4179,7 @@ const QUESTIONS = [
     questionZh: `以下三张图展示三种不同效果的香水瓶，请判断：呈现金属镜面光泽的是哪张图？`,
     questionEn: `以下三张图展示三种不同效果的香水瓶，请判断：呈现金属镜面光泽的是哪张图？`,
     options: [
-      { key: 'A', textZh: `左图（透喷 Transparent Coating）`, textEn: `左图（透喷 Transparent Coating）` },
+      { key: 'A', textZh: `左图（透明喷涂 Transparent Coating）`, textEn: `左图（透明喷涂 Transparent Coating）` },
       { key: 'B', textZh: `中图（实喷 Solid Coating）`, textEn: `中图（实喷 Solid Coating）` },
       { key: 'C', textZh: `右图（UV 电镀 / UV Plating）`, textEn: `右图（UV 电镀 / UV Plating）` },
       { key: 'D', textZh: `三张都有金属光泽`, textEn: `三张都有金属光泽` },
