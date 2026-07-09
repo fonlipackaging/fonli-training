@@ -188,49 +188,52 @@ function buildChapterQuizSet(chapterId) {
 }
 
 // Build mock exam question set (evenly distributed across chapters)
+// Only uses choice/single questions (fill questions excluded from timed exams)
 function buildMockSet() {
-  const allQ    = typeof QUESTIONS !== 'undefined' ? QUESTIONS : [];
-  const target  = EXAM_CONFIG.mock.questionCount;
+  var allQ   = typeof QUESTIONS !== 'undefined' ? QUESTIONS : [];
+  var target = EXAM_CONFIG.mock.questionCount;
+  // Only scoreable question types for exams
+  var choiceQ = allQ.filter(function(q){ return q.type === 'choice' || q.type === 'single' || q.type === 'multiple' || q.type === 'boolean'; });
   // Group by chapter
-  const byChapter = {};
-  allQ.forEach(q => {
+  var byChapter = {};
+  choiceQ.forEach(function(q) {
     if (!byChapter[q.chapterId]) byChapter[q.chapterId] = [];
     byChapter[q.chapterId].push(q);
   });
-  const chapters = Object.keys(byChapter);
-  const perChap  = Math.ceil(target / chapters.length);
-  let result = [];
-  chapters.forEach(cid => {
-    const picked = shuffle(byChapter[cid]).slice(0, perChap);
+  var chapters = Object.keys(byChapter);
+  var perChap  = Math.ceil(target / chapters.length);
+  var result = [];
+  chapters.forEach(function(cid) {
+    var picked = shuffle(byChapter[cid]).slice(0, perChap);
     result = result.concat(picked);
   });
-  return shuffle(result).slice(0, target);
+  return shuffle(result).slice(0, target).map(normalizeQuestion);
 }
 
 // Build formal exam question set
+// Only uses choice/single questions (fill questions excluded from timed exams)
 function buildExamSet(config) {
-  const allQ   = typeof QUESTIONS !== 'undefined' ? QUESTIONS : [];
-  const target = config.questionCount || 30;
-  // Distribute proportionally: harder questions weighted more
-  const easy   = shuffle(allQ.filter(q => q.difficulty === 'easy'));
-  const medium = shuffle(allQ.filter(q => q.difficulty === 'medium'));
-  const hard   = shuffle(allQ.filter(q => q.difficulty === 'hard'));
+  var allQ   = typeof QUESTIONS !== 'undefined' ? QUESTIONS : [];
+  var target = config.questionCount || 30;
+  // Only scoreable question types for exams
+  var choiceQ = allQ.filter(function(q){ return q.type === 'choice' || q.type === 'single' || q.type === 'multiple' || q.type === 'boolean'; });
+  // Distribute proportionally by difficulty
+  var easy   = shuffle(choiceQ.filter(function(q){ return q.difficulty === 'easy'; }));
+  var medium = shuffle(choiceQ.filter(function(q){ return q.difficulty === 'medium'; }));
+  var hard   = shuffle(choiceQ.filter(function(q){ return q.difficulty === 'hard'; }));
   // ~30% easy, 50% medium, 20% hard
-  const eN = Math.round(target * 0.30);
-  const mN = Math.round(target * 0.50);
-  const hN = target - eN - mN;
-  const pool = [
-    ...easy.slice(0, eN),
-    ...medium.slice(0, mN),
-    ...hard.slice(0, hN)
-  ];
+  var eN = Math.round(target * 0.30);
+  var mN = Math.round(target * 0.50);
+  var hN = target - eN - mN;
+  var pool = easy.slice(0, eN).concat(medium.slice(0, mN)).concat(hard.slice(0, hN));
   // Fill gaps if not enough in a difficulty tier
   if (pool.length < target) {
-    const used = new Set(pool.map(q => q.id));
-    const extra = shuffle(allQ.filter(q => !used.has(q.id)));
-    pool.push(...extra.slice(0, target - pool.length));
+    var used = {};
+    pool.forEach(function(q){ used[q.id] = true; });
+    var extra = shuffle(choiceQ.filter(function(q){ return !used[q.id]; }));
+    pool = pool.concat(extra.slice(0, target - pool.length));
   }
-  return shuffle(pool).slice(0, target);
+  return shuffle(pool).slice(0, target).map(normalizeQuestion);
 }
 
 // Score a completed session: returns { score, correct, total, details }
