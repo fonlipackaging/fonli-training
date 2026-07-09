@@ -237,6 +237,7 @@ const CHAPTERS = [
       <li>玻璃瓶（Glass Bottle）</li>
     </ol>
     <div class="kc-ab-note">✦ 特点：肩套覆盖瓶肩，铝牌展示品牌，整体感强，多用于中东高端香水</div>
+    <img src="images/img_002.jpg" class="kc-img" style="width:100%;border-radius:8px;margin-top:10px;cursor:zoom-in;" alt="A结构实物图（肩套+铝牌）" title="点击放大">
   </div>
   <div class="kc-ab-box kc-ab-b">
     <div class="kc-ab-title">🅑 B 结构（带中套）</div>
@@ -249,6 +250,7 @@ const CHAPTERS = [
       <li>玻璃瓶（Glass Bottle）</li>
     </ol>
     <div class="kc-ab-note">✦ 特点：中套套在瓶口喷头处，起装饰和固定双重作用，欧美现代简约风格常见</div>
+    <img src="images/img_001.jpg" class="kc-img" style="width:100%;border-radius:8px;margin-top:10px;cursor:zoom-in;" alt="B结构实物图（中套）" title="点击放大">
   </div>
 </div>
 <div class="kc-highlight-box">⚠️ 关键提示：接单时必须与客户确认是 A 结构还是 B 结构，结构不同则配件完全不同，直接影响报价！</div>
@@ -269,6 +271,7 @@ const CHAPTERS = [
       <li>Glass Bottle</li>
     </ol>
     <div class="kc-ab-note">✦ The shoulder covers the bottle neck; the name plate displays the brand — commonly used in Middle East luxury perfumes</div>
+    <img src="images/img_002.jpg" class="kc-img" style="width:100%;border-radius:8px;margin-top:10px;cursor:zoom-in;" alt="Structure A (Shoulder + Name Plate)" title="Click to zoom">
   </div>
   <div class="kc-ab-box kc-ab-b">
     <div class="kc-ab-title">🅑 Structure B (Collar)</div>
@@ -281,6 +284,7 @@ const CHAPTERS = [
       <li>Glass Bottle</li>
     </ol>
     <div class="kc-ab-note">✦ The collar sits around the pump at the bottle neck, serving both decorative and stabilizing purposes — popular in modern EU/US styles</div>
+    <img src="images/img_001.jpg" class="kc-img" style="width:100%;border-radius:8px;margin-top:10px;cursor:zoom-in;" alt="Structure B (Collar)" title="Click to zoom">
   </div>
 </div>
 <div class="kc-highlight-box">⚠️ Key: Always confirm with client whether they need Structure A or B — different structures require completely different components and affect pricing!</div>
