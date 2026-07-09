@@ -71,6 +71,17 @@ async function loadUserData() {
 
   userProfile = profDoc.exists ? profDoc.data() : { name: currentUser.email, role: 'user' };
 
+  // Admin accounts: redirect back unless explicitly in preview mode
+  if (userProfile.role === 'admin') {
+    const inPreview = localStorage.getItem('fonli_admin_preview') === '1';
+    if (!inPreview) {
+      window.location.href = 'admin.html';
+      return;
+    }
+    // Show preview banner so admin can return easily
+    showAdminPreviewBanner();
+  }
+
   if (!profDoc.exists) {
     // Create user doc if missing
     await db.collection('users').doc(currentUser.uid).set({
@@ -109,7 +120,34 @@ function navigate(view) {
 }
 
 function doLogout() {
+  localStorage.removeItem('fonli_admin_preview');
   auth.signOut().then(() => window.location.href = 'index.html');
+}
+
+// ── Admin preview mode ────────────────────────────────
+function showAdminPreviewBanner() {
+  const banner = document.createElement('div');
+  banner.id = 'adminPreviewBanner';
+  banner.style.cssText = [
+    'position:fixed', 'top:0', 'left:0', 'right:0', 'z-index:99998',
+    'background:#e67e22', 'color:#fff', 'text-align:center',
+    'padding:.5rem 1rem', 'font-size:.88rem', 'font-weight:600',
+    'display:flex', 'align-items:center', 'justify-content:center', 'gap:1rem'
+  ].join(';');
+  banner.innerHTML =
+    '<span>👁 管理员预览模式 | Admin Preview</span>' +
+    '<button onclick="exitAdminPreview()" style="background:rgba(255,255,255,.25);border:none;color:#fff;' +
+    'padding:.25rem .8rem;border-radius:5px;cursor:pointer;font-size:.82rem;font-weight:600;">' +
+    '← 返回管理后台</button>';
+  document.body.prepend(banner);
+  // Push navbar down so it doesn't overlap
+  const nav = document.querySelector('.navbar');
+  if (nav) nav.style.top = banner.offsetHeight + 'px';
+}
+
+function exitAdminPreview() {
+  localStorage.removeItem('fonli_admin_preview');
+  window.location.href = 'admin.html';
 }
 
 function toggleLang() {
