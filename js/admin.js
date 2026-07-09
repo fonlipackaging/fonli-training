@@ -61,6 +61,12 @@ function doLogout() {
   auth.signOut().then(() => window.location.href = 'index.html');
 }
 
+// Switch to student preview mode
+function enterStudentPreview() {
+  localStorage.setItem('fonli_admin_preview', '1');
+  window.location.href = 'app.html';
+}
+
 function toggleLang() {
   const newLang = getLang() === 'zh' ? 'en' : 'zh';
   setLang(newLang);
