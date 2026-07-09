@@ -397,28 +397,45 @@ function renderQuizChapterList() {
   const scores = userProgress.quizScores || {};
   const allQs  = typeof QUESTIONS !== 'undefined' ? QUESTIONS : [];
   let html = '';
-  appChapters.forEach(ch => {
-    const isAvail  = done.includes(ch.id);
-    const score    = scores[ch.id];
-    const qCount   = allQs.filter(q => q.chapterId === ch.id).length;
-    const hasQ     = qCount > 0;
-    const metaText = !isAvail
-      ? t('请先完成本章学习', 'Complete chapter first')
-      : !hasQ
-        ? t('题目筹备中…', 'Questions coming soon…')
-        : score !== undefined
-          ? `${t('上次','Last')}: ${score}${t('分','pts')} | ${Math.min(qCount, 5)}${t('题','Q')}`
-          : `${Math.min(qCount, 5)}${t('题，立即答题','Q, start now')}`;
-    const clickable = isAvail && hasQ;
-    html += `
-      <div class="chapter-item ${!isAvail ? 'locked' : ''}" ${clickable ? `onclick="startChapterQuiz('${ch.id}')" style="cursor:pointer;"` : !isAvail ? '' : 'style="opacity:.55;cursor:default;"'}>
-        <div class="chapter-num" style="background:${isAvail ? 'var(--pale-blue)' : 'var(--gray)'};">${ch.order}</div>
-        <div class="chapter-info">
-          <div class="chapter-title">${getLang()==='zh' ? ch.titleZh : ch.titleEn}</div>
-          <div class="chapter-meta">${metaText}</div>
-        </div>
-        <div class="chapter-status">${!isAvail ? '🔒' : !hasQ ? '⏳' : (score >= 60 ? '✅' : (score !== undefined ? '⚠️' : '▶️'))}</div>
-      </div>`;
+  appChapters.forEach(function(ch) {
+    var isAvail = done.includes(ch.id);
+    var score   = scores[ch.id];
+    var qCount  = allQs.filter(function(q){ return q.chapterId === ch.id; }).length;
+    var hasQ    = qCount > 0;
+    var dispQ   = Math.min(qCount, 5);
+
+    var metaText;
+    if (!isAvail) {
+      metaText = t('请先完成本章学习', 'Complete chapter first');
+    } else if (!hasQ) {
+      metaText = t('题目筹备中…', 'Questions coming soon…');
+    } else if (score !== undefined) {
+      metaText = t('上次','Last') + ': ' + score + t('分','pts') + ' | ' + dispQ + t('题','Q');
+    } else {
+      metaText = dispQ + t('题，立即答题','Q, start now');
+    }
+
+    var clickable = isAvail && hasQ;
+    var divAttrs  = 'class="chapter-item' + (!isAvail ? ' locked' : '') + '"';
+    if (clickable) {
+      divAttrs += ' onclick="startChapterQuiz(\'' + ch.id + '\')" style="cursor:pointer;"';
+    } else if (!isAvail) {
+      // locked — no extra attrs
+    } else {
+      divAttrs += ' style="opacity:.55;cursor:default;"';
+    }
+    var numBg  = isAvail ? 'var(--pale-blue)' : 'var(--gray)';
+    var title  = getLang() === 'zh' ? ch.titleZh : ch.titleEn;
+    var status = !isAvail ? '🔒' : !hasQ ? '⏳' : (score >= 60 ? '✅' : (score !== undefined ? '⚠️' : '▶️'));
+
+    html += '<div ' + divAttrs + '>' +
+      '<div class="chapter-num" style="background:' + numBg + ';">' + ch.order + '</div>' +
+      '<div class="chapter-info">' +
+        '<div class="chapter-title">' + title + '</div>' +
+        '<div class="chapter-meta">' + metaText + '</div>' +
+      '</div>' +
+      '<div class="chapter-status">' + status + '</div>' +
+      '</div>';
   });
   document.getElementById('quizChapterList').innerHTML = html;
 }
