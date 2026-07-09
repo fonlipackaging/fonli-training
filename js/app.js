@@ -686,6 +686,11 @@ function renderExamQuestion() {
 }
 
 function buildQuestionCard(q, userAns, showFeedback, alwaysShowExplanation) {
+  // Fill-in-the-blank questions use a separate renderer
+  if (q.type === 'fill') {
+    return buildFillCard(q, userAns, showFeedback, alwaysShowExplanation);
+  }
+
   const lang     = getLang();
   const answered = userAns !== undefined;
   const qText    = lang === 'zh' ? q.questionZh : q.questionEn;
@@ -693,10 +698,16 @@ function buildQuestionCard(q, userAns, showFeedback, alwaysShowExplanation) {
   const typeLbls = { single: t('单选题','Single'), multiple: t('多选题','Multiple'), boolean: t('判断题','True/False') };
   const typeCls  = { single: 'badge-single', multiple: 'badge-multiple', boolean: 'badge-boolean' };
 
+  // Safety: if options are missing, show an error card rather than crash
+  if (!Array.isArray(options)) {
+    return `<div class="question-card"><div class="question-text" style="color:#c0392b;">
+      [题目数据格式错误，请联系管理员 | Question data error]<br>${qText || ''}</div></div>`;
+  }
+
   let html = `<div class="question-card">
     <div class="question-num">
-      Q${currentQIndex !== undefined ? currentQIndex+1 : ''} — ${sessionQuestions.length ? '' : ''}
-      <span class="question-type-badge ${typeCls[q.type]}">${typeLbls[q.type]}</span>
+      Q${currentQIndex !== undefined ? currentQIndex+1 : ''} —
+      <span class="question-type-badge ${typeCls[q.type] || 'badge-single'}">${typeLbls[q.type] || q.type}</span>
     </div>
     <div class="question-text">${qText}</div>
     <div class="options-list">`;
@@ -707,7 +718,7 @@ function buildQuestionCard(q, userAns, showFeedback, alwaysShowExplanation) {
 
     if (showFeedback && answered) {
       const isCorrect = q.type === 'multiple'
-        ? q.answer.includes(i)
+        ? (Array.isArray(q.answer) && q.answer.includes(i))
         : q.answer === i;
       const isSelected = q.type === 'multiple'
         ? (Array.isArray(userAns) && userAns.includes(i))
@@ -721,11 +732,13 @@ function buildQuestionCard(q, userAns, showFeedback, alwaysShowExplanation) {
       if (userAns === i) cls += ' selected';
     }
 
-    const clickable = showFeedback ? (q.type === 'multiple' && !answered) : true;
+    // In quiz mode (showFeedback): clickable only while not yet answered
+    // In exam mode (!showFeedback): always clickable
+    const clickable = showFeedback ? !answered : true;
     const onclick   = clickable ? `onclick="selectOption('${q.id}',${i})"` : '';
 
     html += `<div class="${cls}" ${onclick}>
-      <div class="option-key">${keys[i]}</div>
+      <div class="option-key">${keys[i] || i}</div>
       <div class="option-text">${opt}</div>
     </div>`;
   });
@@ -747,6 +760,45 @@ function buildQuestionCard(q, userAns, showFeedback, alwaysShowExplanation) {
 
   html += '</div>';
   return html;
+}
+
+// Render a fill-in-the-blank question card
+function buildFillCard(q, userAns, showFeedback, alwaysShowExplanation) {
+  const lang     = getLang();
+  const answered = userAns !== undefined;
+  const qText    = lang === 'zh' ? q.questionZh : q.questionEn;
+
+  let html = `<div class="question-card">
+    <div class="question-num">
+      Q${currentQIndex !== undefined ? currentQIndex+1 : ''} —
+      <span class="question-type-badge" style="background:#6c757d;color:#fff;">${t('填空题','Fill-in')}</span>
+    </div>
+    <div class="question-text">${qText}</div>`;
+
+  if (!answered) {
+    html += `<div style="margin-top:1.25rem;">
+      <button class="btn btn-outline" onclick="revealFillAnswer('${q.id}')"
+        style="width:100%;padding:.75rem;font-size:.95rem;">
+        💡 ${t('查看参考答案','Show Answer')}
+      </button>
+    </div>`;
+  } else {
+    const answerText = typeof q.answer === 'string' ? q.answer : JSON.stringify(q.answer);
+    html += `<div class="explanation-box" style="background:#e8f5e9;border-left:4px solid #1E7E45;margin-top:1rem;">
+      <strong>${t('参考答案：','Answer:')}</strong> ${answerText}
+    </div>`;
+    const exp = lang === 'zh' ? q.explanationZh : q.explanationEn;
+    if (exp) html += `<div class="explanation-box"><strong>${t('解析：','Explanation:')}</strong> ${exp}</div>`;
+  }
+
+  html += '</div>';
+  return html;
+}
+
+// Reveal the answer for a fill question and advance the quiz
+function revealFillAnswer(qId) {
+  sessionAnswers[qId] = '__fill_revealed__';
+  renderQuizSession();
 }
 
 function selectOption(qId, idx) {
