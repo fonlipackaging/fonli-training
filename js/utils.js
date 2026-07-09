@@ -156,10 +156,35 @@ function shuffle(arr) {
   return a;
 }
 
+// Normalize a question from data.js format to UI-expected format
+function normalizeQuestion(q) {
+  if (q._normalized) return q;
+  var n = Object.assign({}, q, { _normalized: true });
+
+  // Map type names
+  if (n.type === 'choice') n.type = 'single';
+  // 'fill' stays as 'fill'; 'multiple' stays as 'multiple'
+
+  // Convert options [{key,textZh,textEn}] → optionsZh/optionsEn flat arrays
+  if (Array.isArray(n.options) && !n.optionsZh) {
+    n.optionsZh = n.options.map(function(o){ return o.textZh || o.text || ''; });
+    n.optionsEn = n.options.map(function(o){ return o.textEn || o.textZh || o.text || ''; });
+  }
+
+  // Convert letter answer (A/B/C/D) to 0-based index for single/boolean
+  if ((n.type === 'single' || n.type === 'boolean') &&
+      typeof n.answer === 'string' && /^[A-D]$/.test(n.answer)) {
+    n.answer = n.answer.charCodeAt(0) - 65; // A→0, B→1, C→2, D→3
+  }
+
+  return n;
+}
+
 // Build question set for a single chapter quiz (in original order, all questions)
 function buildChapterQuizSet(chapterId) {
   return (typeof QUESTIONS !== 'undefined' ? QUESTIONS : [])
-    .filter(q => q.chapterId === chapterId);
+    .filter(function(q){ return q.chapterId === chapterId; })
+    .map(normalizeQuestion);
 }
 
 // Build mock exam question set (evenly distributed across chapters)
@@ -211,16 +236,19 @@ function buildExamSet(config) {
 // Score a completed session: returns { score, correct, total, details }
 function scoreExam(questions, answers) {
   let correct = 0;
-  const details = questions.map(q => {
+  const details = questions.map(function(q) {
     const userAns = answers[q.id];
     let isCorrect = false;
-    if (q.type === 'multi') {
+    if (q.type === 'fill') {
+      // Fill questions: count as correct when user revealed the answer
+      isCorrect = userAns === '__fill_revealed__';
+    } else if (q.type === 'multiple' || q.type === 'multi') {
       // Multi-select: user answer is array, q.answer is array
       const ua = Array.isArray(userAns) ? [...userAns].sort() : [];
       const ca = Array.isArray(q.answer) ? [...q.answer].sort() : [];
-      isCorrect = ua.length === ca.length && ua.every((v, i) => v === ca[i]);
+      isCorrect = ua.length === ca.length && ua.every(function(v, i){ return v === ca[i]; });
     } else {
-      // Single choice: compare numbers
+      // Single choice: compare index numbers
       isCorrect = userAns !== undefined && userAns === q.answer;
     }
     if (isCorrect) correct++;
