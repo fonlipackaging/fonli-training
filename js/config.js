@@ -4,12 +4,13 @@
 // ═══════════════════════════════════════════════════════
 
 const FIREBASE_CONFIG = {
-  apiKey:            "YOUR_API_KEY",
-  authDomain:        "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId:         "YOUR_PROJECT_ID",
-  storageBucket:     "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId:             "YOUR_APP_ID"
+  apiKey:            "AIzaSyDCgY6hGyRjpyq89TQJW4giogds8TDUpJI",
+  authDomain:        "fonli-training.firebaseapp.com",
+  projectId:         "fonli-training",
+  storageBucket:     "fonli-training.firebasestorage.app",
+  messagingSenderId: "876828021650",
+  appId:             "1:876828021650:web:8a0c41e15db19cb5bce74b",
+  measurementId:     "G-HD2XXJLXJE"
 };
 
 // ── EmailJS (for admin email notifications) ──────────
