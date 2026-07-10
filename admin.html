@@ -63,6 +63,9 @@
         <i class="ti ti-list-check nav-icon"></i><span data-zh="题库管理" data-en="Question Bank">题库管理</span>
         <span class="nav-badge hidden" id="qBadge">0</span>
       </a>
+      <a href="#" id="nav-faq" onclick="navigate('faq')">
+        <i class="ti ti-help-circle nav-icon"></i><span data-zh="FAQ 管理" data-en="FAQ">FAQ 管理</span>
+      </a>
     </nav>
     <div class="sidebar-section" style="margin-top:.5rem;"><span class="sidebar-label">系统</span></div>
     <nav class="sidebar-nav">
@@ -236,6 +239,37 @@
 
       <!-- Pagination -->
       <div id="qPagination" style="display:flex;gap:.5rem;justify-content:center;margin-top:1rem;flex-wrap:wrap;"></div>
+    </div>
+
+    <!-- ── FAQ Management ── -->
+    <div class="view hidden" id="view-faq">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:.75rem;">
+        <h1>FAQ 管理</h1>
+        <div style="display:flex;gap:.75rem;flex-wrap:wrap;">
+          <button class="btn btn-outline btn-sm" onclick="showFAQSyncModal()" id="faqSyncBtn" style="display:none;border-color:var(--success);color:var(--success);">
+            <i class="ti ti-cloud-upload"></i> 同步 → data.js
+          </button>
+          <button class="btn btn-primary" onclick="showFAQEditor(null)">
+            <i class="ti ti-plus"></i> 新增 FAQ
+          </button>
+        </div>
+      </div>
+
+      <!-- Search + filter bar -->
+      <div style="display:flex;gap:.75rem;margin-bottom:1rem;flex-wrap:wrap;align-items:center;">
+        <input class="form-input" type="search" id="faqSearch" placeholder="🔍 搜索问题或关键词…"
+          oninput="renderFAQs()" style="flex:1;min-width:200px;max-width:360px;">
+        <select class="form-input form-select" id="faqFilterCat" onchange="renderFAQs()" style="width:auto;">
+          <option value="all">全部分类</option>
+        </select>
+        <span id="faqCount" style="color:var(--text-muted);font-size:.9rem;white-space:nowrap;"></span>
+      </div>
+
+      <div class="card" style="padding:0;overflow:hidden;border-radius:12px;">
+        <div id="faqContent"></div>
+      </div>
+
+      <div id="faqPagination" style="display:flex;gap:.5rem;justify-content:center;margin-top:1rem;flex-wrap:wrap;"></div>
     </div>
 
   </main>
@@ -433,6 +467,104 @@
     <div class="modal-footer">
       <button class="btn btn-outline" onclick="hideModal('syncDataJsModal')">取消</button>
       <button class="btn btn-primary" id="syncStartBtn" onclick="startDataJsSync()" style="background:var(--success);border-color:var(--success);">
+        ☁️ 开始同步
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- FAQ Editor Modal -->
+<div class="modal-overlay" id="faqEditorModal">
+  <div class="modal" style="max-width:640px;width:95vw;max-height:90vh;overflow-y:auto;">
+    <div class="modal-header">
+      <h3 id="faqEditorTitle">新增 FAQ</h3>
+      <button class="modal-close" onclick="hideModal('faqEditorModal')">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <div class="form-group">
+        <label class="form-label">问题 <span style="color:var(--danger);">*</span></label>
+        <input class="form-input" id="faqQuestion" placeholder="请输入常见问题…">
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;">
+        <div class="form-group" style="margin:0;">
+          <label class="form-label">分类</label>
+          <input class="form-input" id="faqCategory" placeholder="例：操作规程 / 产品知识" list="faqCatList">
+          <datalist id="faqCatList"></datalist>
+          <div class="form-hint">自由输入，相同分类自动归组</div>
+        </div>
+        <div class="form-group" style="margin:0;">
+          <label class="form-label">关键词标签</label>
+          <input class="form-input" id="faqTags" placeholder="用逗号分隔，例：包装,尺寸">
+          <div class="form-hint">学员可通过关键词搜索到本条目</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">答案 <span style="color:var(--danger);">*</span></label>
+        <textarea class="form-input" id="faqAnswer" rows="7" style="resize:vertical;font-family:inherit;line-height:1.7;"
+          placeholder="请输入详细解答内容…&#10;支持简单 HTML 格式，例：&lt;b&gt;加粗&lt;/b&gt;、&lt;br&gt; 换行"></textarea>
+        <div class="form-hint">支持基本 HTML 标签（&lt;b&gt; 加粗、&lt;br&gt; 换行、&lt;ul&gt;&lt;li&gt; 列表等）</div>
+      </div>
+
+      <div class="form-error hidden" id="faqEditorError"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-danger btn-sm" id="faqDeleteBtn" onclick="confirmDeleteFAQ()" style="margin-right:auto;display:none;">
+        <i class="ti ti-trash"></i> 删除
+      </button>
+      <button class="btn btn-outline" onclick="hideModal('faqEditorModal')">取消</button>
+      <button class="btn btn-primary" onclick="saveFAQ()">
+        <i class="ti ti-device-floppy"></i> 保存
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- FAQ Delete Confirm Modal -->
+<div class="modal-overlay" id="deleteFaqModal">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-header">
+      <h3>确认删除</h3>
+      <button class="modal-close" onclick="hideModal('deleteFaqModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p id="deleteFaqMsg"></p>
+      <div class="alert alert-warning" style="margin-top:.75rem;">⚠️ 删除后无法恢复，学员端立即生效。</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="hideModal('deleteFaqModal')">取消</button>
+      <button class="btn btn-danger" id="confirmDeleteFaqBtn">确认删除</button>
+    </div>
+  </div>
+</div>
+
+<!-- Sync FAQ to data.js Modal -->
+<div class="modal-overlay" id="syncFaqModal">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-header">
+      <h3>❓ 同步 FAQ → data.js</h3>
+      <button class="modal-close" onclick="hideModal('syncFaqModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:.9rem;color:var(--text-muted);margin-bottom:1rem;">
+        将把 Firestore 中全部 <b id="syncFaqCount">--</b> 条 FAQ 写回 GitHub 的 <code>js/data.js</code> 永久备份。即使数据库异常，学员端仍可读取 data.js 中的离线备份。
+      </p>
+      <div class="form-group">
+        <label class="form-label">GitHub Personal Access Token</label>
+        <input class="form-input" type="password" id="syncFaqToken"
+          placeholder="ghp_xxxx…" style="font-family:monospace;">
+        <div class="form-hint">Token 仅在本次操作中使用，存于 sessionStorage，关闭浏览器后自动清除。</div>
+      </div>
+      <div id="syncFaqProgress" class="hidden" style="margin-top:.75rem;">
+        <div style="background:#f0f4ff;border-radius:8px;padding:.75rem 1rem;font-size:.88rem;font-family:monospace;white-space:pre-wrap;max-height:180px;overflow-y:auto;" id="syncFaqLog"></div>
+      </div>
+      <div class="form-error hidden" id="syncFaqError"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="hideModal('syncFaqModal')">取消</button>
+      <button class="btn btn-primary" id="syncFaqStartBtn" onclick="startFAQSync()" style="background:var(--success);border-color:var(--success);">
         ☁️ 开始同步
       </button>
     </div>
