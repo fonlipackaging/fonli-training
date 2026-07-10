@@ -7,6 +7,7 @@ const auth = firebase.auth();
 const db   = firebase.firestore();
 
 let adminUser    = null;
+let adminRole    = null;   // 'admin' | 'editor'
 let allUsers     = [];
 let allAttempts  = [];
 let allNotifs    = [];
@@ -19,12 +20,21 @@ auth.onAuthStateChanged(async user => {
   const [doc] = await Promise.all([
     db.collection('users').doc(user.uid).get(),
   ]);
-  if (!doc.exists || doc.data().role !== 'admin') {
+  const role = doc.exists ? doc.data().role : null;
+  if (role !== 'admin' && role !== 'editor') {
     alert(t('权限不足，跳转至学员页面', 'Access denied. Redirecting to user page.'));
     window.location.href = 'app.html'; return;
   }
-  adminUser = user;
-  document.getElementById('adminNameChip').textContent = doc.data().name || user.email;
+  adminUser  = user;
+  adminRole  = role;
+  const nameText = doc.data().name || user.email;
+  const roleLabel = role === 'editor' ? ' 〔编辑〕' : '';
+  document.getElementById('adminNameChip').textContent = nameText + roleLabel;
+  // Hide review-center nav from editors; show 'my submissions' nav for editors
+  const reviewNav    = document.getElementById('nav-review');
+  const myPendingNav = document.getElementById('nav-my-pending');
+  if (reviewNav)    reviewNav.style.display    = role === 'editor' ? 'none' : '';
+  if (myPendingNav) myPendingNav.style.display = role === 'editor' ? ''     : 'none';
   await loadAllData();
   initSidebar();
   navigate('overview');
@@ -35,12 +45,22 @@ async function loadAllData() {
   // Load core data — each in separate try/catch so one failure doesn't block others
   const [usersSnap, attSnap, notifSnap] = await Promise.all([
     db.collection('users').get(),
-    db.collection('examAttempts').orderBy('createdAt', 'desc').get(),
-    db.collection('notifications').orderBy('createdAt', 'desc').get()
+    db.collection('examAttempts').get().catch(() => null),
+    db.collection('notifications').get().catch(() => null)
   ]);
   allUsers    = usersSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-  allAttempts = attSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-  allNotifs   = notifSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+  allAttempts = (attSnap ? attSnap.docs : []).map(d => ({ id: d.id, ...d.data() }))
+    .sort((a, b) => {
+      const ta = a.createdAt?.toMillis ? a.createdAt.toMillis() : (a.createdAt || 0);
+      const tb = b.createdAt?.toMillis ? b.createdAt.toMillis() : (b.createdAt || 0);
+      return tb - ta;
+    });
+  allNotifs   = (notifSnap ? notifSnap.docs : []).map(d => ({ id: d.id, ...d.data() }))
+    .sort((a, b) => {
+      const ta = a.createdAt?.toMillis ? a.createdAt.toMillis() : (a.createdAt || 0);
+      const tb = b.createdAt?.toMillis ? b.createdAt.toMillis() : (b.createdAt || 0);
+      return tb - ta;
+    });
 
   // Load exam settings separately — non-fatal if collection doesn't exist yet
   try {
@@ -65,6 +85,19 @@ async function loadAllData() {
   const badge  = document.getElementById('notifBadge');
   if (unread > 0) { badge.textContent = unread; badge.classList.remove('hidden'); }
   else { badge.classList.add('hidden'); }
+
+  // Load pending changes count (admin only)
+  if (adminRole === 'admin') {
+    try {
+      const pendSnap = await db.collection('pendingChanges').where('status','==','pending').get();
+      const pendCount = pendSnap.size;
+      const pb = document.getElementById('pendingBadge');
+      if (pb) {
+        pb.textContent = pendCount;
+        pb.classList.toggle('hidden', pendCount === 0);
+      }
+    } catch(e) { /* no pending collection yet */ }
+  }
 }
 
 function navigate(view) {
@@ -80,10 +113,46 @@ function navigate(view) {
   if (view === 'settings')      renderSettings();
   if (view === 'questions')     { loadQuestions().then(() => renderQuestions()); }
   if (view === 'faq')           { loadFAQs().then(() => renderFAQs()); }
+  if (view === 'review')        { renderPendingReview(); }
 }
 
 function doLogout() {
   auth.signOut().then(() => window.location.href = 'index.html');
+}
+
+// ── Editor role helpers ──────────────────────────────
+function isEditor() { return adminRole === 'editor'; }
+
+async function submitPendingChange(type, collection, docId, data, originalData, description) {
+  // Strip non-serializable Firestore FieldValues from data copy
+  function cleanObj(obj) {
+    if (!obj) return null;
+    const c = Object.assign({}, obj);
+    // Remove FieldValue sentinels and internal fields
+    ['updatedAt','createdAt','_docId'].forEach(k => delete c[k]);
+    return c;
+  }
+  await db.collection('pendingChanges').add({
+    type,                            // 'add' | 'edit' | 'delete'
+    collection,                      // 'chapters' | 'examQuestions' | 'faqs' | 'settings' | 'users'
+    docId:         docId   || null,
+    data:          cleanObj(data),
+    originalData:  cleanObj(originalData),
+    description,
+    submittedBy:   adminUser.uid,
+    submittedByName: (document.getElementById('adminNameChip').textContent || '').replace(' 〔编辑〕',''),
+    submittedAt:   firebase.firestore.FieldValue.serverTimestamp(),
+    status:        'pending',
+    reviewedBy:    null, reviewedAt: null, rejectComment: null
+  });
+  // Update editor's own pending badge
+  try {
+    const snap = await db.collection('pendingChanges')
+      .where('submittedBy','==',adminUser.uid)
+      .where('status','==','pending').get();
+    const myPb = document.getElementById('myPendingBadge');
+    if (myPb) { myPb.textContent = snap.size; myPb.classList.toggle('hidden', snap.size === 0); }
+  } catch(e) {}
 }
 
 // Switch to student preview mode (URL param is most reliable across browsers)
@@ -161,7 +230,7 @@ function renderUsers() {
   }
 
   let html = `<div class="table-wrap"><table class="list-table"><thead><tr>
-    <th>${t('姓名','Name')}</th><th>${t('邮箱','Email')}</th>
+    <th>${t('姓名','Name')}</th><th>${t('角色','Role')}</th><th>${t('邮箱','Email')}</th>
     <th>${t('进度','Progress')}</th><th>${t('最高分','Best Score')}</th><th>${t('操作','Actions')}</th>
   </tr></thead><tbody>`;
 
@@ -172,8 +241,12 @@ function renderUsers() {
     const cls       = bestScore !== null ? `badge-${scoreClass(bestScore)}` : 'badge-pending';
     const scoreTxt  = bestScore !== null ? `${bestScore}${t('分','pts')} (${t('第','#')}${attempts}${t('次','')})` : t('未考试','No exam');
 
+    const roleBadgeHtml = u.role === 'editor'
+      ? '<span style="display:inline-block;padding:2px 9px;border-radius:20px;font-size:.73rem;font-weight:700;background:#fff3e0;color:#e65100;border:1px solid #ffcc80;">编辑者</span>'
+      : '<span style="display:inline-block;padding:2px 9px;border-radius:20px;font-size:.73rem;font-weight:700;background:#e8f4fd;color:#1a4fa0;border:1px solid #b8dff5;">学员</span>';
     html += `<tr>
       <td><b>${u.name || '--'}</b></td>
+      <td>${roleBadgeHtml}</td>
       <td style="font-size:.82rem;">${u.email || '--'}</td>
       <td><span class="badge badge-pending">${attempts}/${EXAM_CONFIG.exam.maxAttempts} ${t('次','att')}</span></td>
       <td><span class="badge ${cls}">${scoreTxt}</span></td>
@@ -925,6 +998,21 @@ async function saveChapterEdit() {
     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
   };
 
+  // ── Editor: submit for approval ──────────────────────
+  if (isEditor()) {
+    const desc = editingChapterId
+      ? t(`修改章节「${titleZh}」`, `Edit chapter "${titleZh}"`)
+      : t(`新增章节「${titleZh}」`, `Add chapter "${titleZh}"`);
+    const orig = editingChapterId ? allChapters.find(c => c.id === editingChapterId) : null;
+    const newId = editingChapterId || ('ch' + String(order).padStart(2,'0') + '_' + Date.now());
+    try {
+      await submitPendingChange(editingChapterId ? 'edit' : 'add', 'chapters', newId, data, orig, desc);
+      toast(t('✅ 已提交审核，待管理员批准','✅ Submitted for review'), 'success');
+      cancelChapterEditor();
+    } catch(e) { toast(t('提交失败：','Submit failed: ') + e.message, 'danger'); }
+    return;
+  }
+
   try {
     if (editingChapterId) {
       await db.collection('chapters').doc(editingChapterId).update(data);
@@ -956,6 +1044,16 @@ function confirmDeleteChapter(chId, chTitle) {
 }
 
 async function deleteChapter(chId) {
+  // ── Editor: submit for approval ──────────────────────
+  if (isEditor()) {
+    const orig = allChapters.find(c => c.id === chId);
+    const desc = t(`删除章节「${orig ? orig.titleZh : chId}」`, `Delete chapter "${orig ? orig.titleZh : chId}"`);
+    try {
+      await submitPendingChange('delete', 'chapters', chId, null, orig, desc);
+      toast(t('✅ 已提交删除审核，待管理员批准','✅ Delete submitted for review'), 'success');
+    } catch(e) { toast(t('提交失败：','Submit failed: ') + e.message, 'danger'); }
+    return;
+  }
   try {
     await db.collection('chapters').doc(chId).delete();
     allChapters = allChapters.filter(c => c.id !== chId);
@@ -1202,6 +1300,18 @@ async function saveExamSettings() {
   const settings = { passingScore: passing, excellentScore: excellent,
     maxAttempts: maxAtt, cooldownHours: cooldown, timeMinutes: timeMins,
     updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
+
+  // ── Editor: submit for approval ──────────────────────
+  if (isEditor()) {
+    const desc = t('修改考试设置（及格/优秀分数线、次数、时间）','Edit exam settings');
+    try {
+      await submitPendingChange('edit', 'settings', 'exam', settings, null, desc);
+      toast(t('✅ 已提交审核，待管理员批准','✅ Submitted for review'), 'success');
+      document.getElementById('settingsSavedMsg').style.display = 'inline';
+      setTimeout(() => { document.getElementById('settingsSavedMsg').style.display = 'none'; }, 3000);
+    } catch(e) { errEl.textContent = '提交失败: ' + e.message; errEl.classList.remove('hidden'); }
+    return;
+  }
 
   try {
     await db.collection('settings').doc('exam').set(settings);
@@ -1618,6 +1728,21 @@ async function saveQuestion() {
     data.blanks = null; data.blankCount = 0;
   }
 
+  // ── Editor: submit for approval ──────────────────────
+  if (isEditor()) {
+    const orig = editingQDocId ? allQuestions.find(q => q._docId === editingQDocId || q.id === editingQDocId) : null;
+    const newId = editingQDocId || ('v6q' + String(allQuestions.reduce((m,q)=>Math.max(m,q.num||0),0)+1).padStart(3,'0'));
+    const desc = editingQDocId
+      ? `修改题目 Q${orig?.num || ''}`
+      : `新增题目（${type === 'fill' ? '填空题' : '选择题'}）`;
+    try {
+      await submitPendingChange(editingQDocId ? 'edit' : 'add', 'examQuestions', newId, data, orig, desc);
+      toast('✅ 已提交审核，待管理员批准', 'success');
+      hideModal('questionEditorModal');
+    } catch(e) { errEl.textContent = '提交失败: ' + e.message; errEl.classList.remove('hidden'); }
+    return;
+  }
+
   try {
     if (editingQDocId) {
       // Update existing
@@ -1649,6 +1774,17 @@ function deleteCurrentQuestion() {
   deletingQDocId = editingQDocId;
   document.getElementById('deleteQMsg').textContent = `确认删除 Q${q.num}「${(q.textZh||q.text||'').substring(0,40)}…」？`;
   document.getElementById('confirmDeleteQBtn').onclick = async () => {
+    // ── Editor: submit for approval ──────────────────────
+    if (isEditor()) {
+      const orig2 = allQuestions.find(q => (q._docId||q.id) === deletingQDocId);
+      try {
+        await submitPendingChange('delete', 'examQuestions', deletingQDocId, null, orig2,
+          `删除题目 Q${orig2?.num || deletingQDocId}`);
+        toast('✅ 已提交删除审核，待管理员批准', 'success');
+        hideModal('deleteQModal'); hideModal('questionEditorModal');
+      } catch(e) { toast('提交失败: '+e.message, 'danger'); }
+      return;
+    }
     try {
       await db.collection('examQuestions').doc(deletingQDocId).delete();
       allQuestions = allQuestions.filter(q => (q._docId||q.id) !== deletingQDocId);
@@ -1988,6 +2124,19 @@ async function saveFAQ() {
     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
   };
 
+  // ── Editor: submit for approval ──────────────────────
+  if (isEditor()) {
+    const orig = editingFAQId ? allFAQs.find(f => (f._docId||f.id) === editingFAQId) : null;
+    const newId = editingFAQId || ('faq' + String(allFAQs.reduce((m,f)=>Math.max(m,f.num||0),0)+1).padStart(3,'0'));
+    const desc = editingFAQId ? `修改 FAQ「${question.substring(0,30)}」` : `新增 FAQ「${question.substring(0,30)}」`;
+    try {
+      await submitPendingChange(editingFAQId ? 'edit' : 'add', 'faqs', newId, data, orig, desc);
+      toast('✅ 已提交审核，待管理员批准', 'success');
+      hideModal('faqEditorModal');
+    } catch(e) { errEl.textContent = '提交失败: ' + e.message; errEl.classList.remove('hidden'); }
+    return;
+  }
+
   try {
     if (editingFAQId) {
       await db.collection('faqs').doc(editingFAQId).update(data);
@@ -2018,6 +2167,17 @@ function confirmDeleteFAQ() {
   document.getElementById('deleteFaqMsg').textContent =
     `确认删除「${(f.question||'').substring(0, 50)}…」？`;
   document.getElementById('confirmDeleteFaqBtn').onclick = async () => {
+    // ── Editor: submit for approval ──────────────────────
+    if (isEditor()) {
+      const fOrig = allFAQs.find(f => (f._docId||f.id) === editingFAQId);
+      try {
+        await submitPendingChange('delete', 'faqs', editingFAQId, null, fOrig,
+          `删除 FAQ「${(fOrig?.question||'').substring(0,30)}」`);
+        toast('✅ 已提交删除审核，待管理员批准', 'success');
+        hideModal('deleteFaqModal'); hideModal('faqEditorModal');
+      } catch(e) { toast('提交失败: ' + e.message, 'danger'); }
+      return;
+    }
     try {
       await db.collection('faqs').doc(editingFAQId).delete();
       allFAQs = allFAQs.filter(f => (f._docId||f.id) !== editingFAQId);
@@ -2138,5 +2298,250 @@ async function startFAQSync() {
     document.getElementById('syncFaqError').classList.remove('hidden');
   } finally {
     document.getElementById('syncFaqStartBtn').disabled = false;
+  }
+}
+
+
+// ═══════════════════════════════════════════════════════
+//  PENDING REVIEW CENTER (admin only)
+// ═══════════════════════════════════════════════════════
+
+let allPendingChanges = [];
+
+async function renderPendingReview() {
+  const container = document.getElementById('reviewContent');
+  if (!container) return;
+  container.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-muted);">加载中…</div>';
+
+  // ── Editor: show own submission history ────────────────
+  if (isEditor()) { renderMySubmissions(); return; }
+
+  try {
+    const snap = await db.collection('pendingChanges')
+      .where('status','==','pending').get();
+    allPendingChanges = snap.docs.map(d => ({ _id: d.id, ...d.data() }))
+      .sort((a, b) => {
+        const ta = a.submittedAt?.toMillis ? a.submittedAt.toMillis() : 0;
+        const tb = b.submittedAt?.toMillis ? b.submittedAt.toMillis() : 0;
+        return ta - tb;
+      });
+  } catch(e) {
+    container.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--danger);">加载失败: ${e.message}</div>`;
+    return;
+  }
+
+  // Update badge
+  const pb = document.getElementById('pendingBadge');
+  if (pb) { pb.textContent = allPendingChanges.length; pb.classList.toggle('hidden', allPendingChanges.length === 0); }
+
+  if (!allPendingChanges.length) {
+    container.innerHTML = `
+      <div style="text-align:center;padding:4rem 1rem;">
+        <div style="font-size:3rem;margin-bottom:1rem;">✅</div>
+        <h3 style="color:var(--text-muted);">暂无待审核变更</h3>
+        <p style="color:var(--text-muted);font-size:.9rem;margin-top:.5rem;">所有编辑提交的内容将显示在这里</p>
+      </div>`;
+    return;
+  }
+
+  const typeLabel = { add:'新增', edit:'修改', delete:'删除' };
+  const collLabel = { chapters:'知识章节', examQuestions:'题库', faqs:'FAQ', settings:'考试设置', users:'用户' };
+  const typeBg    = { add:'#e8f5e9', edit:'#e3f2fd', delete:'#ffebee' };
+  const typeColor = { add:'#2e7d32', edit:'#1565c0', delete:'#c62828' };
+
+  let html = '';
+  allPendingChanges.forEach((p, i) => {
+    const tLabel = typeLabel[p.type] || p.type;
+    const cLabel = collLabel[p.collection] || p.collection;
+    const tColor = typeColor[p.type] || '#555';
+    const tBg    = typeBg[p.type]   || '#f5f5f5';
+    const ts     = p.submittedAt?.toDate ? p.submittedAt.toDate().toLocaleString('zh-CN') : '--';
+
+    // Build data preview
+    let preview = '';
+    if (p.type === 'delete' && p.originalData) {
+      const od = p.originalData;
+      preview = `<div style="background:#fff8f8;border:1px solid #ffcdd2;border-radius:6px;padding:.75rem;font-size:.83rem;line-height:1.6;">
+        <strong style="color:#c62828;">将被删除的内容：</strong><br>
+        ${od.titleZh ? `章节：${od.titleZh}` : ''}
+        ${od.question ? `问题：${od.question}` : ''}
+        ${od.textZh   ? `题目：${od.textZh.substring(0,100)}` : ''}
+        ${od.passingScore != null ? `及格分: ${od.passingScore}%, 优秀分: ${od.excellentScore}%` : ''}
+      </div>`;
+    } else if (p.data) {
+      const d = p.data;
+      let lines = [];
+      if (d.titleZh)       lines.push(`章节标题：${d.titleZh}`);
+      if (d.question)      lines.push(`问题：${(d.question||'').substring(0,80)}`);
+      if (d.answer)        lines.push(`答案：${(d.answer||'').substring(0,100)}`);
+      if (d.category)      lines.push(`分类：${d.category}`);
+      if (d.textZh)        lines.push(`题目：${(d.textZh||'').substring(0,80)}`);
+      if (d.passingScore != null) lines.push(`及格分: ${d.passingScore}%, 优秀分: ${d.excellentScore}%, 考试次数: ${d.maxAttempts}, 冷却: ${d.cooldownHours}h, 时间: ${d.timeMinutes}分钟`);
+      if (d.sections)      lines.push(`小节数：${d.sections.length}`);
+      preview = lines.length ? `<div style="background:#f8fafc;border:1px solid var(--border);border-radius:6px;padding:.75rem;font-size:.83rem;line-height:1.7;">${lines.map(l=>`<div>${l.replace(/</g,'&lt;')}</div>`).join('')}</div>` : '';
+    }
+
+    html += `
+    <div id="pending-${i}" style="border:1.5px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:1rem;">
+      <div style="display:flex;align-items:center;gap:.75rem;padding:.85rem 1rem;background:#fafafa;border-bottom:1px solid var(--border);flex-wrap:wrap;">
+        <span style="display:inline-block;padding:3px 10px;border-radius:20px;font-size:.78rem;font-weight:700;background:${tBg};color:${tColor};">${tLabel}</span>
+        <span style="font-weight:600;font-size:.9rem;">${cLabel}</span>
+        <span style="flex:1;color:var(--text-muted);font-size:.85rem;">${(p.description||'').replace(/</g,'&lt;')}</span>
+        <span style="font-size:.78rem;color:var(--text-muted);white-space:nowrap;">by ${(p.submittedByName||'').replace(/</g,'&lt;')} · ${ts}</span>
+      </div>
+      <div style="padding:.85rem 1rem;">
+        ${preview}
+        <div style="display:flex;gap:.75rem;margin-top:.85rem;flex-wrap:wrap;">
+          <button onclick="approvePendingChange('${p._id}', ${i})"
+            style="padding:6px 20px;border-radius:7px;border:none;background:#2e7d32;color:#fff;font-size:.88rem;font-weight:600;cursor:pointer;">
+            ✓ 批准
+          </button>
+          <button onclick="showRejectDialog('${p._id}', ${i})"
+            style="padding:6px 20px;border-radius:7px;border:1.5px solid #c62828;background:#fff;color:#c62828;font-size:.88rem;font-weight:600;cursor:pointer;">
+            ✕ 驳回
+          </button>
+        </div>
+        <div id="reject-form-${i}" style="display:none;margin-top:.75rem;">
+          <textarea id="reject-reason-${i}" placeholder="驳回原因（可选）"
+            style="width:100%;border:1.5px solid var(--border);border-radius:6px;padding:.5rem;font-size:.85rem;resize:vertical;min-height:60px;box-sizing:border-box;"></textarea>
+          <div style="display:flex;gap:.5rem;margin-top:.5rem;">
+            <button onclick="rejectPendingChange('${p._id}', ${i})"
+              style="padding:5px 16px;border-radius:6px;border:none;background:#c62828;color:#fff;font-size:.85rem;font-weight:600;cursor:pointer;">确认驳回</button>
+            <button onclick="document.getElementById('reject-form-${i}').style.display='none'"
+              style="padding:5px 16px;border-radius:6px;border:1.5px solid var(--border);background:#fff;color:var(--text);font-size:.85rem;cursor:pointer;">取消</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  });
+
+  container.innerHTML = html;
+}
+
+async function renderMySubmissions() {
+  const container = document.getElementById('reviewContent');
+  if (!container) return;
+  const h1 = document.querySelector('#view-review h1');
+  if (h1) h1.textContent = '我的提交记录';
+
+  let snap;
+  try {
+    snap = await db.collection('pendingChanges')
+      .where('submittedBy','==', adminUser.uid).get();
+  } catch(e) {
+    container.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--danger);">加载失败: ${e.message}</div>`;
+    return;
+  }
+
+  const items = snap.docs.map(d => ({ _id: d.id, ...d.data() }))
+    .sort((a,b) => {
+      const ta = a.submittedAt?.toMillis ? a.submittedAt.toMillis() : 0;
+      const tb = b.submittedAt?.toMillis ? b.submittedAt.toMillis() : 0;
+      return tb - ta;
+    });
+
+  // Update my pending badge
+  const pending = items.filter(i => i.status === 'pending').length;
+  const myPb = document.getElementById('myPendingBadge');
+  if (myPb) { myPb.textContent = pending; myPb.classList.toggle('hidden', pending === 0); }
+
+  if (!items.length) {
+    container.innerHTML = `<div style="text-align:center;padding:4rem 1rem;">
+      <div style="font-size:3rem;margin-bottom:1rem;">📝</div>
+      <h3 style="color:var(--text-muted);">尚无提交记录</h3>
+      <p style="color:var(--text-muted);font-size:.9rem;margin-top:.5rem;">您对知识、题库、FAQ 的编辑操作会在此显示状态</p>
+    </div>`;
+    return;
+  }
+
+  const statusBadge = {
+    pending:  '<span style="padding:2px 9px;border-radius:20px;font-size:.75rem;font-weight:700;background:#fff3e0;color:#e65100;">审核中</span>',
+    approved: '<span style="padding:2px 9px;border-radius:20px;font-size:.75rem;font-weight:700;background:#e8f5e9;color:#2e7d32;">已批准 ✓</span>',
+    rejected: '<span style="padding:2px 9px;border-radius:20px;font-size:.75rem;font-weight:700;background:#ffebee;color:#c62828;">已驳回 ✕</span>',
+  };
+  const typeLabel = { add:'新增', edit:'修改', delete:'删除' };
+  const collLabel = { chapters:'知识章节', examQuestions:'题库', faqs:'FAQ', settings:'考试设置', users:'用户' };
+
+  let html = '';
+  items.forEach(p => {
+    const ts = p.submittedAt?.toDate ? p.submittedAt.toDate().toLocaleString('zh-CN') : '--';
+    const revTs = p.reviewedAt?.toDate ? p.reviewedAt.toDate().toLocaleString('zh-CN') : null;
+    html += `<div style="border:1.5px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:.85rem;">
+      <div style="display:flex;align-items:center;gap:.75rem;padding:.75rem 1rem;background:#fafafa;border-bottom:1px solid var(--border);flex-wrap:wrap;">
+        ${statusBadge[p.status] || ''}
+        <span style="font-size:.82rem;color:var(--text-muted);">${typeLabel[p.type]||p.type} · ${collLabel[p.collection]||p.collection}</span>
+        <span style="flex:1;font-size:.88rem;">${(p.description||'').replace(/</g,'&lt;')}</span>
+        <span style="font-size:.76rem;color:var(--text-muted);">${ts}</span>
+      </div>
+      ${p.status==='rejected' && p.rejectComment ? `<div style="padding:.6rem 1rem;font-size:.83rem;color:#c62828;background:#fff8f8;">驳回原因：${p.rejectComment.replace(/</g,'&lt;')}</div>` : ''}
+      ${revTs ? `<div style="padding:.4rem 1rem;font-size:.78rem;color:var(--text-muted);">审核时间：${revTs}</div>` : ''}
+    </div>`;
+  });
+  container.innerHTML = html;
+}
+
+function showRejectDialog(docId, idx) {
+  document.getElementById(`reject-form-${idx}`).style.display = 'block';
+  document.getElementById(`reject-reason-${idx}`).focus();
+}
+
+async function approvePendingChange(docId, idx) {
+  const p = allPendingChanges[idx];
+  if (!p) return;
+  const btn = document.querySelector(`#pending-${idx} button`);
+  if (btn) { btn.disabled = true; btn.textContent = '处理中…'; }
+
+  try {
+    const now = firebase.firestore.FieldValue.serverTimestamp();
+    const data = p.data ? Object.assign({}, p.data) : null;
+
+    if (p.type === 'add') {
+      if (data) { data.createdAt = now; data.updatedAt = now; }
+      await db.collection(p.collection).doc(p.docId).set(data || {});
+    } else if (p.type === 'edit') {
+      if (data) { data.updatedAt = now; delete data.createdAt; }
+      await db.collection(p.collection).doc(p.docId).set(data || {}, { merge: true });
+    } else if (p.type === 'delete') {
+      await db.collection(p.collection).doc(p.docId).delete();
+    }
+
+    // Mark as approved
+    await db.collection('pendingChanges').doc(docId).update({
+      status: 'approved', reviewedBy: adminUser.uid,
+      reviewedAt: now, rejectComment: null
+    });
+
+    toast(`✅ 已批准：${p.description || docId}`, 'success');
+    // Remove from UI
+    const el = document.getElementById(`pending-${idx}`);
+    if (el) el.remove();
+    allPendingChanges.splice(idx, 1);
+    // Update badge
+    const pb = document.getElementById('pendingBadge');
+    if (pb) { pb.textContent = allPendingChanges.length; pb.classList.toggle('hidden', allPendingChanges.length === 0); }
+  } catch(e) {
+    toast('批准失败: ' + e.message, 'danger');
+    if (btn) { btn.disabled = false; btn.textContent = '✓ 批准'; }
+  }
+}
+
+async function rejectPendingChange(docId, idx) {
+  const p = allPendingChanges[idx];
+  if (!p) return;
+  const reason = (document.getElementById(`reject-reason-${idx}`)?.value || '').trim();
+  try {
+    await db.collection('pendingChanges').doc(docId).update({
+      status: 'rejected', reviewedBy: adminUser.uid,
+      reviewedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      rejectComment: reason || null
+    });
+    toast(`驳回成功：${p.description || docId}`, 'info');
+    const el = document.getElementById(`pending-${idx}`);
+    if (el) el.remove();
+    allPendingChanges.splice(idx, 1);
+    const pb = document.getElementById('pendingBadge');
+    if (pb) { pb.textContent = allPendingChanges.length; pb.classList.toggle('hidden', allPendingChanges.length === 0); }
+  } catch(e) {
+    toast('驳回失败: ' + e.message, 'danger');
   }
 }
