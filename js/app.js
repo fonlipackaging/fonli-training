@@ -88,71 +88,75 @@ async function loadChapters() {
   appChapters = (typeof CHAPTERS !== 'undefined' && Array.isArray(CHAPTERS)) ? CHAPTERS : [];
 }
 
-// Ensure question bank loaded before exam starts (background load may still be in flight)
-async function ensureQuestionBank() {
-  if (_firestoreQuestions !== null) return; // already loaded or load in progress
-  await loadQuestionBank();
+// Load admin-configured exam settings from Firestore (overrides config.js defaults)
+async function loadExamSettings() {
+  try {
+    const doc = await db.collection('settings').doc('exam').get();
+    if (doc.exists) {
+      const s = doc.data();
+      if (s.passingScore  != null) EXAM_CONFIG.exam.passingScore  = s.passingScore;
+      if (s.excellentScore!= null) EXAM_CONFIG.exam.excellentScore= s.excellentScore;
+      if (s.maxAttempts   != null) EXAM_CONFIG.exam.maxAttempts   = s.maxAttempts;
+      if (s.cooldownHours != null) EXAM_CONFIG.exam.cooldownHours = s.cooldownHours;
+      if (s.timeMinutes   != null) {
+        EXAM_CONFIG.exam.timeMinutes = s.timeMinutes;
+        EXAM_CONFIG.mock.timeMinutes = s.timeMinutes;
+      }
+    }
+  } catch(e) {
+    console.warn('Could not load exam settings:', e);
+    // Non-fatal: fall back to config.js defaults
+  }
 }
 
 async function loadUserData() {
-  loadChapters(); // synchronous — no await needed
+  await loadChapters();
+  await loadExamSettings();    // pull admin-configured thresholds from Firestore
+  await loadQuestionBank();    // load live question bank (Firestore → data.js fallback)
 
-  // Fire all Firestore reads in parallel for maximum speed
-  const uid = currentUser.uid;
-  const [profDoc, progDoc, settingsDoc, attSnap] = await Promise.all([
-    db.collection('users').doc(uid).get(),
-    db.collection('progress').doc(uid).get(),
-    db.collection('settings').doc('exam').get().catch(() => null),
-    db.collection('examAttempts')
-      .where('userId', '==', uid)
-      .where('mode', '==', 'exam')
-      .orderBy('createdAt', 'asc').get().catch(() => null)
+  const [profDoc, progDoc] = await Promise.all([
+    db.collection('users').doc(currentUser.uid).get(),
+    db.collection('progress').doc(currentUser.uid).get()
   ]);
 
-  // Apply exam settings (non-fatal if missing)
-  if (settingsDoc && settingsDoc.exists) {
-    const s = settingsDoc.data();
-    if (s.passingScore  != null) EXAM_CONFIG.exam.passingScore  = s.passingScore;
-    if (s.excellentScore!= null) EXAM_CONFIG.exam.excellentScore= s.excellentScore;
-    if (s.maxAttempts   != null) EXAM_CONFIG.exam.maxAttempts   = s.maxAttempts;
-    if (s.cooldownHours != null) EXAM_CONFIG.exam.cooldownHours = s.cooldownHours;
-    if (s.timeMinutes   != null) {
-      EXAM_CONFIG.exam.timeMinutes = s.timeMinutes;
-      EXAM_CONFIG.mock.timeMinutes = s.timeMinutes;
-    }
-  }
-
-  userProfile  = profDoc.exists ? profDoc.data() : { name: currentUser.email, role: 'user' };
-  userProgress = progDoc.exists ? progDoc.data() : { completedChapters: [], quizScores: {} };
-  examAttempts = attSnap ? attSnap.docs.map(d => ({ id: d.id, ...d.data() })) : [];
-
-  // Create user doc if missing (non-blocking)
-  if (!profDoc.exists) {
-    db.collection('users').doc(uid).set({
-      email: currentUser.email, name: currentUser.email,
-      role: 'user', createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    }).catch(() => {});
-  }
+  userProfile = profDoc.exists ? profDoc.data() : { name: currentUser.email, role: 'user' };
 
   // Admin accounts: redirect back unless explicitly in preview mode
   if (userProfile.role === 'admin') {
+    // Check URL param (?preview=admin) OR sessionStorage flag
     const urlPreview = new URLSearchParams(window.location.search).get('preview') === 'admin';
     const ssPreview  = sessionStorage.getItem('fonli_admin_preview') === '1';
-    if (!(urlPreview || ssPreview)) {
+    const inPreview  = urlPreview || ssPreview;
+    if (!inPreview) {
       _redirecting = true;
       window.location.href = 'admin.html';
       return;
     }
+    // Persist for this tab session (survives hash navigation)
     sessionStorage.setItem('fonli_admin_preview', '1');
+    // Show preview banner so admin can return easily
     showAdminPreviewBanner();
   }
 
-  // Update name chip
-  document.getElementById('userNameChip').textContent = userProfile.name || currentUser.email;
+  if (!profDoc.exists) {
+    // Create user doc if missing
+    await db.collection('users').doc(currentUser.uid).set({
+      email: currentUser.email, name: currentUser.email,
+      role: 'user', createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+  }
 
-  // Question bank: load in background — don't block page render
-  // Will be ready by the time user starts an exam
-  loadQuestionBank();
+  userProgress = progDoc.exists ? progDoc.data() : { completedChapters: [], quizScores: {} };
+
+  // Load exam attempts
+  const attSnap = await db.collection('examAttempts')
+    .where('userId', '==', currentUser.uid)
+    .where('mode', '==', 'exam')
+    .orderBy('createdAt', 'asc').get();
+  examAttempts = attSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+  // Update UI
+  document.getElementById('userNameChip').textContent = userProfile.name || currentUser.email;
 }
 
 // ── Navigation ────────────────────────────────────────
@@ -669,12 +673,7 @@ function renderMockLanding() {
   if (t2) t2.textContent = EXAM_CONFIG.mock.timeMinutes;
 }
 
-async function startMock() {
-  const btn = document.getElementById('startMockBtn');
-  if (btn) { btn.disabled = true; btn.textContent = t('加载题库中…','Loading…'); }
-  await ensureQuestionBank();
-  if (btn) { btn.disabled = false; btn.textContent = t('开始模拟测试','Start Mock Exam'); }
-
+function startMock() {
   sessionMode      = 'mock';
   sessionQuestions = buildMockSet();
   sessionAnswers   = {};
@@ -760,17 +759,14 @@ function startFinalExam() {
     toast(t('考试机会已用完','No attempts remaining'), 'danger'); return;
   }
 
-  // Ensure questions are ready before starting
-  ensureQuestionBank().then(() => {
-    sessionMode      = 'exam';
-    sessionQuestions = buildExamSet(EXAM_CONFIG.exam);
-    sessionAnswers   = {};
-    currentQIndex    = 0;
+  sessionMode      = 'exam';
+  sessionQuestions = buildExamSet(EXAM_CONFIG.exam);
+  sessionAnswers   = {};
+  currentQIndex    = 0;
 
-    showView('view-exam-session');
-    document.getElementById('sessionTitle').textContent = t('正式考试','Final Exam');
-    startExamSession(EXAM_CONFIG.exam.timeMinutes * 60);
-  });
+  showView('view-exam-session');
+  document.getElementById('sessionTitle').textContent = t('正式考试','Final Exam');
+  startExamSession(EXAM_CONFIG.exam.timeMinutes * 60);
 }
 
 // ── Exam session engine ───────────────────────────────
