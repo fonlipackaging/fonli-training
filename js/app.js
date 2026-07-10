@@ -63,8 +63,30 @@ async function loadChapters() {
   appChapters = (typeof CHAPTERS !== 'undefined' && Array.isArray(CHAPTERS)) ? CHAPTERS : [];
 }
 
+// Load admin-configured exam settings from Firestore (overrides config.js defaults)
+async function loadExamSettings() {
+  try {
+    const doc = await db.collection('settings').doc('exam').get();
+    if (doc.exists) {
+      const s = doc.data();
+      if (s.passingScore  != null) EXAM_CONFIG.exam.passingScore  = s.passingScore;
+      if (s.excellentScore!= null) EXAM_CONFIG.exam.excellentScore= s.excellentScore;
+      if (s.maxAttempts   != null) EXAM_CONFIG.exam.maxAttempts   = s.maxAttempts;
+      if (s.cooldownHours != null) EXAM_CONFIG.exam.cooldownHours = s.cooldownHours;
+      if (s.timeMinutes   != null) {
+        EXAM_CONFIG.exam.timeMinutes = s.timeMinutes;
+        EXAM_CONFIG.mock.timeMinutes = s.timeMinutes;
+      }
+    }
+  } catch(e) {
+    console.warn('Could not load exam settings:', e);
+    // Non-fatal: fall back to config.js defaults
+  }
+}
+
 async function loadUserData() {
   await loadChapters();
+  await loadExamSettings(); // pull admin-configured thresholds from Firestore
 
   const [profDoc, progDoc] = await Promise.all([
     db.collection('users').doc(currentUser.uid).get(),
