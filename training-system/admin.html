@@ -56,6 +56,26 @@
       <a href="#" id="nav-content" onclick="navigate('content')">
         <i class="ti ti-books nav-icon"></i><span data-zh="知识管理" data-en="Knowledge">知识管理</span>
       </a>
+      <a href="#" id="nav-settings" onclick="navigate('settings')">
+        <i class="ti ti-settings nav-icon"></i><span data-zh="考试设置" data-en="Exam Settings">考试设置</span>
+      </a>
+      <a href="#" id="nav-questions" onclick="navigate('questions')">
+        <i class="ti ti-list-check nav-icon"></i><span data-zh="题库管理" data-en="Question Bank">题库管理</span>
+        <span class="nav-badge hidden" id="qBadge">0</span>
+      </a>
+      <a href="#" id="nav-faq" onclick="navigate('faq')">
+        <i class="ti ti-help-circle nav-icon"></i><span data-zh="FAQ 管理" data-en="FAQ">FAQ 管理</span>
+      </a>
+      <!-- Admin-only: review center -->
+      <a href="#" id="nav-review" onclick="navigate('review')">
+        <i class="ti ti-checks nav-icon"></i><span data-zh="审核中心" data-en="Review">审核中心</span>
+        <span class="nav-badge hidden" id="pendingBadge">0</span>
+      </a>
+      <!-- Editor-only: my submissions indicator -->
+      <a href="#" id="nav-my-pending" onclick="navigate('review')" style="display:none;">
+        <i class="ti ti-clock nav-icon"></i><span data-zh="我的提交" data-en="My Submissions">我的提交</span>
+        <span class="nav-badge hidden" id="myPendingBadge">0</span>
+      </a>
     </nav>
     <div class="sidebar-section" style="margin-top:.5rem;"><span class="sidebar-label">系统</span></div>
     <nav class="sidebar-nav">
@@ -114,6 +134,9 @@
           <button class="btn btn-outline btn-sm" onclick="seedDefaultChapters()" id="seedBtn">
             <i class="ti ti-download"></i> <span data-zh="导入默认知识库" data-en="Import Default">导入默认知识库</span>
           </button>
+          <button class="btn btn-outline btn-sm" onclick="showChapterSyncModal()" id="chapterSyncBtn" style="display:none;border-color:var(--success);color:var(--success);">
+            <i class="ti ti-cloud-upload"></i> 同步 → data.js
+          </button>
           <button class="btn btn-primary" onclick="showChapterEditor(null)">
             <i class="ti ti-plus"></i> <span data-zh="添加章节" data-en="Add Chapter">添加章节</span>
           </button>
@@ -132,8 +155,258 @@
       <div class="card" style="padding:0;"><div id="notifContent"></div></div>
     </div>
 
+
+    <!-- ── Exam Settings ── -->
+    <div class="view hidden" id="view-settings">
+      <h1 style="margin-bottom:1.5rem;" data-zh="考试设置" data-en="Exam Settings">考试设置</h1>
+      <div class="card" style="max-width:520px;">
+        <div class="card-title" style="margin-bottom:1.25rem;">⚙️ <span data-zh="评分与规则" data-en="Scoring & Rules">评分与规则</span></div>
+
+        <div class="form-group">
+          <label class="form-label" data-zh="及格分数线 (%)" data-en="Passing Score (%)">及格分数线 (%)</label>
+          <input class="form-input" type="number" id="setPassingScore" min="1" max="100" placeholder="95">
+          <div class="form-hint" data-zh="达到此分数视为及格" data-en="Score at or above this is a pass">达到此分数视为及格</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" data-zh="优秀分数线 (%)" data-en="Excellent Score (%)">优秀分数线 (%)</label>
+          <input class="form-input" type="number" id="setExcellentScore" min="1" max="100" placeholder="99">
+          <div class="form-hint" data-zh="达到此分数显示"优秀"标识" data-en="Score at or above this shows Excellent badge">达到此分数显示"优秀"标识</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" data-zh="最多考试次数" data-en="Max Attempts">最多考试次数</label>
+          <input class="form-input" type="number" id="setMaxAttempts" min="1" max="10" placeholder="3">
+          <div class="form-hint" data-zh="正式考试每人最多可参加的次数" data-en="Maximum times a user can take the final exam">正式考试每人最多可参加的次数</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" data-zh="考试冷却时间（小时）" data-en="Cooldown Between Attempts (hours)">考试冷却时间（小时）</label>
+          <input class="form-input" type="number" id="setCooldownHours" min="0" max="168" placeholder="24">
+          <div class="form-hint" data-zh="两次考试之间需等待的小时数" data-en="Hours to wait between exam attempts">两次考试之间需等待的小时数</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" data-zh="考试时间限制（分钟）" data-en="Exam Time Limit (minutes)">考试时间限制（分钟）</label>
+          <input class="form-input" type="number" id="setTimeMinutes" min="10" max="600" placeholder="180">
+          <div class="form-hint" data-zh="适用于模拟测试和正式考试" data-en="Applies to both mock and final exam">适用于模拟测试和正式考试</div>
+        </div>
+
+        <div class="form-error hidden" id="settingsError"></div>
+        <div style="margin-top:1.5rem;display:flex;gap:.75rem;">
+          <button class="btn btn-primary" onclick="saveExamSettings()">
+            💾 <span data-zh="保存设置" data-en="Save Settings">保存设置</span>
+          </button>
+          <span id="settingsSavedMsg" style="display:none;color:var(--success);font-weight:600;align-self:center;">✅ 已保存</span>
+        </div>
+      </div>
+
+      <div class="card" style="max-width:520px;margin-top:0;">
+        <div class="card-title" style="margin-bottom:.75rem;">ℹ️ <span data-zh="说明" data-en="Notes">说明</span></div>
+        <p style="color:var(--text-muted);font-size:.9rem;line-height:1.7;">
+          评分始终按 <b>正确题数 ÷ 总题数 × 100</b> 计算，与题目总数无关。
+          修改设置后立即生效，学员下次打开系统时自动读取最新配置。
+        </p>
+      </div>
+    </div>
+
+
+    <!-- ── Question Bank ── -->
+    <div class="view hidden" id="view-questions">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:.75rem;">
+        <h1 data-zh="题库管理" data-en="Question Bank">题库管理</h1>
+        <div style="display:flex;gap:.75rem;flex-wrap:wrap;">
+          <button class="btn btn-outline btn-sm" onclick="seedQuestions()" id="seedQBtn">
+            <i class="ti ti-database-import"></i> 从data.js导入题库
+          </button>
+          <button class="btn btn-outline btn-sm" onclick="showSyncModal()" style="border-color:var(--success);color:var(--success);">
+            <i class="ti ti-cloud-upload"></i> 同步 → data.js
+          </button>
+          <button class="btn btn-primary" onclick="showQuestionEditor(null)">
+            <i class="ti ti-plus"></i> 新增题目
+          </button>
+        </div>
+      </div>
+
+      <!-- Filter bar -->
+      <div style="display:flex;gap:.75rem;margin-bottom:1rem;flex-wrap:wrap;align-items:center;">
+        <input class="form-input" type="search" id="qSearch" placeholder="🔍 搜索题目内容…"
+          oninput="renderQuestions()" style="flex:1;min-width:200px;max-width:360px;">
+        <select class="form-input form-select" id="qFilterType" onchange="renderQuestions()" style="width:auto;">
+          <option value="all">全部类型</option>
+          <option value="fill">填空题</option>
+          <option value="single">选择题</option>
+        </select>
+        <select class="form-input form-select" id="qFilterChapter" onchange="renderQuestions()" style="width:auto;">
+          <option value="all">全部章节</option>
+        </select>
+        <span id="qCount" style="color:var(--text-muted);font-size:.9rem;white-space:nowrap;"></span>
+      </div>
+
+      <div class="card" style="padding:0;overflow:hidden;border-radius:12px;">
+        <div id="questionsContent"></div>
+      </div>
+
+      <!-- Pagination -->
+      <div id="qPagination" style="display:flex;gap:.5rem;justify-content:center;margin-top:1rem;flex-wrap:wrap;"></div>
+    </div>
+
+    <!-- ── FAQ Management ── -->
+    <div class="view hidden" id="view-faq">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:.75rem;">
+        <h1>FAQ 管理</h1>
+        <div style="display:flex;gap:.75rem;flex-wrap:wrap;">
+          <button class="btn btn-outline btn-sm" onclick="showFAQSyncModal()" id="faqSyncBtn" style="display:none;border-color:var(--success);color:var(--success);">
+            <i class="ti ti-cloud-upload"></i> 同步 → data.js
+          </button>
+          <button class="btn btn-primary" onclick="showFAQEditor(null)">
+            <i class="ti ti-plus"></i> 新增 FAQ
+          </button>
+        </div>
+      </div>
+
+      <!-- Search + filter bar -->
+      <div style="display:flex;gap:.75rem;margin-bottom:1rem;flex-wrap:wrap;align-items:center;">
+        <input class="form-input" type="search" id="faqSearch" placeholder="🔍 搜索问题或关键词…"
+          oninput="renderFAQs()" style="flex:1;min-width:200px;max-width:360px;">
+        <select class="form-input form-select" id="faqFilterCat" onchange="renderFAQs()" style="width:auto;">
+          <option value="all">全部分类</option>
+        </select>
+        <span id="faqCount" style="color:var(--text-muted);font-size:.9rem;white-space:nowrap;"></span>
+      </div>
+
+      <div class="card" style="padding:0;overflow:hidden;border-radius:12px;">
+        <div id="faqContent"></div>
+      </div>
+
+      <div id="faqPagination" style="display:flex;gap:.5rem;justify-content:center;margin-top:1rem;flex-wrap:wrap;"></div>
+    </div>
+
+    <!-- ── Pending Review (admin only) ── -->
+    <div class="view hidden" id="view-review">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:.75rem;">
+        <h1>审核中心</h1>
+        <button class="btn btn-outline btn-sm" onclick="renderPendingReview()">
+          <i class="ti ti-refresh"></i> 刷新
+        </button>
+      </div>
+      <p style="color:var(--text-muted);margin-bottom:1.25rem;font-size:.9rem;">
+        编辑提交的所有变更在此等待批准。批准后立即生效；驳回后变更记录保留但不执行。
+      </p>
+      <div id="reviewContent"></div>
+    </div>
+
   </main>
 </div>
+
+<!-- Question Editor Modal -->
+<div class="modal-overlay" id="questionEditorModal">
+  <div class="modal" style="max-width:600px;width:95vw;max-height:90vh;overflow-y:auto;">
+    <div class="modal-header">
+      <h3 id="qEditorTitle">编辑题目</h3>
+      <button class="modal-close" onclick="hideModal('questionEditorModal')">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <div style="display:flex;gap:.75rem;margin-bottom:1rem;">
+        <div class="form-group" style="flex:1;margin:0;">
+          <label class="form-label">题目类型</label>
+          <select class="form-input form-select" id="qType" onchange="updateQEditorFields()">
+            <option value="fill">填空题</option>
+            <option value="single">单选题</option>
+          </select>
+        </div>
+        <div class="form-group" style="flex:1;margin:0;">
+          <label class="form-label">章节号</label>
+          <input class="form-input" type="number" id="qChapter" min="1" max="20" placeholder="1">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">题目文字（填空题用 (___)  标注空格位置）</label>
+        <textarea class="form-input" id="qText" rows="3" style="resize:vertical;"
+          placeholder="请输入题目内容…" oninput="autoUpdateBlanks()"></textarea>
+      </div>
+
+      <!-- Fill blank answers -->
+      <div id="fillFields">
+        <div class="form-group">
+          <label class="form-label">填空答案（每个空格一行，用 / 分隔多个正确答案）</label>
+          <div id="blanksEditor"></div>
+          <button type="button" class="btn btn-outline btn-sm" style="margin-top:.5rem;" onclick="addBlank()">
+            + 添加空格答案
+          </button>
+        </div>
+      </div>
+
+      <!-- Single choice options -->
+      <div id="singleFields" class="hidden">
+        <div class="form-group">
+          <label class="form-label">选项（A / B / C / D）</label>
+          <div style="display:flex;flex-direction:column;gap:.5rem;" id="optionsEditor">
+            <div style="display:flex;gap:.5rem;align-items:center;">
+              <span style="width:24px;font-weight:700;color:var(--primary);">A</span>
+              <input class="form-input" id="optA" placeholder="选项 A" style="flex:1;">
+              <input type="radio" name="qAnswer" value="0" id="ansA"><label for="ansA" style="margin:0 .5rem;">正确</label>
+            </div>
+            <div style="display:flex;gap:.5rem;align-items:center;">
+              <span style="width:24px;font-weight:700;color:var(--primary);">B</span>
+              <input class="form-input" id="optB" placeholder="选项 B" style="flex:1;">
+              <input type="radio" name="qAnswer" value="1" id="ansB"><label for="ansB" style="margin:0 .5rem;">正确</label>
+            </div>
+            <div style="display:flex;gap:.5rem;align-items:center;">
+              <span style="width:24px;font-weight:700;color:var(--primary);">C</span>
+              <input class="form-input" id="optC" placeholder="选项 C" style="flex:1;">
+              <input type="radio" name="qAnswer" value="2" id="ansC"><label for="ansC" style="margin:0 .5rem;">正确</label>
+            </div>
+            <div style="display:flex;gap:.5rem;align-items:center;">
+              <span style="width:24px;font-weight:700;color:var(--primary);">D</span>
+              <input class="form-input" id="optD" placeholder="选项 D" style="flex:1;">
+              <input type="radio" name="qAnswer" value="3" id="ansD"><label for="ansD" style="margin:0 .5rem;">正确</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">图片文件名（留空=无图，例：image6.jpg）</label>
+        <input class="form-input" id="qImage" placeholder="例：image6.jpg 或留空">
+        <div class="form-hint">多张图用逗号分隔，例：image1.jpg,image2.jpg</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">提示/解析（可选）</label>
+        <input class="form-input" id="qHint" placeholder="答案解析或记忆技巧…">
+      </div>
+
+      <div class="form-error hidden" id="qEditorError"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="hideModal('questionEditorModal')">取消</button>
+      <button class="btn btn-danger" id="qDeleteBtn" onclick="deleteCurrentQuestion()" style="margin-right:auto;">🗑 删除</button>
+      <button class="btn btn-primary" onclick="saveQuestion()">💾 保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm delete question modal -->
+<div class="modal-overlay" id="deleteQModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>确认删除题目</h3>
+      <button class="modal-close" onclick="hideModal('deleteQModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p id="deleteQMsg"></p>
+      <div class="alert alert-warning" style="margin-top:.75rem;">⚠️ 删除后无法恢复，且立即影响学员端题库。</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="hideModal('deleteQModal')">取消</button>
+      <button class="btn btn-danger" id="confirmDeleteQBtn">确认删除</button>
+    </div>
+  </div>
+</div>
+
 
 <!-- Add User Modal -->
 <div class="modal-overlay" id="addUserModal">
@@ -188,6 +461,168 @@
     <div class="modal-footer">
       <button class="btn btn-outline" onclick="hideModal('deleteUserModal')" data-zh="取消" data-en="Cancel">取消</button>
       <button class="btn btn-danger" id="confirmDeleteBtn" data-zh="确认删除" data-en="Delete">确认删除</button>
+    </div>
+  </div>
+</div>
+
+<!-- Sync to data.js Modal -->
+<div class="modal-overlay" id="syncDataJsModal">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-header">
+      <h3>☁️ 同步题库 → data.js</h3>
+      <button class="modal-close" onclick="hideModal('syncDataJsModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:.9rem;color:var(--text-muted);margin-bottom:1rem;">
+        将把 Firestore 中当前全部 <b id="syncQCount">--</b> 道题目写回 GitHub 的 <code>js/data.js</code>，作为永久备份。操作完成后，即使有人误点「导入默认题库」，导入的也是最新数据。
+      </p>
+      <div class="form-group">
+        <label class="form-label">GitHub Personal Access Token</label>
+        <input class="form-input" type="password" id="syncGithubToken"
+          placeholder="ghp_xxxx…（只需 repo 写权限）"
+          style="font-family:monospace;">
+        <div class="form-hint">Token 仅在本次操作中使用，不会被保存。</div>
+      </div>
+      <div id="syncProgress" class="hidden" style="margin-top:.75rem;">
+        <div style="background:#f0f4ff;border-radius:8px;padding:.75rem 1rem;font-size:.88rem;font-family:monospace;white-space:pre-wrap;max-height:180px;overflow-y:auto;" id="syncLog"></div>
+      </div>
+      <div class="form-error hidden" id="syncError"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="hideModal('syncDataJsModal')">取消</button>
+      <button class="btn btn-primary" id="syncStartBtn" onclick="startDataJsSync()" style="background:var(--success);border-color:var(--success);">
+        ☁️ 开始同步
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- FAQ Editor Modal -->
+<div class="modal-overlay" id="faqEditorModal">
+  <div class="modal" style="max-width:640px;width:95vw;max-height:90vh;overflow-y:auto;">
+    <div class="modal-header">
+      <h3 id="faqEditorTitle">新增 FAQ</h3>
+      <button class="modal-close" onclick="hideModal('faqEditorModal')">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <div class="form-group">
+        <label class="form-label">问题 <span style="color:var(--danger);">*</span></label>
+        <input class="form-input" id="faqQuestion" placeholder="请输入常见问题…">
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;">
+        <div class="form-group" style="margin:0;">
+          <label class="form-label">分类</label>
+          <input class="form-input" id="faqCategory" placeholder="例：操作规程 / 产品知识" list="faqCatList">
+          <datalist id="faqCatList"></datalist>
+          <div class="form-hint">自由输入，相同分类自动归组</div>
+        </div>
+        <div class="form-group" style="margin:0;">
+          <label class="form-label">关键词标签</label>
+          <input class="form-input" id="faqTags" placeholder="用逗号分隔，例：包装,尺寸">
+          <div class="form-hint">学员可通过关键词搜索到本条目</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">答案 <span style="color:var(--danger);">*</span></label>
+        <textarea class="form-input" id="faqAnswer" rows="7" style="resize:vertical;font-family:inherit;line-height:1.7;"
+          placeholder="请输入详细解答内容…&#10;支持简单 HTML 格式，例：&lt;b&gt;加粗&lt;/b&gt;、&lt;br&gt; 换行"></textarea>
+        <div class="form-hint">支持基本 HTML 标签（&lt;b&gt; 加粗、&lt;br&gt; 换行、&lt;ul&gt;&lt;li&gt; 列表等）</div>
+      </div>
+
+      <div class="form-error hidden" id="faqEditorError"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-danger btn-sm" id="faqDeleteBtn" onclick="confirmDeleteFAQ()" style="margin-right:auto;display:none;">
+        <i class="ti ti-trash"></i> 删除
+      </button>
+      <button class="btn btn-outline" onclick="hideModal('faqEditorModal')">取消</button>
+      <button class="btn btn-primary" onclick="saveFAQ()">
+        <i class="ti ti-device-floppy"></i> 保存
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- FAQ Delete Confirm Modal -->
+<div class="modal-overlay" id="deleteFaqModal">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-header">
+      <h3>确认删除</h3>
+      <button class="modal-close" onclick="hideModal('deleteFaqModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p id="deleteFaqMsg"></p>
+      <div class="alert alert-warning" style="margin-top:.75rem;">⚠️ 删除后无法恢复，学员端立即生效。</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="hideModal('deleteFaqModal')">取消</button>
+      <button class="btn btn-danger" id="confirmDeleteFaqBtn">确认删除</button>
+    </div>
+  </div>
+</div>
+
+<!-- Sync FAQ to data.js Modal -->
+<div class="modal-overlay" id="syncFaqModal">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-header">
+      <h3>❓ 同步 FAQ → data.js</h3>
+      <button class="modal-close" onclick="hideModal('syncFaqModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:.9rem;color:var(--text-muted);margin-bottom:1rem;">
+        将把 Firestore 中全部 <b id="syncFaqCount">--</b> 条 FAQ 写回 GitHub 的 <code>js/data.js</code> 永久备份。即使数据库异常，学员端仍可读取 data.js 中的离线备份。
+      </p>
+      <div class="form-group">
+        <label class="form-label">GitHub Personal Access Token</label>
+        <input class="form-input" type="password" id="syncFaqToken"
+          placeholder="ghp_xxxx…" style="font-family:monospace;">
+        <div class="form-hint">Token 仅在本次操作中使用，存于 sessionStorage，关闭浏览器后自动清除。</div>
+      </div>
+      <div id="syncFaqProgress" class="hidden" style="margin-top:.75rem;">
+        <div style="background:#f0f4ff;border-radius:8px;padding:.75rem 1rem;font-size:.88rem;font-family:monospace;white-space:pre-wrap;max-height:180px;overflow-y:auto;" id="syncFaqLog"></div>
+      </div>
+      <div class="form-error hidden" id="syncFaqError"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="hideModal('syncFaqModal')">取消</button>
+      <button class="btn btn-primary" id="syncFaqStartBtn" onclick="startFAQSync()" style="background:var(--success);border-color:var(--success);">
+        ☁️ 开始同步
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Sync Chapters to data.js Modal -->
+<div class="modal-overlay" id="syncChaptersModal">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-header">
+      <h3>📚 同步知识库 → data.js</h3>
+      <button class="modal-close" onclick="hideModal('syncChaptersModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:.9rem;color:var(--text-muted);margin-bottom:1rem;">
+        将把 Firestore 中当前全部 <b id="syncChapCount">--</b> 个章节写回 GitHub 的 <code>js/data.js</code>，作为永久备份。操作完成后，即使有人误点「导入默认知识库」，导入的也是最新数据。
+      </p>
+      <div class="form-group">
+        <label class="form-label">GitHub Personal Access Token</label>
+        <input class="form-input" type="password" id="syncChapToken"
+          placeholder="ghp_xxxx…（只需 repo 写权限）"
+          style="font-family:monospace;">
+        <div class="form-hint">Token 仅在本次操作中使用，存入 sessionStorage，关闭浏览器后自动清除。</div>
+      </div>
+      <div id="syncChapProgress" class="hidden" style="margin-top:.75rem;">
+        <div style="background:#f0f4ff;border-radius:8px;padding:.75rem 1rem;font-size:.88rem;font-family:monospace;white-space:pre-wrap;max-height:180px;overflow-y:auto;" id="syncChapLog"></div>
+      </div>
+      <div class="form-error hidden" id="syncChapError"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="hideModal('syncChaptersModal')">取消</button>
+      <button class="btn btn-primary" id="syncChapStartBtn" onclick="startChapterSync()" style="background:var(--success);border-color:var(--success);">
+        ☁️ 开始同步
+      </button>
     </div>
   </div>
 </div>
