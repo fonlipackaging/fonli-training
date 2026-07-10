@@ -1066,16 +1066,9 @@ async function loadQuestions() {
   try {
     const snap = await db.collection('examQuestions').orderBy('num').get();
     allQuestions = snap.docs.map(d => ({ _docId: d.id, ...d.data() }));
-    // Update nav badge
+    // Hide nav badge (count not needed in sidebar)
     const badge = document.getElementById('qBadge');
-    if (badge) {
-      if (allQuestions.length > 0) {
-        badge.textContent = allQuestions.length;
-        badge.classList.remove('hidden');
-      } else {
-        badge.classList.add('hidden');
-      }
-    }
+    if (badge) badge.classList.add('hidden');
     return allQuestions;
   } catch(e) {
     console.warn('loadQuestions error:', e.message);
@@ -1176,7 +1169,8 @@ function renderQuestions() {
         <button onclick="showQuestionEditor(${qData})"
           style="padding:4px 12px;border-radius:6px;border:1.5px solid var(--primary);background:transparent;color:var(--primary);font-size:.8rem;font-weight:600;cursor:pointer;transition:all .15s;"
           onmouseover="this.style.background='var(--primary)';this.style.color='#fff'"
-          onmouseout="this.style.background='transparent';this.style.color='var(--primary)'">编辑</button>
+          onmouseout="this.style.background='transparent';this.style.color='var(--primary)'"
+          style="padding:4px 12px;border-radius:6px;border:1.5px solid var(--primary);background:transparent;color:var(--primary);font-size:.8rem;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap;">编辑</button>
       </td>
     </tr>`;
   });
@@ -1191,21 +1185,52 @@ function renderQuestions() {
 function renderQPagination(totalPages) {
   const pag = document.getElementById('qPagination');
   if (!pag || totalPages <= 1) { if(pag) pag.innerHTML=''; return; }
-  let html = '';
+  const btnStyle = 'padding:5px 10px;border:1.5px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;font-size:.85rem;transition:all .15s;';
+  const btnActiveStyle = 'padding:5px 10px;border:1.5px solid var(--primary);border-radius:6px;background:var(--primary);color:#fff;cursor:pointer;font-size:.85rem;font-weight:600;';
+  const btnDisabled = 'padding:5px 10px;border:1.5px solid var(--border);border-radius:6px;background:#f5f5f5;color:#bbb;cursor:not-allowed;font-size:.85rem;';
+
   const prev = currentQPage > 1;
   const next = currentQPage < totalPages;
-  html += `<button class="btn btn-sm btn-outline" ${prev?'':'disabled'} onclick="goQPage(${currentQPage-1})">← 上页</button>`;
-  const start = Math.max(1, currentQPage-2);
-  const end   = Math.min(totalPages, currentQPage+2);
-  for (let i=start; i<=end; i++) {
-    html += `<button class="btn btn-sm ${i===currentQPage?'btn-primary':'btn-outline'}" onclick="goQPage(${i})">${i}</button>`;
+
+  let html = `<div style="display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;justify-content:center;">`;
+
+  // First page
+  html += `<button style="${prev ? btnStyle : btnDisabled}" ${prev?'':'disabled'} onclick="goQPage(1)" title="首页">«</button>`;
+  // Prev
+  html += `<button style="${prev ? btnStyle : btnDisabled}" ${prev?'':'disabled'} onclick="goQPage(${currentQPage-1})">‹ 上页</button>`;
+
+  // Page numbers (window of 5)
+  const start = Math.max(1, currentQPage - 2);
+  const end   = Math.min(totalPages, currentQPage + 2);
+  if (start > 1) html += `<span style="align-self:center;color:var(--text-muted);">…</span>`;
+  for (let i = start; i <= end; i++) {
+    html += `<button style="${i === currentQPage ? btnActiveStyle : btnStyle}" onclick="goQPage(${i})">${i}</button>`;
   }
-  html += `<button class="btn btn-sm btn-outline" ${next?'':'disabled'} onclick="goQPage(${currentQPage+1})">下页 →</button>`;
-  html += `<span style="align-self:center;color:var(--text-muted);font-size:.85rem;">${currentQPage}/${totalPages} 页</span>`;
+  if (end < totalPages) html += `<span style="align-self:center;color:var(--text-muted);">…</span>`;
+
+  // Next
+  html += `<button style="${next ? btnStyle : btnDisabled}" ${next?'':'disabled'} onclick="goQPage(${currentQPage+1})">下页 ›</button>`;
+  // Last page
+  html += `<button style="${next ? btnStyle : btnDisabled}" ${next?'':'disabled'} onclick="goQPage(${totalPages})" title="末页">»</button>`;
+
+  // Page jump input
+  html += `<span style="align-self:center;color:var(--text-muted);font-size:.85rem;margin-left:.5rem;">跳至</span>
+    <input type="number" min="1" max="${totalPages}" value="${currentQPage}"
+      id="qPageJumpInput"
+      style="width:52px;padding:4px 6px;border:1.5px solid var(--border);border-radius:6px;font-size:.85rem;text-align:center;"
+      onkeydown="if(event.key==='Enter'){var v=parseInt(this.value);if(v>=1&&v<=${totalPages})goQPage(v);}"
+      onblur="var v=parseInt(this.value);if(v>=1&&v<=${totalPages})goQPage(v);">
+    <span style="align-self:center;color:var(--text-muted);font-size:.85rem;">/ ${totalPages} 页</span>`;
+
+  html += '</div>';
   pag.innerHTML = html;
 }
 
-function goQPage(p) { currentQPage = p; renderQuestions(); window.scrollTo(0,200); }
+function goQPage(p) {
+  currentQPage = p;
+  renderQuestions();
+  window.scrollTo(0, 200);
+}
 
 // ── Seed questions from data.js → Firestore ───────────
 async function seedQuestions() {
