@@ -106,18 +106,16 @@ async function ensureQuestionBank() {
 }
 
 async function loadUserData() {
-  loadChapters(); // synchronous — no await needed
-
-  // Fire all Firestore reads in parallel for maximum speed
+  // Fire all Firestore reads in parallel (including chapters) for maximum speed
   const uid = currentUser.uid;
-  const [profDoc, progDoc, settingsDoc, attSnap] = await Promise.all([
+  const [, profDoc, progDoc, settingsDoc, attSnap] = await Promise.all([
+    loadChapters(),   // await chapters so renderLearnList never sees empty list
     db.collection('users').doc(uid).get(),
     db.collection('progress').doc(uid).get(),
     db.collection('settings').doc('exam').get().catch(() => null),
+    // Simple single-field query — avoids composite index requirement
     db.collection('examAttempts')
-      .where('userId', '==', uid)
-      .where('mode', '==', 'exam')
-      .orderBy('createdAt', 'asc').get().catch(() => null)
+      .where('userId', '==', uid).get().catch(() => null)
   ]);
 
   // Apply exam settings (non-fatal if missing)
@@ -135,7 +133,15 @@ async function loadUserData() {
 
   userProfile  = profDoc.exists ? profDoc.data() : { name: currentUser.email, role: 'user' };
   userProgress = progDoc.exists ? progDoc.data() : { completedChapters: [], quizScores: {} };
-  examAttempts = attSnap ? attSnap.docs.map(d => ({ id: d.id, ...d.data() })) : [];
+  // Filter to exam-mode only and sort ascending by createdAt (no composite index needed)
+  const allAttempts = attSnap ? attSnap.docs.map(d => ({ id: d.id, ...d.data() })) : [];
+  examAttempts = allAttempts
+    .filter(a => a.mode === 'exam')
+    .sort((a, b) => {
+      const ta = a.createdAt?.toMillis ? a.createdAt.toMillis() : (a.createdAt || 0);
+      const tb = b.createdAt?.toMillis ? b.createdAt.toMillis() : (b.createdAt || 0);
+      return ta - tb;
+    });
 
   // Create user doc if missing (non-blocking)
   if (!profDoc.exists) {
@@ -306,8 +312,12 @@ function renderDashboard() {
 function renderLearnList() {
   const done = userProgress.completedChapters || [];
   if (!appChapters || appChapters.length === 0) {
+    // Chapters still loading — retry once after short delay
     document.getElementById('chapterList').innerHTML =
-      `<div class="alert alert-info">${t('章节加载中，请稍候或刷新页面…','Loading chapters, please wait or refresh…')}</div>`;
+      `<div class="alert alert-info" style="text-align:center;">${t('章节加载中…','Loading chapters…')}</div>`;
+    loadChapters().then(() => {
+      if (appChapters.length > 0) renderLearnList();
+    });
     return;
   }
   let html = '';
@@ -1219,10 +1229,16 @@ function buildReviewCard(q, userAns, detail, idx) {
 async function renderHistory() {
   showLoader('historyContent');
   try {
+    // Single-field query avoids composite index requirement; sort descending in JS
     const snap = await db.collection('examAttempts')
-      .where('userId', '==', currentUser.uid)
-      .orderBy('createdAt', 'desc').get();
-    const all = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      .where('userId', '==', currentUser.uid).get();
+    const all = snap.docs
+      .map(d => ({ id: d.id, ...d.data() }))
+      .sort((a, b) => {
+        const ta = a.createdAt?.toMillis ? a.createdAt.toMillis() : (a.createdAt || 0);
+        const tb = b.createdAt?.toMillis ? b.createdAt.toMillis() : (b.createdAt || 0);
+        return tb - ta; // newest first
+      });
 
     if (!all.length) {
       document.getElementById('historyContent').innerHTML =
@@ -1249,8 +1265,14 @@ async function renderHistory() {
     html += '</tbody></table></div>';
     document.getElementById('historyContent').innerHTML = html;
   } catch(e) {
+    const needsIndex = e.message && e.message.includes('index');
+    const msg = needsIndex
+      ? t('考试记录加载失败（数据库索引未创建），请联系管理员。',
+          'History failed to load (missing DB index). Please contact admin.')
+      : t('加载失败，请刷新页面重试。', 'Load failed. Please refresh and try again.');
     document.getElementById('historyContent').innerHTML =
-      `<div class="alert alert-danger">${t('加载失败','Load failed')}: ${e.message}</div>`;
+      `<div class="alert alert-danger">${msg}</div>`;
+    console.warn('[History]', e.message);
   }
 }
 
