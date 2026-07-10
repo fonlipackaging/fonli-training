@@ -735,6 +735,32 @@ function renderExamQuestion() {
   document.getElementById('nextQBtn').disabled = currentQIndex === sessionQuestions.length - 1;
 }
 
+// Capture fill inputs before navigating away
+function captureFillInputs() {
+  var inputs = document.querySelectorAll('.v6-fill-input');
+  if (!inputs.length) return;
+  var qId = inputs[0].dataset.qid;
+  var values = Array.from(inputs).map(function(inp){ return inp.value.trim(); });
+  // Only save if at least one input has content
+  if (values.some(function(v){ return v.length > 0; })) {
+    sessionAnswers[qId] = values;
+  }
+}
+
+// Helper: render image(s) for a question
+function buildImageHtml(images) {
+  if (!images || !images.length) return '';
+  var imgBase = 'https://fonlipackaging.github.io/fonli-training/images/';
+  var html = '<div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:1rem;">';
+  images.forEach(function(img) {
+    html += '<img src="' + imgBase + img + '" alt="题目图片" loading="lazy" '
+          + 'style="max-width:280px;max-height:200px;border-radius:8px;border:1px solid var(--border);object-fit:contain;background:#f8f8f8;" '
+          + 'onerror="this.style.display=\'none\'">';
+  });
+  html += '</div>';
+  return html;
+}
+
 function buildQuestionCard(q, userAns, showFeedback, alwaysShowExplanation) {
   // Fill-in-the-blank questions use a separate renderer
   if (q.type === 'fill') {
@@ -743,8 +769,9 @@ function buildQuestionCard(q, userAns, showFeedback, alwaysShowExplanation) {
 
   const lang     = getLang();
   const answered = userAns !== undefined;
-  const qText    = lang === 'zh' ? q.questionZh : q.questionEn;
-  const options  = lang === 'zh' ? q.optionsZh  : q.optionsEn;
+  // Support both V6 format (textZh/options) and legacy format (questionZh/optionsZh)
+  const qText    = q.textZh || (lang === 'zh' ? q.questionZh : q.questionEn);
+  const options  = q.optionsZh || (lang === 'zh' ? q.optionsZh  : q.optionsEn);
   const typeLbls = { single: t('单选题','Single'), multiple: t('多选题','Multiple'), boolean: t('判断题','True/False') };
   const typeCls  = { single: 'badge-single', multiple: 'badge-multiple', boolean: 'badge-boolean' };
 
@@ -759,6 +786,7 @@ function buildQuestionCard(q, userAns, showFeedback, alwaysShowExplanation) {
       Q${currentQIndex !== undefined ? currentQIndex+1 : ''} —
       <span class="question-type-badge ${typeCls[q.type] || 'badge-single'}">${typeLbls[q.type] || q.type}</span>
     </div>
+    ${buildImageHtml(q.image)}
     <div class="question-text">${qText}</div>
     <div class="options-list">`;
 
@@ -802,9 +830,9 @@ function buildQuestionCard(q, userAns, showFeedback, alwaysShowExplanation) {
     </div>`;
   }
 
-  // Explanation
+  // Explanation / hint
   if ((showFeedback && answered) || alwaysShowExplanation) {
-    const exp = lang === 'zh' ? q.explanationZh : q.explanationEn;
+    const exp = q.hint || (lang === 'zh' ? q.explanationZh : q.explanationEn);
     if (exp) html += `<div class="explanation-box"><strong>${t('解析：','Explanation:')}</strong> ${exp}</div>`;
   }
 
@@ -812,40 +840,108 @@ function buildQuestionCard(q, userAns, showFeedback, alwaysShowExplanation) {
   return html;
 }
 
-// Render a fill-in-the-blank question card
+// Render a fill-in-the-blank question card (V6 format with typed inputs)
 function buildFillCard(q, userAns, showFeedback, alwaysShowExplanation) {
   const lang     = getLang();
-  const answered = userAns !== undefined;
-  const qText    = lang === 'zh' ? q.questionZh : q.questionEn;
+  const qText    = q.textZh || (lang === 'zh' ? q.questionZh : q.questionEn) || '';
+  const blanks   = q.blanks || [];
+  const blankCount = q.blankCount || blanks.length || 1;
+  const isV6     = !!q._v6;
+
+  // Determine answer state
+  const hasTypedAns = Array.isArray(userAns) && userAns.some(function(v){ return v && v.length > 0; });
+  const answered    = hasTypedAns || userAns === '__fill_revealed__';
 
   let html = `<div class="question-card">
     <div class="question-num">
       Q${currentQIndex !== undefined ? currentQIndex+1 : ''} —
       <span class="question-type-badge" style="background:#6c757d;color:#fff;">${t('填空题','Fill-in')}</span>
     </div>
+    ${buildImageHtml(q.image)}
     <div class="question-text">${qText}</div>`;
 
-  if (!answered) {
-    html += `<div style="margin-top:1.25rem;">
-      <button class="btn btn-outline" onclick="revealFillAnswer('${q.id}')"
-        style="width:100%;padding:.75rem;font-size:.95rem;">
-        💡 ${t('查看参考答案','Show Answer')}
-      </button>
-    </div>`;
+  if (isV6) {
+    // V6 fill: show input fields for each blank
+    if ((showFeedback && answered) || alwaysShowExplanation) {
+      // Review mode: show correct/wrong per blank
+      html += '<div style="margin-top:1rem;">';
+      blanks.forEach(function(expected, i) {
+        var typed = Array.isArray(userAns) ? (userAns[i] || '') : '';
+        var correct = checkFillBlank(expected, typed);
+        var alts    = expected.split('/').map(function(a){ return a.trim(); }).join(' / ');
+        html += `<div style="margin-bottom:.75rem;">
+          <div style="font-size:.8rem;color:var(--dark-gray);margin-bottom:.3rem;">${t('第','Blank ')}${i+1}${t('空','')}</div>
+          <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;">
+            <div style="flex:1;min-width:160px;padding:.5rem .75rem;border-radius:6px;border:1.5px solid ${correct?'#1E7E45':'#C0392B'};background:${correct?'#e8f5e9':'#fdecea'};">
+              ${typed ? ('你的答案: <strong>' + typed + '</strong>') : t('（未作答）','(not answered)')}
+              <span style="margin-left:.5rem;">${correct?'✅':'❌'}</span>
+            </div>
+            ${!correct ? `<div style="padding:.5rem .75rem;border-radius:6px;background:#fff3cd;border:1px solid #f0ad4e;font-size:.85rem;">
+              ${t('参考答案：','Answer:')} <strong>${alts}</strong>
+            </div>` : ''}
+          </div>
+        </div>`;
+      });
+      html += '</div>';
+      if (q.hint) html += `<div class="explanation-box"><strong>${t('解析：','Explanation:')}</strong> ${q.hint}</div>`;
+    } else {
+      // Input mode
+      var savedVals = Array.isArray(userAns) ? userAns : [];
+      html += '<div style="margin-top:1.25rem;">';
+      for (var i = 0; i < blankCount; i++) {
+        var val = savedVals[i] || '';
+        html += `<div style="margin-bottom:.75rem;">
+          <label style="font-size:.82rem;color:var(--dark-gray);display:block;margin-bottom:.3rem;">${t('第','Blank ')}${i+1}${t('空 / 请填写答案','/ Enter answer')}</label>
+          <input class="form-input v6-fill-input" type="text"
+            data-qid="${q.id}" data-idx="${i}"
+            value="${val.replace(/"/g,'&quot;')}"
+            placeholder="${t('在此输入...','Type here...')}"
+            style="width:100%;max-width:420px;">
+        </div>`;
+      }
+      html += `<button class="btn btn-primary btn-sm" onclick="saveFillAnswer('${q.id}',${blankCount})" style="margin-top:.25rem;">
+        ${t('💾 保存答案','💾 Save Answer')}
+      </button></div>`;
+    }
   } else {
-    const answerText = typeof q.answer === 'string' ? q.answer : JSON.stringify(q.answer);
-    html += `<div class="explanation-box" style="background:#e8f5e9;border-left:4px solid #1E7E45;margin-top:1rem;">
-      <strong>${t('参考答案：','Answer:')}</strong> ${answerText}
-    </div>`;
-    const exp = lang === 'zh' ? q.explanationZh : q.explanationEn;
-    if (exp) html += `<div class="explanation-box"><strong>${t('解析：','Explanation:')}</strong> ${exp}</div>`;
+    // Legacy fill: reveal-only mode
+    if (!answered) {
+      html += `<div style="margin-top:1.25rem;">
+        <button class="btn btn-outline" onclick="revealFillAnswer('${q.id}')"
+          style="width:100%;padding:.75rem;font-size:.95rem;">
+          💡 ${t('查看参考答案','Show Answer')}
+        </button>
+      </div>`;
+    } else {
+      const answerText = typeof q.answer === 'string' ? q.answer : JSON.stringify(q.answer);
+      html += `<div class="explanation-box" style="background:#e8f5e9;border-left:4px solid #1E7E45;margin-top:1rem;">
+        <strong>${t('参考答案：','Answer:')}</strong> ${answerText}
+      </div>`;
+    }
   }
 
   html += '</div>';
   return html;
 }
 
-// Reveal the answer for a fill question and advance the quiz
+// Save fill inputs for a V6 fill question
+function saveFillAnswer(qId, blankCount) {
+  var values = [];
+  for (var i = 0; i < blankCount; i++) {
+    var inp = document.querySelector('.v6-fill-input[data-qid="'+qId+'"][data-idx="'+i+'"]');
+    values.push(inp ? inp.value.trim() : '');
+  }
+  sessionAnswers[qId] = values;
+  if (sessionMode === 'quiz') {
+    renderQuizSession();
+  } else {
+    renderExamQuestion();
+    renderQuestionNav();
+    updateExamProgress();
+  }
+}
+
+// Reveal the answer for a legacy fill question
 function revealFillAnswer(qId) {
   sessionAnswers[qId] = '__fill_revealed__';
   renderQuizSession();
@@ -897,6 +993,7 @@ function updateExamProgress() {
 }
 
 function navigateQuestion(dir) {
+  captureFillInputs();
   const newIdx = currentQIndex + dir;
   if (newIdx < 0 || newIdx >= sessionQuestions.length) return;
   currentQIndex = newIdx;
@@ -907,6 +1004,7 @@ function navigateQuestion(dir) {
 }
 
 function jumpToQuestion(idx) {
+  captureFillInputs();
   currentQIndex = idx;
   renderExamQuestion();
   renderQuestionNav();
@@ -927,6 +1025,7 @@ function confirmSubmit() {
 
 async function submitExam() {
   hideModal('confirmModal');
+  captureFillInputs(); // Save any open fill inputs
   if (examTimer) examTimer.stop();
 
   const result = scoreExam(sessionQuestions, sessionAnswers);
@@ -997,17 +1096,30 @@ function showResult(result) {
 
 function buildReviewCard(q, userAns, detail, idx) {
   const lang    = getLang();
-  const qText   = lang === 'zh' ? q.questionZh : q.questionEn;
-  const options = lang === 'zh' ? q.optionsZh  : q.optionsEn;
+  const qText   = q.textZh || (lang === 'zh' ? q.questionZh : q.questionEn) || '';
   const keys    = 'ABCD';
+
+  // V6 fill question review
+  if (q.type === 'fill' && q._v6) {
+    return buildFillCard(q, userAns, true, true);
+  }
+
+  // V6 or legacy choice question review
+  const options = q.optionsZh || (lang === 'zh' ? q.optionsZh : q.optionsEn);
+  if (!Array.isArray(options)) {
+    return `<div class="question-card" style="margin-bottom:.75rem;">
+      <div class="question-num">Q${idx+1} <span style="margin-left:.5rem;">${detail.isCorrect ? '✅' : '❌'}</span></div>
+      <div class="question-text">${qText}</div></div>`;
+  }
 
   let html = `<div class="question-card" style="margin-bottom:.75rem;">
     <div class="question-num">Q${idx+1} <span style="margin-left:.5rem;">${detail.isCorrect ? '✅' : '❌'}</span></div>
+    ${buildImageHtml(q.image)}
     <div class="question-text">${qText}</div>
     <div class="options-list">`;
 
   options.forEach((opt, i) => {
-    const isCorrect  = q.type === 'multiple' ? q.answer.includes(i) : q.answer === i;
+    const isCorrect  = q.type === 'multiple' ? (Array.isArray(q.answer) && q.answer.includes(i)) : q.answer === i;
     const isSelected = q.type === 'multiple' ? (Array.isArray(userAns) && userAns.includes(i)) : userAns === i;
     let cls = 'option-item';
     if (isSelected && isCorrect) cls += ' correct';
@@ -1017,7 +1129,7 @@ function buildReviewCard(q, userAns, detail, idx) {
   });
 
   html += '</div>';
-  const exp = lang === 'zh' ? q.explanationZh : q.explanationEn;
+  const exp = q.hint || (lang === 'zh' ? q.explanationZh : q.explanationEn);
   if (exp) html += `<div class="explanation-box"><strong>${t('解析：','Explanation:')}</strong> ${exp}</div>`;
   html += '</div>';
   return html;
