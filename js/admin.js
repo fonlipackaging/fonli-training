@@ -29,14 +29,28 @@ auth.onAuthStateChanged(async user => {
 });
 
 async function loadAllData() {
-  const [usersSnap, attSnap, notifSnap] = await Promise.all([
+  const [usersSnap, attSnap, notifSnap, settingsDoc] = await Promise.all([
     db.collection('users').get(),
     db.collection('examAttempts').orderBy('createdAt', 'desc').get(),
-    db.collection('notifications').orderBy('createdAt', 'desc').get()
+    db.collection('notifications').orderBy('createdAt', 'desc').get(),
+    db.collection('settings').doc('exam').get()
   ]);
   allUsers    = usersSnap.docs.map(d => ({ id: d.id, ...d.data() }));
   allAttempts = attSnap.docs.map(d => ({ id: d.id, ...d.data() }));
   allNotifs   = notifSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+  // Apply saved exam settings over config defaults
+  if (settingsDoc.exists) {
+    const s = settingsDoc.data();
+    if (s.passingScore  != null) EXAM_CONFIG.exam.passingScore  = s.passingScore;
+    if (s.excellentScore!= null) EXAM_CONFIG.exam.excellentScore= s.excellentScore;
+    if (s.maxAttempts   != null) EXAM_CONFIG.exam.maxAttempts   = s.maxAttempts;
+    if (s.cooldownHours != null) EXAM_CONFIG.exam.cooldownHours = s.cooldownHours;
+    if (s.timeMinutes   != null) {
+      EXAM_CONFIG.exam.timeMinutes  = s.timeMinutes;
+      EXAM_CONFIG.mock.timeMinutes  = s.timeMinutes;
+    }
+  }
 
   // Update notification badge
   const unread = allNotifs.filter(n => !n.read).length;
@@ -55,6 +69,7 @@ function navigate(view) {
   if (view === 'results')       renderResults();
   if (view === 'notifications') renderNotifications();
   if (view === 'content')       renderContent();
+  if (view === 'settings')      renderSettings();
 }
 
 function doLogout() {
@@ -962,5 +977,66 @@ async function seedDefaultChapters() {
       btn.disabled = false;
       btn.innerHTML = `<i class="ti ti-download"></i> ${t('导入默认知识库','Import Default')}`;
     }
+  }
+}
+
+// ── Exam Settings ─────────────────────────────────────
+
+function renderSettings() {
+  document.getElementById('setPassingScore').value   = EXAM_CONFIG.exam.passingScore;
+  document.getElementById('setExcellentScore').value = EXAM_CONFIG.exam.excellentScore;
+  document.getElementById('setMaxAttempts').value    = EXAM_CONFIG.exam.maxAttempts;
+  document.getElementById('setCooldownHours').value  = EXAM_CONFIG.exam.cooldownHours;
+  document.getElementById('setTimeMinutes').value    = EXAM_CONFIG.exam.timeMinutes;
+  document.getElementById('settingsSavedMsg').style.display = 'none';
+  const err = document.getElementById('settingsError');
+  err.textContent = ''; err.classList.add('hidden');
+}
+
+async function saveExamSettings() {
+  const passing   = parseInt(document.getElementById('setPassingScore').value);
+  const excellent = parseInt(document.getElementById('setExcellentScore').value);
+  const maxAtt    = parseInt(document.getElementById('setMaxAttempts').value);
+  const cooldown  = parseInt(document.getElementById('setCooldownHours').value);
+  const timeMins  = parseInt(document.getElementById('setTimeMinutes').value);
+
+  const errEl = document.getElementById('settingsError');
+  errEl.classList.add('hidden');
+
+  if (isNaN(passing) || passing < 1 || passing > 100) {
+    errEl.textContent = '及格分数须在 1-100 之间'; errEl.classList.remove('hidden'); return;
+  }
+  if (isNaN(excellent) || excellent < passing || excellent > 100) {
+    errEl.textContent = '优秀分数须大于等于及格分数，且不超过 100'; errEl.classList.remove('hidden'); return;
+  }
+  if (isNaN(maxAtt) || maxAtt < 1) {
+    errEl.textContent = '考试次数至少为 1'; errEl.classList.remove('hidden'); return;
+  }
+  if (isNaN(cooldown) || cooldown < 0) {
+    errEl.textContent = '冷却时间不能为负数'; errEl.classList.remove('hidden'); return;
+  }
+  if (isNaN(timeMins) || timeMins < 10) {
+    errEl.textContent = '考试时间至少 10 分钟'; errEl.classList.remove('hidden'); return;
+  }
+
+  const settings = { passingScore: passing, excellentScore: excellent,
+    maxAttempts: maxAtt, cooldownHours: cooldown, timeMinutes: timeMins,
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
+
+  try {
+    await db.collection('settings').doc('exam').set(settings);
+    // Update runtime config immediately
+    EXAM_CONFIG.exam.passingScore   = passing;
+    EXAM_CONFIG.exam.excellentScore = excellent;
+    EXAM_CONFIG.exam.maxAttempts    = maxAtt;
+    EXAM_CONFIG.exam.cooldownHours  = cooldown;
+    EXAM_CONFIG.exam.timeMinutes    = timeMins;
+    EXAM_CONFIG.mock.timeMinutes    = timeMins;
+    const msg = document.getElementById('settingsSavedMsg');
+    msg.style.display = 'inline';
+    setTimeout(() => { msg.style.display = 'none'; }, 3000);
+    toast(t('设置已保存', 'Settings saved'), 'success');
+  } catch(e) {
+    errEl.textContent = '保存失败: ' + e.message; errEl.classList.remove('hidden');
   }
 }
