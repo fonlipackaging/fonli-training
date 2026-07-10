@@ -617,6 +617,12 @@ function renderMockLanding() {
     locked ? t(`请先完成全部${appChapters.length}个章节的学习（当前已完成${done}章）`, `Complete all ${appChapters.length} chapters first (${done} done)`)
            : t('完整模拟正式考试环境，帮助你评估准备程度。', 'Simulate the real exam to assess your readiness.');
   document.getElementById('startMockBtn').disabled = locked;
+  // Set dynamic question count (always reflects current V6 pool size)
+  var v6Count = typeof EXAM_QUESTIONS_V6 !== 'undefined' ? EXAM_QUESTIONS_V6.length : '--';
+  var el = document.getElementById('mockQuestionCount');
+  if (el) el.textContent = v6Count;
+  var t2 = document.getElementById('mockTimeDisplay');
+  if (t2) t2.textContent = EXAM_CONFIG.mock.timeMinutes;
 }
 
 function startMock() {
@@ -632,6 +638,13 @@ function startMock() {
 
 // ── Final Exam ────────────────────────────────────────
 function renderExamLanding() {
+  // Set dynamic question count and time (updates automatically when V6 pool grows)
+  var v6Count = typeof EXAM_QUESTIONS_V6 !== 'undefined' ? EXAM_QUESTIONS_V6.length : '--';
+  var eqc = document.getElementById('examQuestionCount');
+  if (eqc) eqc.textContent = v6Count;
+  var etd = document.getElementById('examTimeDisplay');
+  if (etd) etd.textContent = EXAM_CONFIG.exam.timeMinutes;
+
   const done     = (userProgress.completedChapters || []).length;
   const allDone  = done >= appChapters.length;
   const attempts = examAttempts.length;
