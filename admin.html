@@ -56,6 +56,9 @@
       <a href="#" id="nav-content" onclick="navigate('content')">
         <i class="ti ti-books nav-icon"></i><span data-zh="知识管理" data-en="Knowledge">知识管理</span>
       </a>
+      <a href="#" id="nav-settings" onclick="navigate('settings')">
+        <i class="ti ti-settings nav-icon"></i><span data-zh="考试设置" data-en="Exam Settings">考试设置</span>
+      </a>
     </nav>
     <div class="sidebar-section" style="margin-top:.5rem;"><span class="sidebar-label">系统</span></div>
     <nav class="sidebar-nav">
@@ -130,6 +133,61 @@
         <button class="btn btn-outline btn-sm" onclick="markAllRead()" data-zh="全部标为已读" data-en="Mark All Read">全部标为已读</button>
       </div>
       <div class="card" style="padding:0;"><div id="notifContent"></div></div>
+    </div>
+
+
+    <!-- ── Exam Settings ── -->
+    <div class="view hidden" id="view-settings">
+      <h1 style="margin-bottom:1.5rem;" data-zh="考试设置" data-en="Exam Settings">考试设置</h1>
+      <div class="card" style="max-width:520px;">
+        <div class="card-title" style="margin-bottom:1.25rem;">⚙️ <span data-zh="评分与规则" data-en="Scoring & Rules">评分与规则</span></div>
+
+        <div class="form-group">
+          <label class="form-label" data-zh="及格分数线 (%)" data-en="Passing Score (%)">及格分数线 (%)</label>
+          <input class="form-input" type="number" id="setPassingScore" min="1" max="100" placeholder="95">
+          <div class="form-hint" data-zh="达到此分数视为及格" data-en="Score at or above this is a pass">达到此分数视为及格</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" data-zh="优秀分数线 (%)" data-en="Excellent Score (%)">优秀分数线 (%)</label>
+          <input class="form-input" type="number" id="setExcellentScore" min="1" max="100" placeholder="99">
+          <div class="form-hint" data-zh="达到此分数显示"优秀"标识" data-en="Score at or above this shows Excellent badge">达到此分数显示"优秀"标识</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" data-zh="最多考试次数" data-en="Max Attempts">最多考试次数</label>
+          <input class="form-input" type="number" id="setMaxAttempts" min="1" max="10" placeholder="3">
+          <div class="form-hint" data-zh="正式考试每人最多可参加的次数" data-en="Maximum times a user can take the final exam">正式考试每人最多可参加的次数</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" data-zh="考试冷却时间（小时）" data-en="Cooldown Between Attempts (hours)">考试冷却时间（小时）</label>
+          <input class="form-input" type="number" id="setCooldownHours" min="0" max="168" placeholder="24">
+          <div class="form-hint" data-zh="两次考试之间需等待的小时数" data-en="Hours to wait between exam attempts">两次考试之间需等待的小时数</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" data-zh="考试时间限制（分钟）" data-en="Exam Time Limit (minutes)">考试时间限制（分钟）</label>
+          <input class="form-input" type="number" id="setTimeMinutes" min="10" max="600" placeholder="180">
+          <div class="form-hint" data-zh="适用于模拟测试和正式考试" data-en="Applies to both mock and final exam">适用于模拟测试和正式考试</div>
+        </div>
+
+        <div class="form-error hidden" id="settingsError"></div>
+        <div style="margin-top:1.5rem;display:flex;gap:.75rem;">
+          <button class="btn btn-primary" onclick="saveExamSettings()">
+            💾 <span data-zh="保存设置" data-en="Save Settings">保存设置</span>
+          </button>
+          <span id="settingsSavedMsg" style="display:none;color:var(--success);font-weight:600;align-self:center;">✅ 已保存</span>
+        </div>
+      </div>
+
+      <div class="card" style="max-width:520px;margin-top:0;">
+        <div class="card-title" style="margin-bottom:.75rem;">ℹ️ <span data-zh="说明" data-en="Notes">说明</span></div>
+        <p style="color:var(--text-muted);font-size:.9rem;line-height:1.7;">
+          评分始终按 <b>正确题数 ÷ 总题数 × 100</b> 计算，与题目总数无关。
+          修改设置后立即生效，学员下次打开系统时自动读取最新配置。
+        </p>
+      </div>
     </div>
 
   </main>
