@@ -23,6 +23,7 @@ let currentUser  = null;
 let userProfile  = null;
 let userProgress = null;   // { completedChapters: [], quizScores: {} }
 let examAttempts = [];     // array of attempt docs
+let appChapters  = [];     // loaded from Firestore (fallback: appChapters in data.js)
 
 let sessionMode       = null;  // 'quiz'|'mock'|'exam'
 let sessionQuestions  = [];
@@ -31,24 +32,60 @@ let currentQIndex     = 0;
 let examTimer         = null;
 let currentChapterId  = null;
 let currentChapterIdx = 0;
+let currentSectionIdx = 0;  // pagination within chapter
 
 // ── Auth guard ────────────────────────────────────────
+function hideAppLoading() {
+  const ld = document.getElementById('appLoading');
+  if (ld) ld.style.display = 'none';
+}
+
 auth.onAuthStateChanged(async user => {
   if (!user) { window.location.href = 'index.html'; return; }
   currentUser = user;
-  await loadUserData();
-  initSidebar();
-  navigate('dashboard');
-  applyI18n();
+  try {
+    await loadUserData();
+    initSidebar();
+    navigate('dashboard');
+    applyI18n();
+  } catch(e) {
+    console.error('App init error:', e);
+  } finally {
+    hideAppLoading();
+  }
 });
 
+// ── Load chapters: always use data.js (Firestore only stores progress/users) ─
+async function loadChapters() {
+  // Always use the static data.js CHAPTERS — Firestore content may be stale.
+  appChapters = (typeof CHAPTERS !== 'undefined' && Array.isArray(CHAPTERS)) ? CHAPTERS : [];
+}
+
 async function loadUserData() {
+  await loadChapters();
+
   const [profDoc, progDoc] = await Promise.all([
     db.collection('users').doc(currentUser.uid).get(),
     db.collection('progress').doc(currentUser.uid).get()
   ]);
 
   userProfile = profDoc.exists ? profDoc.data() : { name: currentUser.email, role: 'user' };
+
+  // Admin accounts: redirect back unless explicitly in preview mode
+  if (userProfile.role === 'admin') {
+    // Check URL param (?preview=admin) OR sessionStorage flag
+    const urlPreview = new URLSearchParams(window.location.search).get('preview') === 'admin';
+    const ssPreview  = sessionStorage.getItem('fonli_admin_preview') === '1';
+    const inPreview  = urlPreview || ssPreview;
+    if (!inPreview) {
+      window.location.href = 'admin.html';
+      return;
+    }
+    // Persist for this tab session (survives hash navigation)
+    sessionStorage.setItem('fonli_admin_preview', '1');
+    // Show preview banner so admin can return easily
+    showAdminPreviewBanner();
+  }
 
   if (!profDoc.exists) {
     // Create user doc if missing
@@ -88,7 +125,38 @@ function navigate(view) {
 }
 
 function doLogout() {
+  localStorage.removeItem('fonli_admin_preview');
   auth.signOut().then(() => window.location.href = 'index.html');
+}
+
+// ── Admin preview mode ────────────────────────────────
+function showAdminPreviewBanner() {
+  const BANNER_H = 40; // fixed height in px
+  const banner = document.createElement('div');
+  banner.id = 'adminPreviewBanner';
+  banner.style.cssText =
+    'position:fixed;top:0;left:0;right:0;height:' + BANNER_H + 'px;z-index:999999;' +
+    'background:#e67e22;color:#fff;display:flex;align-items:center;' +
+    'justify-content:center;gap:1.25rem;font-size:.88rem;font-weight:600;' +
+    'box-shadow:0 2px 8px rgba(0,0,0,.25);';
+  banner.innerHTML =
+    '<span>👁 管理员预览模式 | Admin Preview</span>' +
+    '<button onclick="exitAdminPreview()" style="background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.4);' +
+    'color:#fff;padding:.3rem 1rem;border-radius:6px;cursor:pointer;font-size:.85rem;font-weight:700;">' +
+    '← 返回管理后台</button>';
+  document.body.prepend(banner);
+  // Push navbar down by fixed banner height (offsetHeight=0 before paint)
+  const nav = document.querySelector('.navbar');
+  if (nav) nav.style.top = BANNER_H + 'px';
+  // Also push app-layout down
+  const layout = document.querySelector('.app-layout');
+  if (layout) layout.style.marginTop = BANNER_H + 'px';
+}
+
+function exitAdminPreview() {
+  sessionStorage.removeItem('fonli_admin_preview');
+  localStorage.removeItem('fonli_admin_preview');
+  window.location.href = 'admin.html';
 }
 
 function toggleLang() {
@@ -105,7 +173,7 @@ function currentActiveView() {
 
 // ── Dashboard ─────────────────────────────────────────
 function renderDashboard() {
-  const total    = CHAPTERS.length;
+  const total    = appChapters.length;
   const done     = (userProgress.completedChapters || []).length;
   const pct      = Math.round(done / total * 100);
   const bestExam = examAttempts.length ? Math.max(...examAttempts.map(a => a.score)) : null;
@@ -178,17 +246,23 @@ function renderDashboard() {
 // ── Learn ─────────────────────────────────────────────
 function renderLearnList() {
   const done = userProgress.completedChapters || [];
+  if (!appChapters || appChapters.length === 0) {
+    document.getElementById('chapterList').innerHTML =
+      `<div class="alert alert-info">${t('章节加载中，请稍候或刷新页面…','Loading chapters, please wait or refresh…')}</div>`;
+    return;
+  }
   let html = '';
-  CHAPTERS.forEach((ch, i) => {
+  appChapters.forEach((ch, i) => {
     const isComplete = done.includes(ch.id);
-    const isLocked   = i > 0 && !done.includes(CHAPTERS[i-1].id);
+    const isLocked   = i > 0 && !done.includes(appChapters[i-1].id);
+    const secCount   = (ch.sections || []).length;
     html += `
       <div class="chapter-item ${isComplete ? 'completed' : ''} ${isLocked ? 'locked' : ''}"
            onclick="${isLocked ? '' : `openChapter('${ch.id}')`}">
         <div class="chapter-num">${ch.order}</div>
         <div class="chapter-info">
           <div class="chapter-title">${getLang()==='zh' ? ch.titleZh : ch.titleEn}</div>
-          <div class="chapter-meta">${ch.sections.length} ${t('节','sections')} · ${t('约','~')}${ch.estimatedMinutes}${t('分钟','min')}</div>
+          <div class="chapter-meta">${secCount} ${t('节','sections')} · ${t('约','~')}${ch.estimatedMinutes}${t('分钟','min')}</div>
         </div>
         <div class="chapter-status">${isComplete ? '✅' : (isLocked ? '🔒' : '📖')}</div>
       </div>`;
@@ -198,46 +272,117 @@ function renderLearnList() {
 
 function openChapter(chapterId) {
   currentChapterId  = chapterId;
-  currentChapterIdx = CHAPTERS.findIndex(c => c.id === chapterId);
+  currentChapterIdx = appChapters.findIndex(c => c.id === chapterId);
+  currentSectionIdx = 0;
   renderReader();
   showView('view-reader');
   setActiveNav('nav-learn');
 }
 
 function renderReader() {
-  const ch = CHAPTERS[currentChapterIdx];
+  const ch   = appChapters[currentChapterIdx];
   const lang = getLang();
+  const secs = ch.sections || [];
+  const totalSec = secs.length;
+  // Guard section index
+  if (currentSectionIdx < 0) currentSectionIdx = 0;
+  if (currentSectionIdx >= totalSec) currentSectionIdx = totalSec - 1;
+  const sec = secs[currentSectionIdx] || {};
+
+  // ── Header ──────────────────────────────────────────
   document.getElementById('readerHeader').innerHTML = `
     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;">
       <div>
-        <h2>${lang==='zh' ? ch.titleZh : ch.titleEn}</h2>
-        <p>${t('章节','Chapter')} ${ch.order} / ${CHAPTERS.length} · ${t('约','~')}${ch.estimatedMinutes}${t('分钟阅读','min read')}</p>
+        <h2 style="margin-bottom:.2rem;">${lang==='zh' ? ch.titleZh : ch.titleEn}</h2>
+        <p style="margin:0;font-size:.82rem;color:rgba(255,255,255,.65);">
+          ${t('章节','Ch.')} ${ch.order}/${appChapters.length}
+          &nbsp;·&nbsp;
+          <span style="color:#ffb08a;font-weight:600;">
+            ${t('小节','Sec.')} ${currentSectionIdx+1} / ${totalSec}
+          </span>
+        </p>
       </div>
-      <span class="tag tag-blue">${ch.order} / ${CHAPTERS.length}</span>
+      <div style="display:flex;align-items:center;gap:.5rem;">
+        <div class="reader-progress-bar" style="width:120px;height:7px;background:rgba(255,255,255,.2);border-radius:4px;overflow:hidden;">
+          <div style="height:100%;width:${Math.round((currentSectionIdx+1)/totalSec*100)}%;background:#E8603C;border-radius:4px;transition:width .4s;"></div>
+        </div>
+        <span style="font-size:.78rem;color:rgba(255,255,255,.7);">${Math.round((currentSectionIdx+1)/totalSec*100)}%</span>
+      </div>
     </div>`;
 
-  let body = '';
-  ch.sections.forEach(sec => {
-    const heading = lang === 'zh' ? sec.headingZh : sec.headingEn;
-    const content = (lang === 'zh' ? sec.contentZh : sec.contentEn) || '';
-    body += `<div class="reader-section">
-      <h3>${heading}</h3>
-      ${content.split('\n').map(line => line.trim() ? `<p>${line.replace(/^[•·]\s?/,'<span style="color:var(--mid-blue);margin-right:.3em;">•</span>')}</p>` : '').join('')}
+  // ── Section content ──────────────────────────────────
+  const heading = lang === 'zh' ? sec.headingZh : sec.headingEn;
+  const content = (lang === 'zh' ? sec.contentZh : sec.contentEn) || '';
+  const isHtml = content.trim().startsWith('<');
+  const renderedContent = isHtml
+    ? content
+    : content.split('\n').map(line => line.trim()
+        ? `<p>${line.replace(/^[•·]\s?/,'<span style="color:var(--mid-blue);margin-right:.3em;">•</span>')}</p>`
+        : '').join('');
+
+  document.getElementById('readerBody').innerHTML = `
+    <div class="reader-section">
+      ${heading ? `<h3>${heading}</h3>` : ''}
+      ${renderedContent}
     </div>`;
+
+  // Make images zoomable
+  document.getElementById('readerBody').querySelectorAll('img').forEach(img => {
+    img.style.cursor = 'zoom-in';
+    img.addEventListener('click', () => openLightbox(img.src, img.alt || ''));
   });
-  document.getElementById('readerBody').innerHTML = body;
 
-  // Prev/Next btn state
-  document.getElementById('prevChapterBtn').style.visibility = currentChapterIdx === 0 ? 'hidden' : 'visible';
-  const isLast = currentChapterIdx === CHAPTERS.length - 1;
+  // ── Section nav buttons ──────────────────────────────
+  const isFirstSec = currentSectionIdx === 0;
+  const isLastSec  = currentSectionIdx === totalSec - 1;
+  const isLastCh   = currentChapterIdx === appChapters.length - 1;
+
+  document.getElementById('prevChapterBtn').style.visibility =
+    (isFirstSec && currentChapterIdx === 0) ? 'hidden' : 'visible';
+  document.getElementById('prevChapterBtn').textContent =
+    isFirstSec ? t('← 上一章', '← Prev Ch.') : t('← 上一节', '← Prev');
+
   const nextBtn = document.getElementById('nextChapterBtn');
-  nextBtn.textContent = isLast ? t('完成学习', 'Finish') : t('下一章 →', 'Next →');
-  document.getElementById('markReadBtn').textContent =
-    t('✓ 标记已读' + (isLast ? '' : '，继续'), '✓ Mark Read' + (isLast ? '' : ' & Continue'));
+  if (isLastSec && isLastCh) {
+    nextBtn.textContent = t('完成学习', 'Finish');
+  } else if (isLastSec) {
+    nextBtn.textContent = t('下一章 →', 'Next Ch. →');
+  } else {
+    nextBtn.textContent = t('下一节 →', 'Next →');
+  }
+
+  const markBtn = document.getElementById('markReadBtn');
+  if (markBtn) {
+    markBtn.style.display = isLastSec ? 'inline-flex' : 'none';
+  }
+
+  window.scrollTo(0, 0);
+}
+
+// ── Lightbox ──────────────────────────────────────────
+function openLightbox(src, caption) {
+  let lb = document.getElementById('img-lightbox');
+  if (!lb) {
+    lb = document.createElement('div');
+    lb.id = 'img-lightbox';
+    lb.style.cssText = `position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:zoom-out;`;
+    lb.innerHTML = `
+      <button onclick="document.getElementById('img-lightbox').remove()"
+        style="position:absolute;top:1rem;right:1.25rem;background:none;border:none;
+               color:#fff;font-size:1.8rem;cursor:pointer;line-height:1;">✕</button>
+      <img id="lb-img" style="max-width:92vw;max-height:85vh;border-radius:6px;box-shadow:0 8px 40px rgba(0,0,0,.6);object-fit:contain;">
+      <p id="lb-cap" style="color:rgba(255,255,255,.75);font-size:.85rem;margin-top:.75rem;text-align:center;max-width:80vw;"></p>`;
+    lb.addEventListener('click', e => { if (e.target === lb) lb.remove(); });
+    document.body.appendChild(lb);
+  }
+  document.getElementById('lb-img').src = src;
+  document.getElementById('lb-cap').textContent = caption;
+  lb.style.display = 'flex';
 }
 
 async function markChapterRead() {
-  const ch = CHAPTERS[currentChapterIdx];
+  const ch = appChapters[currentChapterIdx];
   const done = userProgress.completedChapters || [];
   if (!done.includes(ch.id)) {
     done.push(ch.id);
@@ -245,9 +390,10 @@ async function markChapterRead() {
     await db.collection('progress').doc(currentUser.uid).set(userProgress, { merge: true });
   }
   // Go to next chapter or back to list
-  if (currentChapterIdx < CHAPTERS.length - 1) {
+  if (currentChapterIdx < appChapters.length - 1) {
     currentChapterIdx++;
-    currentChapterId = CHAPTERS[currentChapterIdx].id;
+    currentChapterId  = appChapters[currentChapterIdx].id;
+    currentSectionIdx = 0;
     renderReader();
   } else {
     toast(t('🎉 全部章节学习完成！', '🎉 All chapters completed!'), 'success');
@@ -256,38 +402,101 @@ async function markChapterRead() {
 }
 
 function navigateChapter(dir) {
-  const newIdx = currentChapterIdx + dir;
-  if (newIdx < 0 || newIdx >= CHAPTERS.length) return;
-  currentChapterIdx = newIdx;
-  currentChapterId  = CHAPTERS[newIdx].id;
-  renderReader();
-  window.scrollTo(0, 0);
+  const ch     = appChapters[currentChapterIdx];
+  const secs   = (ch && ch.sections) ? ch.sections : [];
+  const total  = secs.length;
+
+  if (dir > 0) {
+    // Forward: go to next section, or next chapter if last section
+    if (currentSectionIdx < total - 1) {
+      currentSectionIdx++;
+      renderReader();
+    } else {
+      // Move to next chapter
+      const newIdx = currentChapterIdx + 1;
+      if (newIdx >= appChapters.length) return;
+      currentChapterIdx = newIdx;
+      currentChapterId  = appChapters[newIdx].id;
+      currentSectionIdx = 0;
+      renderReader();
+    }
+  } else {
+    // Backward: go to prev section, or prev chapter last section
+    if (currentSectionIdx > 0) {
+      currentSectionIdx--;
+      renderReader();
+    } else {
+      const newIdx = currentChapterIdx - 1;
+      if (newIdx < 0) return;
+      currentChapterIdx = newIdx;
+      currentChapterId  = appChapters[newIdx].id;
+      const prevSecs = appChapters[newIdx].sections || [];
+      currentSectionIdx = Math.max(0, prevSecs.length - 1);
+      renderReader();
+    }
+  }
 }
 
 // ── Chapter Quiz ──────────────────────────────────────
 function renderQuizChapterList() {
-  const done  = userProgress.completedChapters || [];
+  const done   = userProgress.completedChapters || [];
   const scores = userProgress.quizScores || {};
+  const allQs  = typeof QUESTIONS !== 'undefined' ? QUESTIONS : [];
+  if (!Array.isArray(appChapters) || appChapters.length === 0) {
+    document.getElementById('quizChapterList').innerHTML =
+      '<p style="color:#888;text-align:center;padding:2rem">章节数据加载中，请刷新页面重试…</p>';
+    return;
+  }
   let html = '';
-  CHAPTERS.forEach(ch => {
-    const isAvail = done.includes(ch.id);
-    const score   = scores[ch.id];
-    html += `
-      <div class="chapter-item ${!isAvail ? 'locked' : ''}" onclick="${isAvail ? `startChapterQuiz('${ch.id}')` : ''}">
-        <div class="chapter-num" style="background:${isAvail ? 'var(--pale-blue)' : 'var(--gray)'};">${ch.order}</div>
-        <div class="chapter-info">
-          <div class="chapter-title">${getLang()==='zh' ? ch.titleZh : ch.titleEn}</div>
-          <div class="chapter-meta">${isAvail ? (score !== undefined ? `${t('上次','Last')}: ${score}${t('分','pts')}` : t('5题，立即答题','5 questions, answer now')) : t('请先完成本章学习','Complete chapter first')}</div>
-        </div>
-        <div class="chapter-status">${!isAvail ? '🔒' : (score >= 60 ? '✅' : (score !== undefined ? '⚠️' : '▶️'))}</div>
-      </div>`;
+  appChapters.forEach(function(ch) {
+    var isAvail = done.includes(ch.id);
+    var score   = scores[ch.id];
+    var qCount  = allQs.filter(function(q){ return q.chapterId === ch.id; }).length;
+    var hasQ    = qCount > 0;
+    var metaText;
+    if (!isAvail) {
+      metaText = t('请先完成本章学习', 'Complete chapter first');
+    } else if (!hasQ) {
+      metaText = t('题目筹备中…', 'Questions coming soon…');
+    } else if (score !== undefined) {
+      metaText = t('上次','Last') + ': ' + score + t('分','pts') + ' | ' + qCount + t('题','Q');
+    } else {
+      metaText = qCount + t('题，顺序作答','Q, answer in order');
+    }
+
+    var clickable = isAvail && hasQ;
+    var divAttrs  = 'class="chapter-item' + (!isAvail ? ' locked' : '') + '"';
+    if (clickable) {
+      divAttrs += ' onclick="startChapterQuiz(\'' + ch.id + '\')" style="cursor:pointer;"';
+    } else if (!isAvail) {
+      // locked — no extra attrs
+    } else {
+      divAttrs += ' style="opacity:.55;cursor:default;"';
+    }
+    var numBg  = isAvail ? 'var(--pale-blue)' : 'var(--gray)';
+    var title  = getLang() === 'zh' ? ch.titleZh : ch.titleEn;
+    var status = !isAvail ? '🔒' : !hasQ ? '⏳' : (score >= 60 ? '✅' : (score !== undefined ? '⚠️' : '▶️'));
+
+    html += '<div ' + divAttrs + '>' +
+      '<div class="chapter-num" style="background:' + numBg + ';">' + ch.order + '</div>' +
+      '<div class="chapter-info">' +
+        '<div class="chapter-title">' + title + '</div>' +
+        '<div class="chapter-meta">' + metaText + '</div>' +
+      '</div>' +
+      '<div class="chapter-status">' + status + '</div>' +
+      '</div>';
   });
   document.getElementById('quizChapterList').innerHTML = html;
 }
 
 function startChapterQuiz(chapterId) {
+  const qs = buildChapterQuizSet(chapterId);
+  if (!qs || qs.length === 0) {
+    toast(t('该章节暂无题目，请联系管理员', 'No questions available for this chapter yet'), 'warning');
+    return;
+  }
   sessionMode      = 'quiz';
-  sessionQuestions = buildChapterQuizSet(chapterId);
+  sessionQuestions = qs;
   currentChapterId = chapterId;
   sessionAnswers   = {};
   currentQIndex    = 0;
@@ -300,7 +509,7 @@ function renderQuizSession() {
   const q     = sessionQuestions[currentQIndex];
   const total = sessionQuestions.length;
   const lang  = getLang();
-  const ch    = CHAPTERS.find(c => c.id === currentChapterId);
+  const ch    = appChapters.find(c => c.id === currentChapterId);
 
   let html = `
     <div style="margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;">
@@ -400,9 +609,9 @@ async function finishQuiz() {
 // ── Mock Exam ─────────────────────────────────────────
 function renderMockLanding() {
   const done = (userProgress.completedChapters || []).length;
-  const locked = done < CHAPTERS.length;
+  const locked = done < appChapters.length;
   document.getElementById('mockDesc').textContent =
-    locked ? t(`请先完成全部${CHAPTERS.length}个章节的学习（当前已完成${done}章）`, `Complete all ${CHAPTERS.length} chapters first (${done} done)`)
+    locked ? t(`请先完成全部${appChapters.length}个章节的学习（当前已完成${done}章）`, `Complete all ${appChapters.length} chapters first (${done} done)`)
            : t('完整模拟正式考试环境，帮助你评估准备程度。', 'Simulate the real exam to assess your readiness.');
   document.getElementById('startMockBtn').disabled = locked;
 }
@@ -415,13 +624,13 @@ function startMock() {
 
   showView('view-exam-session');
   document.getElementById('sessionTitle').textContent = t('模拟测试','Mock Exam');
-  startExamSession(EXAM_CONFIG.mockExam.timeMinutes * 60);
+  startExamSession(EXAM_CONFIG.mock.timeMinutes * 60);
 }
 
 // ── Final Exam ────────────────────────────────────────
 function renderExamLanding() {
   const done     = (userProgress.completedChapters || []).length;
-  const allDone  = done >= CHAPTERS.length;
+  const allDone  = done >= appChapters.length;
   const attempts = examAttempts.length;
   const maxAtt   = EXAM_CONFIG.exam.maxAttempts;
   const canTake  = allDone && attempts < maxAtt;
@@ -454,7 +663,7 @@ function renderExamLanding() {
 
   let btnHtml = '';
   if (!allDone) {
-    btnHtml = `<div class="alert alert-info">${t(`请先完成全部${CHAPTERS.length}章节的学习`, `Please complete all ${CHAPTERS.length} chapters first`)}</div>`;
+    btnHtml = `<div class="alert alert-info">${t(`请先完成全部${appChapters.length}章节的学习`, `Please complete all ${appChapters.length} chapters first`)}</div>`;
   } else if (attempts >= maxAtt) {
     const passed = examAttempts.some(a => a.score >= EXAM_CONFIG.exam.passingScore);
     btnHtml = `<div class="alert ${passed ? 'alert-success' : 'alert-danger'}">
@@ -524,6 +733,11 @@ function renderExamQuestion() {
 }
 
 function buildQuestionCard(q, userAns, showFeedback, alwaysShowExplanation) {
+  // Fill-in-the-blank questions use a separate renderer
+  if (q.type === 'fill') {
+    return buildFillCard(q, userAns, showFeedback, alwaysShowExplanation);
+  }
+
   const lang     = getLang();
   const answered = userAns !== undefined;
   const qText    = lang === 'zh' ? q.questionZh : q.questionEn;
@@ -531,10 +745,16 @@ function buildQuestionCard(q, userAns, showFeedback, alwaysShowExplanation) {
   const typeLbls = { single: t('单选题','Single'), multiple: t('多选题','Multiple'), boolean: t('判断题','True/False') };
   const typeCls  = { single: 'badge-single', multiple: 'badge-multiple', boolean: 'badge-boolean' };
 
+  // Safety: if options are missing, show an error card rather than crash
+  if (!Array.isArray(options)) {
+    return `<div class="question-card"><div class="question-text" style="color:#c0392b;">
+      [题目数据格式错误，请联系管理员 | Question data error]<br>${qText || ''}</div></div>`;
+  }
+
   let html = `<div class="question-card">
     <div class="question-num">
-      Q${currentQIndex !== undefined ? currentQIndex+1 : ''} — ${sessionQuestions.length ? '' : ''}
-      <span class="question-type-badge ${typeCls[q.type]}">${typeLbls[q.type]}</span>
+      Q${currentQIndex !== undefined ? currentQIndex+1 : ''} —
+      <span class="question-type-badge ${typeCls[q.type] || 'badge-single'}">${typeLbls[q.type] || q.type}</span>
     </div>
     <div class="question-text">${qText}</div>
     <div class="options-list">`;
@@ -545,7 +765,7 @@ function buildQuestionCard(q, userAns, showFeedback, alwaysShowExplanation) {
 
     if (showFeedback && answered) {
       const isCorrect = q.type === 'multiple'
-        ? q.answer.includes(i)
+        ? (Array.isArray(q.answer) && q.answer.includes(i))
         : q.answer === i;
       const isSelected = q.type === 'multiple'
         ? (Array.isArray(userAns) && userAns.includes(i))
@@ -559,11 +779,13 @@ function buildQuestionCard(q, userAns, showFeedback, alwaysShowExplanation) {
       if (userAns === i) cls += ' selected';
     }
 
-    const clickable = showFeedback ? (q.type === 'multiple' && !answered) : true;
+    // In quiz mode (showFeedback): clickable only while not yet answered
+    // In exam mode (!showFeedback): always clickable
+    const clickable = showFeedback ? !answered : true;
     const onclick   = clickable ? `onclick="selectOption('${q.id}',${i})"` : '';
 
     html += `<div class="${cls}" ${onclick}>
-      <div class="option-key">${keys[i]}</div>
+      <div class="option-key">${keys[i] || i}</div>
       <div class="option-text">${opt}</div>
     </div>`;
   });
@@ -585,6 +807,45 @@ function buildQuestionCard(q, userAns, showFeedback, alwaysShowExplanation) {
 
   html += '</div>';
   return html;
+}
+
+// Render a fill-in-the-blank question card
+function buildFillCard(q, userAns, showFeedback, alwaysShowExplanation) {
+  const lang     = getLang();
+  const answered = userAns !== undefined;
+  const qText    = lang === 'zh' ? q.questionZh : q.questionEn;
+
+  let html = `<div class="question-card">
+    <div class="question-num">
+      Q${currentQIndex !== undefined ? currentQIndex+1 : ''} —
+      <span class="question-type-badge" style="background:#6c757d;color:#fff;">${t('填空题','Fill-in')}</span>
+    </div>
+    <div class="question-text">${qText}</div>`;
+
+  if (!answered) {
+    html += `<div style="margin-top:1.25rem;">
+      <button class="btn btn-outline" onclick="revealFillAnswer('${q.id}')"
+        style="width:100%;padding:.75rem;font-size:.95rem;">
+        💡 ${t('查看参考答案','Show Answer')}
+      </button>
+    </div>`;
+  } else {
+    const answerText = typeof q.answer === 'string' ? q.answer : JSON.stringify(q.answer);
+    html += `<div class="explanation-box" style="background:#e8f5e9;border-left:4px solid #1E7E45;margin-top:1rem;">
+      <strong>${t('参考答案：','Answer:')}</strong> ${answerText}
+    </div>`;
+    const exp = lang === 'zh' ? q.explanationZh : q.explanationEn;
+    if (exp) html += `<div class="explanation-box"><strong>${t('解析：','Explanation:')}</strong> ${exp}</div>`;
+  }
+
+  html += '</div>';
+  return html;
+}
+
+// Reveal the answer for a fill question and advance the quiz
+function revealFillAnswer(qId) {
+  sessionAnswers[qId] = '__fill_revealed__';
+  renderQuizSession();
 }
 
 function selectOption(qId, idx) {
