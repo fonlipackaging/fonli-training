@@ -61,10 +61,9 @@ function doLogout() {
   auth.signOut().then(() => window.location.href = 'index.html');
 }
 
-// Switch to student preview mode
+// Switch to student preview mode (URL param is most reliable across browsers)
 function enterStudentPreview() {
-  localStorage.setItem('fonli_admin_preview', '1');
-  window.location.href = 'app.html';
+  window.location.href = 'app.html?preview=admin';
 }
 
 function toggleLang() {
