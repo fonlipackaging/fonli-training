@@ -25,6 +25,7 @@ let userProgress = null;   // { completedChapters: [], quizScores: {} }
 let examAttempts = [];     // array of attempt docs
 let appChapters  = [];     // loaded from Firestore (fallback: appChapters in data.js)
 
+let _redirecting      = false; // true while navigating away (admin → admin.html)
 let sessionMode       = null;  // 'quiz'|'mock'|'exam'
 let sessionQuestions  = [];
 let sessionAnswers    = {};
@@ -45,13 +46,14 @@ auth.onAuthStateChanged(async user => {
   currentUser = user;
   try {
     await loadUserData();
+    if (_redirecting) return; // admin being redirected — stop here
     initSidebar();
     navigate('dashboard');
     applyI18n();
   } catch(e) {
     console.error('App init error:', e);
   } finally {
-    hideAppLoading();
+    if (!_redirecting) hideAppLoading();
   }
 });
 
@@ -71,8 +73,19 @@ async function loadUserData() {
 
   userProfile = profDoc.exists ? profDoc.data() : { name: currentUser.email, role: 'user' };
 
-    // Admin: floating button to return to admin panel
-  if (userProfile.role === 'admin') { showAdminReturnBtn(); }
+  // Admin accounts: redirect back unless explicitly in preview mode
+  if (userProfile.role === 'admin') {
+    // Check URL param (?preview=admin) OR sessionStorage flag
+    const urlPreview = new URLSearchParams(window.location.search).get('preview') === 'admin';
+    const ssPreview  = sessionStorage.getItem('fonli_admin_preview') === '1';
+    const inPreview  = urlPreview || ssPreview;
+    if (!inPreview) {
+      _redirecting = true;
+      window.location.href = 'admin.html';
+      return;
+    }
+    // Persist for this tab session (survives hash navigation)
+    sessionStorage.setItem('fonli_admin_preview', '1');
     // Show preview banner so admin can return easily
     showAdminPreviewBanner();
   }
@@ -119,6 +132,35 @@ function doLogout() {
   auth.signOut().then(() => window.location.href = 'index.html');
 }
 
+// ── Admin preview mode ────────────────────────────────
+function showAdminPreviewBanner() {
+  const BANNER_H = 40; // fixed height in px
+  const banner = document.createElement('div');
+  banner.id = 'adminPreviewBanner';
+  banner.style.cssText =
+    'position:fixed;top:0;left:0;right:0;height:' + BANNER_H + 'px;z-index:999999;' +
+    'background:#e67e22;color:#fff;display:flex;align-items:center;' +
+    'justify-content:center;gap:1.25rem;font-size:.88rem;font-weight:600;' +
+    'box-shadow:0 2px 8px rgba(0,0,0,.25);';
+  banner.innerHTML =
+    '<span>👁 管理员预览模式 | Admin Preview</span>' +
+    '<button onclick="exitAdminPreview()" style="background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.4);' +
+    'color:#fff;padding:.3rem 1rem;border-radius:6px;cursor:pointer;font-size:.85rem;font-weight:700;">' +
+    '← 返回管理后台</button>';
+  document.body.prepend(banner);
+  // Push navbar down by fixed banner height (offsetHeight=0 before paint)
+  const nav = document.querySelector('.navbar');
+  if (nav) nav.style.top = BANNER_H + 'px';
+  // Also push app-layout down
+  const layout = document.querySelector('.app-layout');
+  if (layout) layout.style.marginTop = BANNER_H + 'px';
+}
+
+function exitAdminPreview() {
+  sessionStorage.removeItem('fonli_admin_preview');
+  localStorage.removeItem('fonli_admin_preview');
+  window.location.href = 'admin.html';
+}
 
 function toggleLang() {
   const newLang = getLang() === 'zh' ? 'en' : 'zh';
