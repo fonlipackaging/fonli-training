@@ -121,6 +121,9 @@
           <button class="btn btn-outline btn-sm" onclick="seedDefaultChapters()" id="seedBtn">
             <i class="ti ti-download"></i> <span data-zh="导入默认知识库" data-en="Import Default">导入默认知识库</span>
           </button>
+          <button class="btn btn-outline btn-sm" onclick="showChapterSyncModal()" id="chapterSyncBtn" style="display:none;border-color:var(--success);color:var(--success);">
+            <i class="ti ti-cloud-upload"></i> 同步 → data.js
+          </button>
           <button class="btn btn-primary" onclick="showChapterEditor(null)">
             <i class="ti ti-plus"></i> <span data-zh="添加章节" data-en="Add Chapter">添加章节</span>
           </button>
@@ -430,6 +433,38 @@
     <div class="modal-footer">
       <button class="btn btn-outline" onclick="hideModal('syncDataJsModal')">取消</button>
       <button class="btn btn-primary" id="syncStartBtn" onclick="startDataJsSync()" style="background:var(--success);border-color:var(--success);">
+        ☁️ 开始同步
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Sync Chapters to data.js Modal -->
+<div class="modal-overlay" id="syncChaptersModal">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-header">
+      <h3>📚 同步知识库 → data.js</h3>
+      <button class="modal-close" onclick="hideModal('syncChaptersModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:.9rem;color:var(--text-muted);margin-bottom:1rem;">
+        将把 Firestore 中当前全部 <b id="syncChapCount">--</b> 个章节写回 GitHub 的 <code>js/data.js</code>，作为永久备份。操作完成后，即使有人误点「导入默认知识库」，导入的也是最新数据。
+      </p>
+      <div class="form-group">
+        <label class="form-label">GitHub Personal Access Token</label>
+        <input class="form-input" type="password" id="syncChapToken"
+          placeholder="ghp_xxxx…（只需 repo 写权限）"
+          style="font-family:monospace;">
+        <div class="form-hint">Token 仅在本次操作中使用，存入 sessionStorage，关闭浏览器后自动清除。</div>
+      </div>
+      <div id="syncChapProgress" class="hidden" style="margin-top:.75rem;">
+        <div style="background:#f0f4ff;border-radius:8px;padding:.75rem 1rem;font-size:.88rem;font-family:monospace;white-space:pre-wrap;max-height:180px;overflow-y:auto;" id="syncChapLog"></div>
+      </div>
+      <div class="form-error hidden" id="syncChapError"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="hideModal('syncChaptersModal')">取消</button>
+      <button class="btn btn-primary" id="syncChapStartBtn" onclick="startChapterSync()" style="background:var(--success);border-color:var(--success);">
         ☁️ 开始同步
       </button>
     </div>
