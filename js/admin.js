@@ -79,6 +79,7 @@ function navigate(view) {
   if (view === 'content')       renderContent();
   if (view === 'settings')      renderSettings();
   if (view === 'questions')     { loadQuestions().then(() => renderQuestions()); }
+  if (view === 'faq')           { loadFAQs().then(() => renderFAQs()); }
 }
 
 function doLogout() {
@@ -1785,5 +1786,357 @@ async function startDataJsSync() {
     document.getElementById('syncError').classList.remove('hidden');
   } finally {
     document.getElementById('syncStartBtn').disabled = false;
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+//  FAQ MANAGEMENT
+// ═══════════════════════════════════════════════════════
+
+let allFAQs       = [];
+let filteredFAQs  = [];
+let currentFAQPage = 1;
+const FAQ_PER_PAGE = 25;
+let editingFAQId   = null;
+
+// ── navigate hook ─────────────────────────────────────
+// (navigate() already calls: if (view==='faq') { loadFAQs().then(()=>renderFAQs()); })
+
+// ── Load FAQs from Firestore ──────────────────────────
+async function loadFAQs() {
+  try {
+    const snap = await db.collection('faqs').orderBy('num').get();
+    allFAQs = snap.docs.map(d => ({ _docId: d.id, ...d.data() }));
+  } catch(e) {
+    console.warn('loadFAQs error:', e.message);
+  }
+  return allFAQs;
+}
+
+// ── Render FAQ list ───────────────────────────────────
+function renderFAQs() {
+  const search = (document.getElementById('faqSearch')?.value || '').toLowerCase();
+  const catF   = document.getElementById('faqFilterCat')?.value || 'all';
+
+  filteredFAQs = allFAQs.filter(f => {
+    if (catF !== 'all' && (f.category || '未分类') !== catF) return false;
+    if (search) {
+      const q = (f.question || '').toLowerCase();
+      const a = (f.answer   || '').toLowerCase();
+      const t = (f.tags     || []).join(' ').toLowerCase();
+      if (!q.includes(search) && !a.includes(search) && !t.includes(search)) return false;
+    }
+    return true;
+  });
+
+  // Populate category filter
+  const catSel = document.getElementById('faqFilterCat');
+  if (catSel && allFAQs.length) {
+    const cats = [...new Set(allFAQs.map(f => f.category || '未分类'))].sort();
+    // Rebuild options only when list changed
+    const existing = Array.from(catSel.options).slice(1).map(o => o.value);
+    if (JSON.stringify(existing) !== JSON.stringify(cats)) {
+      while (catSel.options.length > 1) catSel.remove(1);
+      cats.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c; opt.textContent = c;
+        catSel.appendChild(opt);
+      });
+    }
+  }
+
+  // Update datalist in editor modal
+  const dl = document.getElementById('faqCatList');
+  if (dl) {
+    dl.innerHTML = '';
+    [...new Set(allFAQs.map(f => f.category || '').filter(Boolean))].forEach(c => {
+      const opt = document.createElement('option'); opt.value = c; dl.appendChild(opt);
+    });
+  }
+
+  document.getElementById('faqCount').textContent = `${filteredFAQs.length} / ${allFAQs.length} 条`;
+
+  const totalPages = Math.max(1, Math.ceil(filteredFAQs.length / FAQ_PER_PAGE));
+  if (currentFAQPage > totalPages) currentFAQPage = 1;
+  const pageFAQs = filteredFAQs.slice((currentFAQPage-1)*FAQ_PER_PAGE, currentFAQPage*FAQ_PER_PAGE);
+
+  const container = document.getElementById('faqContent');
+  if (!container) return;
+
+  // Show/hide sync button
+  const syncBtn = document.getElementById('faqSyncBtn');
+  if (syncBtn) syncBtn.style.display = allFAQs.length ? '' : 'none';
+
+  if (!allFAQs.length) {
+    container.innerHTML = `
+      <div style="text-align:center;padding:3rem 1rem;">
+        <div style="font-size:3rem;margin-bottom:1rem;">❓</div>
+        <h3 style="margin-bottom:.5rem;">暂无 FAQ 条目</h3>
+        <p style="color:var(--text-muted);margin-bottom:1.5rem;">点击右上角「新增 FAQ」开始积累常见问题解答</p>
+        <button class="btn btn-primary" onclick="showFAQEditor(null)">
+          <i class="ti ti-plus"></i> 新增第一条 FAQ
+        </button>
+      </div>`;
+    document.getElementById('faqPagination').innerHTML = '';
+    return;
+  }
+
+  if (!filteredFAQs.length) {
+    container.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--text-muted);">🔍 没有符合条件的 FAQ</div>`;
+    document.getElementById('faqPagination').innerHTML = '';
+    return;
+  }
+
+  // Table
+  let html = `<table style="width:100%;border-collapse:collapse;">
+    <thead><tr style="border-bottom:2px solid var(--border);">
+      <th style="padding:.6rem 1rem;text-align:left;font-size:.78rem;font-weight:600;color:var(--text-muted);width:44px;">#</th>
+      <th style="padding:.6rem .75rem;text-align:left;font-size:.78rem;font-weight:600;color:var(--text-muted);width:100px;">分类</th>
+      <th style="padding:.6rem .75rem;text-align:left;font-size:.78rem;font-weight:600;color:var(--text-muted);">问题</th>
+      <th style="padding:.6rem .75rem;text-align:left;font-size:.78rem;font-weight:600;color:var(--text-muted);width:160px;">关键词</th>
+      <th style="padding:.6rem 1rem;text-align:right;font-size:.78rem;font-weight:600;color:var(--text-muted);width:60px;">操作</th>
+    </tr></thead><tbody>`;
+
+  pageFAQs.forEach((f, idx) => {
+    const cat     = f.category || '未分类';
+    const tags    = (f.tags || []).slice(0, 3).map(t =>
+      `<span style="display:inline-block;padding:1px 7px;border-radius:20px;font-size:.72rem;background:#f0f4ff;color:var(--primary);margin:1px;">${t}</span>`
+    ).join('');
+    const qText   = (f.question || '').substring(0, 80) + ((f.question||'').length > 80 ? '…' : '');
+    const rowBg   = idx % 2 === 0 ? '' : 'background:rgba(0,0,0,.018)';
+    const fData   = JSON.stringify(f).replace(/"/g,'&quot;');
+
+    html += `<tr style="border-bottom:1px solid var(--border);${rowBg};cursor:pointer;transition:background .15s;"
+      onmouseover="this.style.background='rgba(26,79,160,.06)'" onmouseout="this.style.background='${idx%2?'rgba(0,0,0,.018)':''}'"
+      onclick="showFAQEditor(${fData})">
+      <td style="padding:.7rem 1rem;color:var(--text-muted);font-size:.8rem;font-weight:500;">F${f.num}</td>
+      <td style="padding:.7rem .75rem;">
+        <span style="display:inline-block;padding:2px 9px;border-radius:20px;font-size:.76rem;font-weight:600;background:#f0fff4;color:#22863a;border:1px solid #c6efce;white-space:nowrap;">${cat}</span>
+      </td>
+      <td style="padding:.7rem .75rem;font-size:.9rem;line-height:1.45;">${qText.replace(/</g,'&lt;')}</td>
+      <td style="padding:.7rem .75rem;">${tags}</td>
+      <td style="padding:.7rem 1rem;text-align:right;" onclick="event.stopPropagation()">
+        <button onclick="showFAQEditor(${fData})"
+          style="padding:4px 12px;border-radius:6px;border:1.5px solid var(--primary);background:transparent;color:var(--primary);font-size:.8rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .15s;"
+          onmouseover="this.style.background='var(--primary)';this.style.color='#fff'"
+          onmouseout="this.style.background='transparent';this.style.color='var(--primary)'">编辑</button>
+      </td>
+    </tr>`;
+  });
+
+  html += '</tbody></table>';
+  container.innerHTML = html;
+  renderFAQPagination(totalPages);
+}
+
+function renderFAQPagination(totalPages) {
+  const pag = document.getElementById('faqPagination');
+  if (!pag || totalPages <= 1) { if (pag) pag.innerHTML=''; return; }
+  const bs = 'padding:5px 10px;border:1.5px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;font-size:.85rem;';
+  const ba = 'padding:5px 10px;border:1.5px solid var(--primary);border-radius:6px;background:var(--primary);color:#fff;cursor:pointer;font-size:.85rem;font-weight:600;';
+  const bd = 'padding:5px 10px;border:1.5px solid var(--border);border-radius:6px;background:#f5f5f5;color:#bbb;cursor:not-allowed;font-size:.85rem;';
+  const prev = currentFAQPage > 1, next = currentFAQPage < totalPages;
+  let html = '<div style="display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;justify-content:center;">';
+  html += `<button style="${prev?bs:bd}" ${prev?'':'disabled'} onclick="goFAQPage(1)">«</button>`;
+  html += `<button style="${prev?bs:bd}" ${prev?'':'disabled'} onclick="goFAQPage(${currentFAQPage-1})">‹ 上页</button>`;
+  const start = Math.max(1, currentFAQPage-2), end = Math.min(totalPages, currentFAQPage+2);
+  if (start > 1) html += `<span style="align-self:center;color:var(--text-muted);">…</span>`;
+  for (let i = start; i <= end; i++) html += `<button style="${i===currentFAQPage?ba:bs}" onclick="goFAQPage(${i})">${i}</button>`;
+  if (end < totalPages) html += `<span style="align-self:center;color:var(--text-muted);">…</span>`;
+  html += `<button style="${next?bs:bd}" ${next?'':'disabled'} onclick="goFAQPage(${currentFAQPage+1})">下页 ›</button>`;
+  html += `<button style="${next?bs:bd}" ${next?'':'disabled'} onclick="goFAQPage(${totalPages})">»</button>`;
+  html += `<span style="align-self:center;color:var(--text-muted);font-size:.85rem;margin-left:.5rem;">跳至</span>
+    <input type="number" min="1" max="${totalPages}" value="${currentFAQPage}" id="faqPageJumpInput"
+      style="width:52px;padding:4px 6px;border:1.5px solid var(--border);border-radius:6px;font-size:.85rem;text-align:center;"
+      onkeydown="if(event.key==='Enter'){var v=parseInt(this.value);if(v>=1&&v<=${totalPages})goFAQPage(v);}"
+      onblur="var v=parseInt(this.value);if(v>=1&&v<=${totalPages})goFAQPage(v);">
+    <span style="align-self:center;color:var(--text-muted);font-size:.85rem;">/ ${totalPages} 页</span>`;
+  pag.innerHTML = html + '</div>';
+}
+
+function goFAQPage(p) { currentFAQPage = p; renderFAQs(); window.scrollTo(0, 200); }
+
+// ── FAQ Editor ────────────────────────────────────────
+function showFAQEditor(f) {
+  editingFAQId = f ? (f._docId || f.id) : null;
+  document.getElementById('faqEditorTitle').textContent = f ? `编辑 F${f.num}` : '新增 FAQ';
+  document.getElementById('faqDeleteBtn').style.display = f ? '' : 'none';
+  document.getElementById('faqEditorError').classList.add('hidden');
+
+  document.getElementById('faqQuestion').value = f?.question || '';
+  document.getElementById('faqCategory').value = f?.category || '';
+  document.getElementById('faqTags').value      = (f?.tags || []).join(', ');
+  document.getElementById('faqAnswer').value    = f?.answer || '';
+
+  showModal('faqEditorModal');
+}
+
+async function saveFAQ() {
+  const question = document.getElementById('faqQuestion').value.trim();
+  const category = document.getElementById('faqCategory').value.trim() || '未分类';
+  const tagsRaw  = document.getElementById('faqTags').value.trim();
+  const answer   = document.getElementById('faqAnswer').value.trim();
+  const errEl    = document.getElementById('faqEditorError');
+  errEl.classList.add('hidden');
+
+  if (!question) { errEl.textContent = '请填写问题'; errEl.classList.remove('hidden'); return; }
+  if (!answer)   { errEl.textContent = '请填写答案'; errEl.classList.remove('hidden'); return; }
+
+  const tags = tagsRaw ? tagsRaw.split(/[,，]+/).map(s => s.trim()).filter(Boolean) : [];
+  const data = {
+    question, category, tags, answer,
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+  };
+
+  try {
+    if (editingFAQId) {
+      await db.collection('faqs').doc(editingFAQId).update(data);
+      const idx = allFAQs.findIndex(f => (f._docId||f.id) === editingFAQId);
+      if (idx >= 0) allFAQs[idx] = { ...allFAQs[idx], ...data };
+      toast('✅ FAQ 已更新', 'success');
+    } else {
+      const maxNum = allFAQs.reduce((m, f) => Math.max(m, f.num||0), 0);
+      data.num = maxNum + 1;
+      data.id  = 'faq' + String(data.num).padStart(3, '0');
+      data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+      await db.collection('faqs').doc(data.id).set(data);
+      allFAQs.push({ _docId: data.id, ...data });
+      toast('✅ FAQ 已新增', 'success');
+    }
+    hideModal('faqEditorModal');
+    renderFAQs();
+  } catch(e) {
+    errEl.textContent = '保存失败: ' + e.message;
+    errEl.classList.remove('hidden');
+  }
+}
+
+// ── Delete FAQ ────────────────────────────────────────
+function confirmDeleteFAQ() {
+  const f = allFAQs.find(f => (f._docId||f.id) === editingFAQId);
+  if (!f) return;
+  document.getElementById('deleteFaqMsg').textContent =
+    `确认删除「${(f.question||'').substring(0, 50)}…」？`;
+  document.getElementById('confirmDeleteFaqBtn').onclick = async () => {
+    try {
+      await db.collection('faqs').doc(editingFAQId).delete();
+      allFAQs = allFAQs.filter(f => (f._docId||f.id) !== editingFAQId);
+      hideModal('deleteFaqModal');
+      hideModal('faqEditorModal');
+      renderFAQs();
+      toast('FAQ 已删除', 'info');
+    } catch(e) { toast('删除失败: ' + e.message, 'danger'); }
+  };
+  hideModal('faqEditorModal');
+  showModal('deleteFaqModal');
+}
+
+// ── Sync FAQ → data.js ────────────────────────────────
+function showFAQSyncModal() {
+  document.getElementById('syncFaqCount').textContent = allFAQs.length || '--';
+  document.getElementById('syncFaqProgress').classList.add('hidden');
+  document.getElementById('syncFaqLog').textContent = '';
+  document.getElementById('syncFaqError').classList.add('hidden');
+  document.getElementById('syncFaqStartBtn').disabled = false;
+  const cached = sessionStorage.getItem('_gh_sync_token');
+  if (cached) document.getElementById('syncFaqToken').value = cached;
+  showModal('syncFaqModal');
+}
+
+function faqSyncLog(msg) {
+  const el = document.getElementById('syncFaqLog');
+  el.textContent += msg + '\n';
+  el.scrollTop = el.scrollHeight;
+}
+
+async function startFAQSync() {
+  const token = document.getElementById('syncFaqToken').value.trim();
+  if (!token) {
+    document.getElementById('syncFaqError').textContent = '请输入 GitHub Token';
+    document.getElementById('syncFaqError').classList.remove('hidden');
+    return;
+  }
+  sessionStorage.setItem('_gh_sync_token', token);
+  document.getElementById('syncFaqError').classList.add('hidden');
+  document.getElementById('syncFaqProgress').classList.remove('hidden');
+  document.getElementById('syncFaqStartBtn').disabled = true;
+  faqSyncLog('① 从 Firestore 加载 FAQ…');
+
+  try {
+    if (!allFAQs.length) await loadFAQs();
+    const faqs = allFAQs.map(f => {
+      const copy = Object.assign({}, f);
+      delete copy._docId;
+      // Strip Firestore Timestamp objects
+      if (copy.createdAt && typeof copy.createdAt.toDate === 'function') delete copy.createdAt;
+      if (copy.updatedAt && typeof copy.updatedAt.toDate === 'function') delete copy.updatedAt;
+      return copy;
+    });
+    faqSyncLog(`   已加载 ${faqs.length} 条 FAQ`);
+
+    faqSyncLog('② 从 GitHub 读取 data.js…');
+    const getResp = await fetch(
+      `https://api.github.com/repos/${SYNC_REPO}/contents/${SYNC_PATH}?ref=${SYNC_BRANCH}`,
+      { headers: { Authorization: `token ${token}` } }
+    );
+    if (!getResp.ok) {
+      const e = await getResp.json();
+      throw new Error('读取 data.js 失败: ' + (e.message || getResp.status));
+    }
+    const fileData = await getResp.json();
+    const sha = fileData.sha;
+    let original = fromB64(fileData.content);
+    faqSyncLog(`   文件大小: ${(original.length / 1024).toFixed(1)} KB`);
+
+    faqSyncLog('③ 更新 FAQ_DATA 数组…');
+    const newDecl = `const FAQ_DATA = ${JSON.stringify(faqs, null, 2)};`;
+    const faqMarker = 'const FAQ_DATA';
+    const si = original.indexOf(faqMarker);
+    let updated;
+    if (si !== -1) {
+      // Replace existing FAQ_DATA
+      const bi = original.indexOf('[', si);
+      let depth = 0, ei = bi;
+      for (let i = bi; i < original.length; i++) {
+        if (original[i] === '[') depth++;
+        else if (original[i] === ']') { depth--; if (depth === 0) { ei = i; break; } }
+      }
+      let afterEnd = ei + 1;
+      if (original[afterEnd] === ';') afterEnd++;
+      updated = original.substring(0, si) + newDecl + original.substring(afterEnd);
+      faqSyncLog('   找到现有 FAQ_DATA，替换完成');
+    } else {
+      // Append FAQ_DATA before the last line of the file
+      updated = original.trimEnd() + '\n\n' + newDecl + '\n';
+      faqSyncLog('   FAQ_DATA 未存在，已追加到文件末尾');
+    }
+    faqSyncLog(`   新文件大小: ${(updated.length / 1024).toFixed(1)} KB`);
+
+    faqSyncLog('④ 推送到 GitHub…');
+    const pushResp = await fetch(
+      `https://api.github.com/repos/${SYNC_REPO}/contents/${SYNC_PATH}`,
+      {
+        method: 'PUT',
+        headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: `sync: update FAQ_DATA from Firestore (${faqs.length} FAQs)`,
+          content: toB64(updated),
+          sha, branch: SYNC_BRANCH
+        })
+      }
+    );
+    if (!pushResp.ok) {
+      const e = await pushResp.json();
+      throw new Error('推送失败: ' + (e.message || pushResp.status));
+    }
+    faqSyncLog(`\n✅ 同步成功！data.js 已包含 ${faqs.length} 条 FAQ 离线备份。`);
+    toast('✅ FAQ 已同步到 data.js', 'success');
+
+  } catch(e) {
+    faqSyncLog('\n❌ 失败: ' + e.message);
+    document.getElementById('syncFaqError').textContent = e.message;
+    document.getElementById('syncFaqError').classList.remove('hidden');
+  } finally {
+    document.getElementById('syncFaqStartBtn').disabled = false;
   }
 }
