@@ -1323,7 +1323,7 @@ function _renderFAQContent() {
   const search = ((document.getElementById('faqStudentSearch')?.value) || '').toLowerCase().trim();
   const faqs   = _faqData || [];
 
-  // Build category pills
+  // Build category pills — use hardcoded colors so CSS vars don't interfere
   const cats = ['all', ...[...new Set(faqs.map(f => f.category || '未分类'))].sort()];
   const pillsEl = document.getElementById('faqCategoryPills');
   if (pillsEl) {
@@ -1331,9 +1331,12 @@ function _renderFAQContent() {
       const active = c === _faqActiveCat;
       const label  = c === 'all' ? '全部' : c;
       return `<button onclick="setFAQCat('${c}')"
-        style="padding:4px 14px;border-radius:20px;border:1.5px solid ${active?'var(--primary)':'var(--border)'};
-        background:${active?'var(--primary)':'#fff'};color:${active?'#fff':'var(--text-muted)'};
-        font-size:.82rem;font-weight:${active?'600':'400'};cursor:pointer;white-space:nowrap;transition:all .15s;">
+        style="padding:5px 16px;border-radius:20px;
+        border:1.5px solid ${active?'#1a4fa0':'#d0d7e3'};
+        background:${active?'#1a4fa0':'#fff'};
+        color:${active?'#fff':'#6b7a99'};
+        font-size:.83rem;font-weight:${active?'700':'400'};
+        cursor:pointer;white-space:nowrap;transition:all .15s;line-height:1.5;">
         ${label}
       </button>`;
     }).join('');
@@ -1399,32 +1402,39 @@ function _renderFAQContent() {
     groups[cat].forEach(f => {
       const fid    = f._docId || f.id || String(f.num);
       const isOpen = _faqOpenId === fid;
+      const catLabel = f.category || '未分类';
       const tags   = (f.tags || []).map(t =>
         `<span style="display:inline-block;padding:1px 8px;border-radius:20px;font-size:.72rem;
-        background:#f0f4ff;color:var(--primary);margin:2px;">${_highlight(t, search)}</span>`
+        background:#f0f4ff;color:#1a4fa0;margin:2px 2px 0 0;">${_highlight(t, search)}</span>`
       ).join('');
 
       html += `
-        <div style="border:1px solid var(--border);border-radius:10px;margin-bottom:.5rem;overflow:hidden;transition:box-shadow .15s;"
-          ${isOpen ? 'style="box-shadow:0 2px 12px rgba(26,79,160,.12);"' : ''}>
+        <div style="border:1px solid ${isOpen?'#b8d0f5':'#e0e6ef'};border-radius:10px;margin-bottom:.5rem;overflow:hidden;
+          box-shadow:${isOpen?'0 2px 12px rgba(26,79,160,.1)':'none'};transition:all .15s;">
           <button onclick="toggleFAQItem('${fid}')"
-            style="width:100%;padding:.9rem 1.1rem;background:${isOpen?'#f5f8ff':'#fff'};border:none;cursor:pointer;
+            style="width:100%;padding:.85rem 1rem;background:${isOpen?'#f0f5ff':'#fff'};border:none;cursor:pointer;
             display:flex;align-items:flex-start;gap:.75rem;text-align:left;transition:background .15s;">
-            <span style="flex-shrink:0;width:24px;height:24px;border-radius:50%;
-              background:${isOpen?'var(--primary)':'#e8edf5'};color:${isOpen?'#fff':'var(--text-muted)'};
-              display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;margin-top:.1rem;">
+            <span style="flex-shrink:0;width:22px;height:22px;border-radius:50%;margin-top:.15rem;
+              background:${isOpen?'#1a4fa0':'#e4e9f2'};color:${isOpen?'#fff':'#6b7a99'};
+              display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;">
               ${isOpen ? '▾' : '▸'}
             </span>
-            <div style="flex:1;">
-              <div style="font-size:.95rem;font-weight:600;color:var(--dark-blue);line-height:1.4;">
-                ${_highlight(f.question || '', search)}
+            <div style="flex:1;min-width:0;">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem;flex-wrap:wrap;">
+                <div style="font-size:.94rem;font-weight:600;color:#1a2e55;line-height:1.45;flex:1;">
+                  ${_highlight(f.question || '', search)}
+                </div>
+                <span style="flex-shrink:0;padding:2px 10px;border-radius:20px;font-size:.72rem;font-weight:600;
+                  background:#edfaf3;color:#1a7a4a;border:1px solid #b6e8cc;white-space:nowrap;">
+                  ${catLabel}
+                </span>
               </div>
               ${tags ? `<div style="margin-top:.4rem;">${tags}</div>` : ''}
             </div>
           </button>
           ${isOpen ? `
-            <div style="padding:.25rem 1.1rem 1.1rem 3.1rem;background:#f5f8ff;border-top:1px solid var(--border);">
-              <div style="font-size:.92rem;line-height:1.75;color:var(--dark-gray);">
+            <div style="padding:.5rem 1rem 1.1rem 3rem;background:#f5f8ff;border-top:1px solid #d0dff5;">
+              <div style="font-size:.92rem;line-height:1.8;color:#2c3a57;">
                 ${_highlightAnswer(f.answer || '', search)}
               </div>
             </div>` : ''}
