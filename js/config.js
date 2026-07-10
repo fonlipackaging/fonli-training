@@ -40,12 +40,12 @@ const EXAM_CONFIG = {
     questionsPerChapter: 5   // max questions shown per chapter quiz
   },
   mock: {
-    questionCount: 20,       // total questions in mock test
-    timeMinutes: 30          // time limit
+    questionCount: null,     // same as exam (all V6 questions) — set dynamically
+    timeMinutes: 180         // time limit (3 hours, same as formal exam)
   },
   exam: {
-    questionCount: 30,       // total questions in formal exam
-    timeMinutes: 45,         // time limit
+    questionCount: 259,      // total questions in formal exam (all V6 questions)
+    timeMinutes: 180,        // time limit (3 hours)
     passingScore: 95,        // minimum passing score (%)
     excellentScore: 99,      // excellent threshold (%)
     maxAttempts: 3,          // max exam attempts allowed
