@@ -221,24 +221,17 @@ function normalizeV6Question(q) {
   return n;
 }
 
-// Build mock exam (40 random V6 questions, mix of fill and single)
+// Build mock exam — same full question pool as formal exam, shuffled
+// Scoring is always percentage-based (correct/total*100), safe when questions are added
 function buildMockSet() {
   var v6 = typeof EXAM_QUESTIONS_V6 !== 'undefined' ? EXAM_QUESTIONS_V6 : [];
   if (v6.length === 0) {
     // Fallback to old questions
     var allQ = typeof QUESTIONS !== 'undefined' ? QUESTIONS : [];
-    return shuffle(allQ.filter(function(q){ return q.type === 'choice' || q.type === 'single'; }))
-      .slice(0, EXAM_CONFIG.mock.questionCount).map(normalizeQuestion);
+    return shuffle(allQ).map(normalizeQuestion);
   }
-  var target = 40;
-  // Split by type for balanced selection
-  var fillQ   = v6.filter(function(q){ return q.type === 'fill'; });
-  var singleQ = v6.filter(function(q){ return q.type === 'single'; });
-  // 50% fill, 50% choice
-  var fillCount   = Math.round(target * 0.5);
-  var singleCount = target - fillCount;
-  var picked = shuffle(fillQ).slice(0, fillCount).concat(shuffle(singleQ).slice(0, singleCount));
-  return shuffle(picked).map(normalizeV6Question);
+  // All V6 questions, shuffled (same as formal exam)
+  return shuffle(v6).map(normalizeV6Question);
 }
 
 // Build formal exam (all 259 V6 questions)
