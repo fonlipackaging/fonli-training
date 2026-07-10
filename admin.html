@@ -59,6 +59,10 @@
       <a href="#" id="nav-settings" onclick="navigate('settings')">
         <i class="ti ti-settings nav-icon"></i><span data-zh="考试设置" data-en="Exam Settings">考试设置</span>
       </a>
+      <a href="#" id="nav-questions" onclick="navigate('questions')">
+        <i class="ti ti-list-check nav-icon"></i><span data-zh="题库管理" data-en="Question Bank">题库管理</span>
+        <span class="nav-badge hidden" id="qBadge">0</span>
+      </a>
     </nav>
     <div class="sidebar-section" style="margin-top:.5rem;"><span class="sidebar-label">系统</span></div>
     <nav class="sidebar-nav">
@@ -190,8 +194,155 @@
       </div>
     </div>
 
+
+    <!-- ── Question Bank ── -->
+    <div class="view hidden" id="view-questions">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:.75rem;">
+        <h1 data-zh="题库管理" data-en="Question Bank">题库管理</h1>
+        <div style="display:flex;gap:.75rem;flex-wrap:wrap;">
+          <button class="btn btn-outline btn-sm" onclick="seedQuestions()" id="seedQBtn">
+            <i class="ti ti-database-import"></i> 从data.js导入题库
+          </button>
+          <button class="btn btn-primary" onclick="showQuestionEditor(null)">
+            <i class="ti ti-plus"></i> 新增题目
+          </button>
+        </div>
+      </div>
+
+      <!-- Filter bar -->
+      <div style="display:flex;gap:.75rem;margin-bottom:1rem;flex-wrap:wrap;align-items:center;">
+        <input class="form-input" type="search" id="qSearch" placeholder="🔍 搜索题目内容…"
+          oninput="renderQuestions()" style="flex:1;min-width:200px;max-width:360px;">
+        <select class="form-input form-select" id="qFilterType" onchange="renderQuestions()" style="width:auto;">
+          <option value="all">全部类型</option>
+          <option value="fill">填空题</option>
+          <option value="single">选择题</option>
+        </select>
+        <select class="form-input form-select" id="qFilterChapter" onchange="renderQuestions()" style="width:auto;">
+          <option value="all">全部章节</option>
+        </select>
+        <span id="qCount" style="color:var(--text-muted);font-size:.9rem;white-space:nowrap;"></span>
+      </div>
+
+      <div class="card" style="padding:0;overflow:hidden;">
+        <div id="questionsContent"></div>
+      </div>
+
+      <!-- Pagination -->
+      <div id="qPagination" style="display:flex;gap:.5rem;justify-content:center;margin-top:1rem;flex-wrap:wrap;"></div>
+    </div>
+
   </main>
 </div>
+
+<!-- Question Editor Modal -->
+<div class="modal-overlay" id="questionEditorModal">
+  <div class="modal" style="max-width:600px;width:95vw;max-height:90vh;overflow-y:auto;">
+    <div class="modal-header">
+      <h3 id="qEditorTitle">编辑题目</h3>
+      <button class="modal-close" onclick="hideModal('questionEditorModal')">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <div style="display:flex;gap:.75rem;margin-bottom:1rem;">
+        <div class="form-group" style="flex:1;margin:0;">
+          <label class="form-label">题目类型</label>
+          <select class="form-input form-select" id="qType" onchange="updateQEditorFields()">
+            <option value="fill">填空题</option>
+            <option value="single">单选题</option>
+          </select>
+        </div>
+        <div class="form-group" style="flex:1;margin:0;">
+          <label class="form-label">章节号</label>
+          <input class="form-input" type="number" id="qChapter" min="1" max="20" placeholder="1">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">题目文字（填空题用 (___)  标注空格位置）</label>
+        <textarea class="form-input" id="qText" rows="3" style="resize:vertical;"
+          placeholder="请输入题目内容…" oninput="autoUpdateBlanks()"></textarea>
+      </div>
+
+      <!-- Fill blank answers -->
+      <div id="fillFields">
+        <div class="form-group">
+          <label class="form-label">填空答案（每个空格一行，用 / 分隔多个正确答案）</label>
+          <div id="blanksEditor"></div>
+          <button type="button" class="btn btn-outline btn-sm" style="margin-top:.5rem;" onclick="addBlank()">
+            + 添加空格答案
+          </button>
+        </div>
+      </div>
+
+      <!-- Single choice options -->
+      <div id="singleFields" class="hidden">
+        <div class="form-group">
+          <label class="form-label">选项（A / B / C / D）</label>
+          <div style="display:flex;flex-direction:column;gap:.5rem;" id="optionsEditor">
+            <div style="display:flex;gap:.5rem;align-items:center;">
+              <span style="width:24px;font-weight:700;color:var(--primary);">A</span>
+              <input class="form-input" id="optA" placeholder="选项 A" style="flex:1;">
+              <input type="radio" name="qAnswer" value="0" id="ansA"><label for="ansA" style="margin:0 .5rem;">正确</label>
+            </div>
+            <div style="display:flex;gap:.5rem;align-items:center;">
+              <span style="width:24px;font-weight:700;color:var(--primary);">B</span>
+              <input class="form-input" id="optB" placeholder="选项 B" style="flex:1;">
+              <input type="radio" name="qAnswer" value="1" id="ansB"><label for="ansB" style="margin:0 .5rem;">正确</label>
+            </div>
+            <div style="display:flex;gap:.5rem;align-items:center;">
+              <span style="width:24px;font-weight:700;color:var(--primary);">C</span>
+              <input class="form-input" id="optC" placeholder="选项 C" style="flex:1;">
+              <input type="radio" name="qAnswer" value="2" id="ansC"><label for="ansC" style="margin:0 .5rem;">正确</label>
+            </div>
+            <div style="display:flex;gap:.5rem;align-items:center;">
+              <span style="width:24px;font-weight:700;color:var(--primary);">D</span>
+              <input class="form-input" id="optD" placeholder="选项 D" style="flex:1;">
+              <input type="radio" name="qAnswer" value="3" id="ansD"><label for="ansD" style="margin:0 .5rem;">正确</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">图片文件名（留空=无图，例：image6.jpg）</label>
+        <input class="form-input" id="qImage" placeholder="例：image6.jpg 或留空">
+        <div class="form-hint">多张图用逗号分隔，例：image1.jpg,image2.jpg</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">提示/解析（可选）</label>
+        <input class="form-input" id="qHint" placeholder="答案解析或记忆技巧…">
+      </div>
+
+      <div class="form-error hidden" id="qEditorError"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="hideModal('questionEditorModal')">取消</button>
+      <button class="btn btn-danger" id="qDeleteBtn" onclick="deleteCurrentQuestion()" style="margin-right:auto;">🗑 删除</button>
+      <button class="btn btn-primary" onclick="saveQuestion()">💾 保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm delete question modal -->
+<div class="modal-overlay" id="deleteQModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>确认删除题目</h3>
+      <button class="modal-close" onclick="hideModal('deleteQModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p id="deleteQMsg"></p>
+      <div class="alert alert-warning" style="margin-top:.75rem;">⚠️ 删除后无法恢复，且立即影响学员端题库。</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="hideModal('deleteQModal')">取消</button>
+      <button class="btn btn-danger" id="confirmDeleteQBtn">确认删除</button>
+    </div>
+  </div>
+</div>
+
 
 <!-- Add User Modal -->
 <div class="modal-overlay" id="addUserModal">
