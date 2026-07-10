@@ -1323,26 +1323,41 @@ function _renderFAQContent() {
   const search = ((document.getElementById('faqStudentSearch')?.value) || '').toLowerCase().trim();
   const faqs   = _faqData || [];
 
-  // Build category pills — use hardcoded colors so CSS vars don't interfere
-  const cats = ['all', ...[...new Set(faqs.map(f => f.category || '未分类'))].sort()];
+  // Count per category
+  const catCounts = {};
+  faqs.forEach(f => {
+    const c = f.category || '未分类';
+    catCounts[c] = (catCounts[c] || 0) + 1;
+  });
+  const cats = Object.keys(catCounts).sort();
+
+  // Build prominent category tabs (separate row, with counts)
   const pillsEl = document.getElementById('faqCategoryPills');
   if (pillsEl) {
-    pillsEl.innerHTML = cats.map(c => {
-      const active = c === _faqActiveCat;
-      const label  = c === 'all' ? '全部' : c;
-      return `<button onclick="setFAQCat('${c}')"
-        style="padding:5px 16px;border-radius:20px;
-        border:1.5px solid ${active?'#1a4fa0':'#d0d7e3'};
-        background:${active?'#1a4fa0':'#fff'};
-        color:${active?'#fff':'#6b7a99'};
-        font-size:.83rem;font-weight:${active?'700':'400'};
-        cursor:pointer;white-space:nowrap;transition:all .15s;line-height:1.5;">
-        ${label}
+    const allCount = faqs.length;
+    const tabs = [
+      { key: 'all', label: '全部', count: allCount },
+      ...cats.map(c => ({ key: c, label: c, count: catCounts[c] }))
+    ];
+    pillsEl.innerHTML = tabs.map(tab => {
+      const active = tab.key === _faqActiveCat;
+      return `<button onclick="setFAQCat('${tab.key}')"
+        style="padding:6px 18px;border-radius:8px;
+        border:2px solid ${active ? '#1a4fa0' : '#d8dfe8'};
+        background:${active ? '#1a4fa0' : '#fff'};
+        color:${active ? '#fff' : '#4a5568'};
+        font-size:.85rem;font-weight:${active ? '700' : '500'};
+        cursor:pointer;white-space:nowrap;transition:all .15s;
+        display:inline-flex;align-items:center;gap:.4rem;">
+        ${tab.label}
+        <span style="display:inline-block;min-width:20px;padding:1px 6px;border-radius:20px;font-size:.72rem;font-weight:700;
+          background:${active ? 'rgba(255,255,255,.25)' : '#edf0f5'};
+          color:${active ? '#fff' : '#6b7a99'};">${tab.count}</span>
       </button>`;
     }).join('');
   }
 
-  // Filter
+  // Filter by category and search
   const visible = faqs.filter(f => {
     if (_faqActiveCat !== 'all' && (f.category || '未分类') !== _faqActiveCat) return false;
     if (search) {
@@ -1356,9 +1371,13 @@ function _renderFAQContent() {
 
   const countEl = document.getElementById('faqResultCount');
   if (countEl) {
-    countEl.textContent = search
-      ? `找到 ${visible.length} 条结果（共 ${faqs.length} 条）`
-      : `共 ${faqs.length} 条`;
+    if (search) {
+      countEl.textContent = `搜索到 ${visible.length} 条结果`;
+    } else if (_faqActiveCat === 'all') {
+      countEl.textContent = `共 ${faqs.length} 条`;
+    } else {
+      countEl.textContent = `${_faqActiveCat} · ${visible.length} 条`;
+    }
   }
 
   const listEl = document.getElementById('faqStudentList');
@@ -1383,57 +1402,61 @@ function _renderFAQContent() {
     return;
   }
 
-  // Group by category
+  // When showing all (no search, no filter): group by category with headers
+  const groupByCategory = _faqActiveCat === 'all' && !search;
   const groups = {};
-  visible.forEach(f => {
-    const cat = f.category || '未分类';
-    if (!groups[cat]) groups[cat] = [];
-    groups[cat].push(f);
-  });
+  if (groupByCategory) {
+    visible.forEach(f => {
+      const c = f.category || '未分类';
+      if (!groups[c]) groups[c] = [];
+      groups[c].push(f);
+    });
+  } else {
+    groups['_all'] = visible;
+  }
 
-  // Render accordion
-  const showCatHeaders = _faqActiveCat === 'all' && !search;
   let html = '';
-  Object.keys(groups).sort().forEach(cat => {
-    if (showCatHeaders) {
-      html += `<div style="font-size:.8rem;font-weight:700;color:var(--text-muted);letter-spacing:.06em;
-        text-transform:uppercase;padding:.5rem 0 .35rem;margin-top:.75rem;border-bottom:1px solid var(--border);">${cat}</div>`;
+  Object.keys(groups).sort().forEach(grpKey => {
+    // Section header only when showing all categories
+    if (groupByCategory) {
+      const cnt = groups[grpKey].length;
+      html += `
+        <div style="display:flex;align-items:center;gap:.75rem;margin:1.25rem 0 .6rem;">
+          <div style="font-size:.88rem;font-weight:700;color:#1a4fa0;letter-spacing:.02em;">${grpKey}</div>
+          <span style="padding:1px 8px;border-radius:20px;font-size:.72rem;font-weight:600;background:#e8eef8;color:#4a6fa0;">${cnt} 条</span>
+          <div style="flex:1;height:1px;background:var(--border);"></div>
+        </div>`;
     }
-    groups[cat].forEach(f => {
+
+    groups[grpKey].forEach(f => {
       const fid    = f._docId || f.id || String(f.num);
       const isOpen = _faqOpenId === fid;
-      const catLabel = f.category || '未分类';
       const tags   = (f.tags || []).map(t =>
         `<span style="display:inline-block;padding:1px 8px;border-radius:20px;font-size:.72rem;
-        background:#f0f4ff;color:#1a4fa0;margin:2px 2px 0 0;">${_highlight(t, search)}</span>`
+        background:#eef2ff;color:#4a6fa0;margin:2px 2px 0 0;">${_highlight(t, search)}</span>`
       ).join('');
 
       html += `
-        <div style="border:1px solid ${isOpen?'#b8d0f5':'#e0e6ef'};border-radius:10px;margin-bottom:.5rem;overflow:hidden;
-          box-shadow:${isOpen?'0 2px 12px rgba(26,79,160,.1)':'none'};transition:all .15s;">
+        <div style="border:1.5px solid ${isOpen ? '#93b4e8' : '#e4eaf3'};border-radius:10px;margin-bottom:.45rem;
+          overflow:hidden;box-shadow:${isOpen ? '0 3px 14px rgba(26,79,160,.1)' : 'none'};transition:all .2s;">
           <button onclick="toggleFAQItem('${fid}')"
-            style="width:100%;padding:.85rem 1rem;background:${isOpen?'#f0f5ff':'#fff'};border:none;cursor:pointer;
-            display:flex;align-items:flex-start;gap:.75rem;text-align:left;transition:background .15s;">
-            <span style="flex-shrink:0;width:22px;height:22px;border-radius:50%;margin-top:.15rem;
-              background:${isOpen?'#1a4fa0':'#e4e9f2'};color:${isOpen?'#fff':'#6b7a99'};
-              display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;">
+            style="width:100%;padding:.85rem 1rem;
+            background:${isOpen ? 'linear-gradient(135deg,#f0f5ff,#e8f0fe)' : '#fff'};
+            border:none;cursor:pointer;display:flex;align-items:center;gap:.75rem;text-align:left;transition:background .15s;">
+            <span style="flex-shrink:0;width:22px;height:22px;border-radius:50%;
+              background:${isOpen ? '#1a4fa0' : '#eaeff8'};color:${isOpen ? '#fff' : '#6b7a99'};
+              display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;">
               ${isOpen ? '▾' : '▸'}
             </span>
             <div style="flex:1;min-width:0;">
-              <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem;flex-wrap:wrap;">
-                <div style="font-size:.94rem;font-weight:600;color:#1a2e55;line-height:1.45;flex:1;">
-                  ${_highlight(f.question || '', search)}
-                </div>
-                <span style="flex-shrink:0;padding:2px 10px;border-radius:20px;font-size:.72rem;font-weight:600;
-                  background:#edfaf3;color:#1a7a4a;border:1px solid #b6e8cc;white-space:nowrap;">
-                  ${catLabel}
-                </span>
+              <div style="font-size:.95rem;font-weight:600;color:${isOpen ? '#1a4fa0' : '#1a2e55'};line-height:1.4;">
+                ${_highlight(f.question || '', search)}
               </div>
-              ${tags ? `<div style="margin-top:.4rem;">${tags}</div>` : ''}
+              ${tags ? `<div style="margin-top:.35rem;">${tags}</div>` : ''}
             </div>
           </button>
           ${isOpen ? `
-            <div style="padding:.5rem 1rem 1.1rem 3rem;background:#f5f8ff;border-top:1px solid #d0dff5;">
+            <div style="padding:.6rem 1rem 1rem 3rem;background:#f8faff;border-top:1px solid #d4e2f7;">
               <div style="font-size:.92rem;line-height:1.8;color:#2c3a57;">
                 ${_highlightAnswer(f.answer || '', search)}
               </div>
