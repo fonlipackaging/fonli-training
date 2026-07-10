@@ -46,7 +46,7 @@ const EXAM_CONFIG = {
   exam: {
     questionCount: 30,       // total questions in formal exam
     timeMinutes: 45,         // time limit
-    passingScore: 80,        // minimum passing score (%)
+    excellentScore: 99,        // minimum passing score (%)
     excellentScore: 95,      // excellent threshold (%)
     maxAttempts: 3,          // max exam attempts allowed
     cooldownHours: 24        // hours between retries after fail
