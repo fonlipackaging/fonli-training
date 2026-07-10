@@ -25,6 +25,7 @@ let userProgress = null;   // { completedChapters: [], quizScores: {} }
 let examAttempts = [];     // array of attempt docs
 let appChapters  = [];     // loaded from Firestore (fallback: appChapters in data.js)
 
+let _redirecting      = false; // true while navigating away (admin → admin.html)
 let sessionMode       = null;  // 'quiz'|'mock'|'exam'
 let sessionQuestions  = [];
 let sessionAnswers    = {};
@@ -45,13 +46,14 @@ auth.onAuthStateChanged(async user => {
   currentUser = user;
   try {
     await loadUserData();
+    if (_redirecting) return; // admin being redirected — stop here
     initSidebar();
     navigate('dashboard');
     applyI18n();
   } catch(e) {
     console.error('App init error:', e);
   } finally {
-    hideAppLoading();
+    if (!_redirecting) hideAppLoading();
   }
 });
 
@@ -78,6 +80,7 @@ async function loadUserData() {
     const ssPreview  = sessionStorage.getItem('fonli_admin_preview') === '1';
     const inPreview  = urlPreview || ssPreview;
     if (!inPreview) {
+      _redirecting = true;
       window.location.href = 'admin.html';
       return;
     }
