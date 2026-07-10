@@ -66,6 +66,16 @@
       <a href="#" id="nav-faq" onclick="navigate('faq')">
         <i class="ti ti-help-circle nav-icon"></i><span data-zh="FAQ 管理" data-en="FAQ">FAQ 管理</span>
       </a>
+      <!-- Admin-only: review center -->
+      <a href="#" id="nav-review" onclick="navigate('review')">
+        <i class="ti ti-checks nav-icon"></i><span data-zh="审核中心" data-en="Review">审核中心</span>
+        <span class="nav-badge hidden" id="pendingBadge">0</span>
+      </a>
+      <!-- Editor-only: my submissions indicator -->
+      <a href="#" id="nav-my-pending" onclick="navigate('review')" style="display:none;">
+        <i class="ti ti-clock nav-icon"></i><span data-zh="我的提交" data-en="My Submissions">我的提交</span>
+        <span class="nav-badge hidden" id="myPendingBadge">0</span>
+      </a>
     </nav>
     <div class="sidebar-section" style="margin-top:.5rem;"><span class="sidebar-label">系统</span></div>
     <nav class="sidebar-nav">
@@ -272,6 +282,20 @@
       <div id="faqPagination" style="display:flex;gap:.5rem;justify-content:center;margin-top:1rem;flex-wrap:wrap;"></div>
     </div>
 
+    <!-- ── Pending Review (admin only) ── -->
+    <div class="view hidden" id="view-review">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:.75rem;">
+        <h1>审核中心</h1>
+        <button class="btn btn-outline btn-sm" onclick="renderPendingReview()">
+          <i class="ti ti-refresh"></i> 刷新
+        </button>
+      </div>
+      <p style="color:var(--text-muted);margin-bottom:1.25rem;font-size:.9rem;">
+        编辑提交的所有变更在此等待批准。批准后立即生效；驳回后变更记录保留但不执行。
+      </p>
+      <div id="reviewContent"></div>
+    </div>
+
   </main>
 </div>
 
@@ -409,6 +433,7 @@
         <label class="form-label" data-zh="角色" data-en="Role">角色</label>
         <select class="form-input form-select" id="newRole">
           <option value="user">学员 (User)</option>
+          <option value="editor">编辑者 (Editor)</option>
           <option value="admin">管理员 (Admin)</option>
         </select>
       </div>
