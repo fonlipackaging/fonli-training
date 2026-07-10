@@ -151,8 +151,8 @@ async function loadUserData() {
     }).catch(() => {});
   }
 
-  // Admin accounts: redirect back unless explicitly in preview mode
-  if (userProfile.role === 'admin') {
+  // Admin/editor accounts: redirect to admin panel unless explicitly in preview mode
+  if (userProfile.role === 'admin' || userProfile.role === 'editor') {
     const urlPreview = new URLSearchParams(window.location.search).get('preview') === 'admin';
     const ssPreview  = sessionStorage.getItem('fonli_admin_preview') === '1';
     if (!(urlPreview || ssPreview)) {
