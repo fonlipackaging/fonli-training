@@ -187,53 +187,71 @@ function buildChapterQuizSet(chapterId) {
     .map(normalizeQuestion);
 }
 
-// Build mock exam question set (evenly distributed across chapters)
-// Only uses choice/single questions (fill questions excluded from timed exams)
-function buildMockSet() {
-  var allQ   = typeof QUESTIONS !== 'undefined' ? QUESTIONS : [];
-  var target = EXAM_CONFIG.mock.questionCount;
-  // Only scoreable question types for exams
-  var choiceQ = allQ.filter(function(q){ return q.type === 'choice' || q.type === 'single' || q.type === 'multiple' || q.type === 'boolean'; });
-  // Group by chapter
-  var byChapter = {};
-  choiceQ.forEach(function(q) {
-    if (!byChapter[q.chapterId]) byChapter[q.chapterId] = [];
-    byChapter[q.chapterId].push(q);
-  });
-  var chapters = Object.keys(byChapter);
-  var perChap  = Math.ceil(target / chapters.length);
-  var result = [];
-  chapters.forEach(function(cid) {
-    var picked = shuffle(byChapter[cid]).slice(0, perChap);
-    result = result.concat(picked);
-  });
-  return shuffle(result).slice(0, target).map(normalizeQuestion);
+// ── V6 question helpers ───────────────────────────────
+
+// Check a single blank answer against the expected answer (supports "/" alternatives)
+function checkFillBlank(expected, userInput) {
+  if (!userInput || !userInput.trim()) return false;
+  var inp = userInput.trim().toLowerCase().replace(/\s+/g, ' ');
+  // Split expected by "/" for alternatives
+  var alts = expected.split('/').map(function(a){ return a.trim().toLowerCase().replace(/\s+/g, ' '); });
+  return alts.some(function(alt){ return inp === alt; });
 }
 
-// Build formal exam question set
-// Only uses choice/single questions (fill questions excluded from timed exams)
-function buildExamSet(config) {
-  var allQ   = typeof QUESTIONS !== 'undefined' ? QUESTIONS : [];
-  var target = config.questionCount || 30;
-  // Only scoreable question types for exams
-  var choiceQ = allQ.filter(function(q){ return q.type === 'choice' || q.type === 'single' || q.type === 'multiple' || q.type === 'boolean'; });
-  // Distribute proportionally by difficulty
-  var easy   = shuffle(choiceQ.filter(function(q){ return q.difficulty === 'easy'; }));
-  var medium = shuffle(choiceQ.filter(function(q){ return q.difficulty === 'medium'; }));
-  var hard   = shuffle(choiceQ.filter(function(q){ return q.difficulty === 'hard'; }));
-  // ~30% easy, 50% medium, 20% hard
-  var eN = Math.round(target * 0.30);
-  var mN = Math.round(target * 0.50);
-  var hN = target - eN - mN;
-  var pool = easy.slice(0, eN).concat(medium.slice(0, mN)).concat(hard.slice(0, hN));
-  // Fill gaps if not enough in a difficulty tier
-  if (pool.length < target) {
-    var used = {};
-    pool.forEach(function(q){ used[q.id] = true; });
-    var extra = shuffle(choiceQ.filter(function(q){ return !used[q.id]; }));
-    pool = pool.concat(extra.slice(0, target - pool.length));
+// Check a V6 fill question answer (array of blank answers)
+function checkV6FillAnswer(q, userAns) {
+  if (!Array.isArray(userAns) || !Array.isArray(q.blanks) || q.blanks.length === 0) return false;
+  // All blanks must be correct
+  return q.blanks.every(function(expected, i) {
+    return checkFillBlank(expected, userAns[i] || '');
+  });
+}
+
+// Normalize V6 format question so buildQuestionCard() can render it
+function normalizeV6Question(q) {
+  if (q._normalized) return q;
+  var n = Object.assign({}, q, { _normalized: true, _v6: true });
+  // Map fields to rendering format
+  n.questionZh = n.textZh || '';
+  n.questionEn = n.textZh || '';  // V6 questions are Chinese-only
+  if (n.type === 'single' && Array.isArray(n.options)) {
+    n.optionsZh = n.options;
+    n.optionsEn = n.options;
   }
-  return shuffle(pool).slice(0, target).map(normalizeQuestion);
+  return n;
+}
+
+// Build mock exam (40 random V6 questions, mix of fill and single)
+function buildMockSet() {
+  var v6 = typeof EXAM_QUESTIONS_V6 !== 'undefined' ? EXAM_QUESTIONS_V6 : [];
+  if (v6.length === 0) {
+    // Fallback to old questions
+    var allQ = typeof QUESTIONS !== 'undefined' ? QUESTIONS : [];
+    return shuffle(allQ.filter(function(q){ return q.type === 'choice' || q.type === 'single'; }))
+      .slice(0, EXAM_CONFIG.mock.questionCount).map(normalizeQuestion);
+  }
+  var target = 40;
+  // Split by type for balanced selection
+  var fillQ   = v6.filter(function(q){ return q.type === 'fill'; });
+  var singleQ = v6.filter(function(q){ return q.type === 'single'; });
+  // 50% fill, 50% choice
+  var fillCount   = Math.round(target * 0.5);
+  var singleCount = target - fillCount;
+  var picked = shuffle(fillQ).slice(0, fillCount).concat(shuffle(singleQ).slice(0, singleCount));
+  return shuffle(picked).map(normalizeV6Question);
+}
+
+// Build formal exam (all 259 V6 questions)
+function buildExamSet(config) {
+  var v6 = typeof EXAM_QUESTIONS_V6 !== 'undefined' ? EXAM_QUESTIONS_V6 : [];
+  if (v6.length === 0) {
+    // Fallback to old questions
+    var allQ = typeof QUESTIONS !== 'undefined' ? QUESTIONS : [];
+    return shuffle(allQ.filter(function(q){ return q.type === 'choice' || q.type === 'single'; }))
+      .slice(0, config.questionCount || 50).map(normalizeQuestion);
+  }
+  // All V6 questions, shuffled
+  return shuffle(v6).map(normalizeV6Question);
 }
 
 // Score a completed session: returns { score, correct, total, details }
@@ -243,8 +261,13 @@ function scoreExam(questions, answers) {
     const userAns = answers[q.id];
     let isCorrect = false;
     if (q.type === 'fill') {
-      // Fill questions: count as correct when user revealed the answer
-      isCorrect = userAns === '__fill_revealed__';
+      if (q._v6 && Array.isArray(q.blanks)) {
+        // V6 fill: check typed answers against blanks
+        isCorrect = checkV6FillAnswer(q, Array.isArray(userAns) ? userAns : []);
+      } else {
+        // Legacy fill: correct when user revealed the answer
+        isCorrect = userAns === '__fill_revealed__';
+      }
     } else if (q.type === 'multiple' || q.type === 'multi') {
       // Multi-select: user answer is array, q.answer is array
       const ua = Array.isArray(userAns) ? [...userAns].sort() : [];
