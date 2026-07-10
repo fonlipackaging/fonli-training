@@ -230,7 +230,7 @@ function renderUsers() {
   }
 
   let html = `<div class="table-wrap"><table class="list-table"><thead><tr>
-    <th>${t('姓名','Name')}</th><th>${t('邮箱','Email')}</th>
+    <th>${t('姓名','Name')}</th><th>${t('角色','Role')}</th><th>${t('邮箱','Email')}</th>
     <th>${t('进度','Progress')}</th><th>${t('最高分','Best Score')}</th><th>${t('操作','Actions')}</th>
   </tr></thead><tbody>`;
 
@@ -241,8 +241,12 @@ function renderUsers() {
     const cls       = bestScore !== null ? `badge-${scoreClass(bestScore)}` : 'badge-pending';
     const scoreTxt  = bestScore !== null ? `${bestScore}${t('分','pts')} (${t('第','#')}${attempts}${t('次','')})` : t('未考试','No exam');
 
+    const roleBadgeHtml = u.role === 'editor'
+      ? '<span style="display:inline-block;padding:2px 9px;border-radius:20px;font-size:.73rem;font-weight:700;background:#fff3e0;color:#e65100;border:1px solid #ffcc80;">编辑者</span>'
+      : '<span style="display:inline-block;padding:2px 9px;border-radius:20px;font-size:.73rem;font-weight:700;background:#e8f4fd;color:#1a4fa0;border:1px solid #b8dff5;">学员</span>';
     html += `<tr>
       <td><b>${u.name || '--'}</b></td>
+      <td>${roleBadgeHtml}</td>
       <td style="font-size:.82rem;">${u.email || '--'}</td>
       <td><span class="badge badge-pending">${attempts}/${EXAM_CONFIG.exam.maxAttempts} ${t('次','att')}</span></td>
       <td><span class="badge ${cls}">${scoreTxt}</span></td>
