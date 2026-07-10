@@ -1490,3 +1490,130 @@ function deleteCurrentQuestion() {
   hideModal('questionEditorModal');
   showModal('deleteQModal');
 }
+
+// ═══════════════════════════════════════════════════════
+//  SYNC FIRESTORE → data.js on GitHub
+// ═══════════════════════════════════════════════════════
+
+const SYNC_REPO   = 'fonlipackaging/fonli-training';
+const SYNC_BRANCH = 'main';
+const SYNC_PATH   = 'js/data.js';
+
+function showSyncModal() {
+  document.getElementById('syncQCount').textContent = allQuestions.length || '--';
+  document.getElementById('syncProgress').classList.add('hidden');
+  document.getElementById('syncLog').textContent = '';
+  document.getElementById('syncError').classList.add('hidden');
+  document.getElementById('syncStartBtn').disabled = false;
+  // Restore cached token if available
+  const cached = sessionStorage.getItem('_gh_sync_token');
+  if (cached) document.getElementById('syncGithubToken').value = cached;
+  showModal('syncDataJsModal');
+}
+
+function syncLog(msg) {
+  const el = document.getElementById('syncLog');
+  el.textContent += msg + '\n';
+  el.scrollTop = el.scrollHeight;
+}
+
+// Safe base64 encode/decode for Unicode strings
+function toB64(str) {
+  return btoa(unescape(encodeURIComponent(str)));
+}
+function fromB64(b64) {
+  return decodeURIComponent(escape(atob(b64.replace(/\s/g, ''))));
+}
+
+async function startDataJsSync() {
+  const token = document.getElementById('syncGithubToken').value.trim();
+  if (!token) {
+    document.getElementById('syncError').textContent = '请输入 GitHub Token';
+    document.getElementById('syncError').classList.remove('hidden');
+    return;
+  }
+  sessionStorage.setItem('_gh_sync_token', token);
+  document.getElementById('syncError').classList.add('hidden');
+  document.getElementById('syncProgress').classList.remove('hidden');
+  document.getElementById('syncStartBtn').disabled = true;
+  syncLog('① 从 Firestore 加载题目…');
+
+  try {
+    // Step 1: ensure all questions loaded
+    if (allQuestions.length === 0) await loadQuestions();
+    const questions = allQuestions.map(q => {
+      const copy = Object.assign({}, q);
+      delete copy._docId; // strip internal field
+      return copy;
+    });
+    syncLog(`   已加载 ${questions.length} 道题目`);
+
+    // Step 2: fetch current data.js from GitHub
+    syncLog('② 从 GitHub 读取 data.js…');
+    const getResp = await fetch(
+      `https://api.github.com/repos/${SYNC_REPO}/contents/${SYNC_PATH}?ref=${SYNC_BRANCH}`,
+      { headers: { Authorization: `token ${token}` } }
+    );
+    if (!getResp.ok) {
+      const e = await getResp.json();
+      throw new Error('读取 data.js 失败: ' + (e.message || getResp.status));
+    }
+    const fileData = await getResp.json();
+    const sha = fileData.sha;
+    const original = fromB64(fileData.content);
+    syncLog(`   文件大小: ${(original.length / 1024).toFixed(1)} KB，SHA: ${sha.slice(0,10)}…`);
+
+    // Step 3: find and replace EXAM_QUESTIONS_V6 array
+    syncLog('③ 替换 EXAM_QUESTIONS_V6 数组…');
+    const marker = 'const EXAM_QUESTIONS_V6';
+    const si = original.indexOf(marker);
+    if (si === -1) throw new Error('在 data.js 中未找到 EXAM_QUESTIONS_V6');
+
+    // Find opening bracket
+    const bi = original.indexOf('[', si);
+    // Walk to matching closing bracket
+    let depth = 0, ei = bi;
+    for (let i = bi; i < original.length; i++) {
+      if (original[i] === '[') depth++;
+      else if (original[i] === ']') { depth--; if (depth === 0) { ei = i; break; } }
+    }
+    // Skip trailing ';' if present
+    let afterEnd = ei + 1;
+    if (original[afterEnd] === ';') afterEnd++;
+
+    const newDecl = `const EXAM_QUESTIONS_V6 = ${JSON.stringify(questions, null, 2)};`;
+    const updated = original.substring(0, si) + newDecl + original.substring(afterEnd);
+    syncLog(`   替换完成，新文件大小: ${(updated.length / 1024).toFixed(1)} KB`);
+
+    // Step 4: push back to GitHub
+    syncLog('④ 推送到 GitHub…');
+    const newB64 = toB64(updated);
+    const pushResp = await fetch(
+      `https://api.github.com/repos/${SYNC_REPO}/contents/${SYNC_PATH}`,
+      {
+        method: 'PUT',
+        headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: `sync: update EXAM_QUESTIONS_V6 from Firestore (${questions.length} questions)`,
+          content: newB64,
+          sha: sha,
+          branch: SYNC_BRANCH
+        })
+      }
+    );
+    if (!pushResp.ok) {
+      const e = await pushResp.json();
+      throw new Error('推送失败: ' + (e.message || pushResp.status));
+    }
+    syncLog(`\n✅ 同步成功！data.js 已更新为 ${questions.length} 道最新题目。`);
+    syncLog('   等约 30 秒 GitHub Pages 刷新后生效。');
+    toast('✅ data.js 同步完成', 'success');
+
+  } catch(e) {
+    syncLog('\n❌ 失败: ' + e.message);
+    document.getElementById('syncError').textContent = e.message;
+    document.getElementById('syncError').classList.remove('hidden');
+  } finally {
+    document.getElementById('syncStartBtn').disabled = false;
+  }
+}
