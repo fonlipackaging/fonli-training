@@ -32,7 +32,7 @@
   <div class="auth-card">
     <div class="auth-logo">
       <div class="logo-mark" id="authLogoMark" style="background:transparent;">
-        <img src="logo.png" alt="菲利包装" onerror="this.parentElement.style.background='var(--dark-blue)';this.outerHTML='<span>FL</span>'" style="width:64px;height:64px;border-radius:14px;object-fit:contain;">
+        <img src="LOGO.png" alt="菲利包装" onerror="this.parentElement.style.background='var(--dark-blue)';this.outerHTML='<span>FL</span>'" style="width:64px;height:64px;border-radius:14px;object-fit:contain;">
       </div>
       <h1 data-zh="菲利包装" data-en="Fonli Packaging">菲利包装</h1>
       <p data-zh="销售培训与考核系统" data-en="Sales Training & Assessment System">销售培训与考核系统</p>
@@ -74,27 +74,40 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <script src="js/config.js"></script>
-<script src="js/data.js"></script>
 <script src="js/utils.js"></script>
+<!-- data.js not needed on login page -->
 <script>
   // Init Firebase
   firebase.initializeApp(FIREBASE_CONFIG);
   const auth = firebase.auth();
   const db   = firebase.firestore();
 
+  function hideLogin() {
+    document.getElementById('loadingScreen').classList.add('hidden');
+  }
+
+  // Timeout fallback: if Firebase never responds within 8s, show login form
+  const _loginTimeout = setTimeout(hideLogin, 8000);
+
   // Check if already logged in
   auth.onAuthStateChanged(async user => {
-    if (user) {
-      // Get role and redirect
-      const doc = await db.collection('users').doc(user.uid).get();
-      if (doc.exists) {
-        const role = doc.data().role;
-        window.location.href = role === 'admin' ? 'admin.html' : 'app.html';
+    clearTimeout(_loginTimeout);
+    try {
+      if (user) {
+        // Get role and redirect
+        const doc = await db.collection('users').doc(user.uid).get();
+        if (doc.exists) {
+          const role = doc.data().role;
+          window.location.href = role === 'admin' ? 'admin.html' : 'app.html';
+        } else {
+          hideLogin();
+        }
       } else {
-        document.getElementById('loadingScreen').classList.add('hidden');
+        hideLogin();
       }
-    } else {
-      document.getElementById('loadingScreen').classList.add('hidden');
+    } catch(e) {
+      console.error('Auth state error:', e);
+      hideLogin(); // Always show login form even if Firestore fails
     }
   });
 
