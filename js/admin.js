@@ -29,27 +29,32 @@ auth.onAuthStateChanged(async user => {
 });
 
 async function loadAllData() {
-  const [usersSnap, attSnap, notifSnap, settingsDoc] = await Promise.all([
+  // Load core data — each in separate try/catch so one failure doesn't block others
+  const [usersSnap, attSnap, notifSnap] = await Promise.all([
     db.collection('users').get(),
     db.collection('examAttempts').orderBy('createdAt', 'desc').get(),
-    db.collection('notifications').orderBy('createdAt', 'desc').get(),
-    db.collection('settings').doc('exam').get()
+    db.collection('notifications').orderBy('createdAt', 'desc').get()
   ]);
   allUsers    = usersSnap.docs.map(d => ({ id: d.id, ...d.data() }));
   allAttempts = attSnap.docs.map(d => ({ id: d.id, ...d.data() }));
   allNotifs   = notifSnap.docs.map(d => ({ id: d.id, ...d.data() }));
 
-  // Apply saved exam settings over config defaults
-  if (settingsDoc.exists) {
-    const s = settingsDoc.data();
-    if (s.passingScore  != null) EXAM_CONFIG.exam.passingScore  = s.passingScore;
-    if (s.excellentScore!= null) EXAM_CONFIG.exam.excellentScore= s.excellentScore;
-    if (s.maxAttempts   != null) EXAM_CONFIG.exam.maxAttempts   = s.maxAttempts;
-    if (s.cooldownHours != null) EXAM_CONFIG.exam.cooldownHours = s.cooldownHours;
-    if (s.timeMinutes   != null) {
-      EXAM_CONFIG.exam.timeMinutes  = s.timeMinutes;
-      EXAM_CONFIG.mock.timeMinutes  = s.timeMinutes;
+  // Load exam settings separately — non-fatal if collection doesn't exist yet
+  try {
+    const settingsDoc = await db.collection('settings').doc('exam').get();
+    if (settingsDoc.exists) {
+      const s = settingsDoc.data();
+      if (s.passingScore  != null) EXAM_CONFIG.exam.passingScore  = s.passingScore;
+      if (s.excellentScore!= null) EXAM_CONFIG.exam.excellentScore= s.excellentScore;
+      if (s.maxAttempts   != null) EXAM_CONFIG.exam.maxAttempts   = s.maxAttempts;
+      if (s.cooldownHours != null) EXAM_CONFIG.exam.cooldownHours = s.cooldownHours;
+      if (s.timeMinutes   != null) {
+        EXAM_CONFIG.exam.timeMinutes  = s.timeMinutes;
+        EXAM_CONFIG.mock.timeMinutes  = s.timeMinutes;
+      }
     }
+  } catch(e) {
+    console.warn('Could not load exam settings (check Firestore rules for settings collection):', e.message);
   }
 
   // Update notification badge
