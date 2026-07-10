@@ -57,6 +57,31 @@ auth.onAuthStateChanged(async user => {
   }
 });
 
+// ── Live question bank: load from Firestore, fallback to data.js ─────────────
+// Set once at startup; buildExamSet/buildMockSet read this.
+let _firestoreQuestions = null;   // null = not loaded yet; [] = loaded but empty
+
+async function loadQuestionBank() {
+  try {
+    const snap = await db.collection('examQuestions').orderBy('num').get();
+    if (!snap.empty) {
+      _firestoreQuestions = snap.docs.map(d => d.data());
+      console.log('[QBank] Loaded', _firestoreQuestions.length, 'questions from Firestore');
+    } else {
+      _firestoreQuestions = [];
+      console.log('[QBank] Firestore examQuestions empty — using data.js fallback');
+    }
+  } catch(e) {
+    _firestoreQuestions = [];
+    console.warn('[QBank] Could not load from Firestore:', e.message, '— using data.js fallback');
+  }
+}
+
+function getActiveQuestions() {
+  if (_firestoreQuestions && _firestoreQuestions.length > 0) return _firestoreQuestions;
+  return typeof EXAM_QUESTIONS_V6 !== 'undefined' ? EXAM_QUESTIONS_V6 : [];
+}
+
 // ── Load chapters: always use data.js (Firestore only stores progress/users) ─
 async function loadChapters() {
   // Always use the static data.js CHAPTERS — Firestore content may be stale.
@@ -86,7 +111,8 @@ async function loadExamSettings() {
 
 async function loadUserData() {
   await loadChapters();
-  await loadExamSettings(); // pull admin-configured thresholds from Firestore
+  await loadExamSettings();    // pull admin-configured thresholds from Firestore
+  await loadQuestionBank();    // load live question bank (Firestore → data.js fallback)
 
   const [profDoc, progDoc] = await Promise.all([
     db.collection('users').doc(currentUser.uid).get(),
@@ -639,8 +665,8 @@ function renderMockLanding() {
     locked ? t(`请先完成全部${appChapters.length}个章节的学习（当前已完成${done}章）`, `Complete all ${appChapters.length} chapters first (${done} done)`)
            : t('完整模拟正式考试环境，帮助你评估准备程度。', 'Simulate the real exam to assess your readiness.');
   document.getElementById('startMockBtn').disabled = locked;
-  // Set dynamic question count (always reflects current V6 pool size)
-  var v6Count = typeof EXAM_QUESTIONS_V6 !== 'undefined' ? EXAM_QUESTIONS_V6.length : '--';
+  // Set dynamic question count (always reflects live question bank)
+  var v6Count = getActiveQuestions().length || '--';
   var el = document.getElementById('mockQuestionCount');
   if (el) el.textContent = v6Count;
   var t2 = document.getElementById('mockTimeDisplay');
@@ -660,8 +686,8 @@ function startMock() {
 
 // ── Final Exam ────────────────────────────────────────
 function renderExamLanding() {
-  // Set dynamic question count and time (updates automatically when V6 pool grows)
-  var v6Count = typeof EXAM_QUESTIONS_V6 !== 'undefined' ? EXAM_QUESTIONS_V6.length : '--';
+  // Set dynamic question count and time (updates automatically when question bank changes)
+  var v6Count = getActiveQuestions().length || '--';
   var eqc = document.getElementById('examQuestionCount');
   if (eqc) eqc.textContent = v6Count;
   var etd = document.getElementById('examTimeDisplay');
