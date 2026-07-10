@@ -15,7 +15,10 @@ let userToDelete = null;
 // ── Auth guard ────────────────────────────────────────
 auth.onAuthStateChanged(async user => {
   if (!user) { window.location.href = 'index.html'; return; }
-  const doc = await db.collection('users').doc(user.uid).get();
+  // Check role + load all data in parallel
+  const [doc] = await Promise.all([
+    db.collection('users').doc(user.uid).get(),
+  ]);
   if (!doc.exists || doc.data().role !== 'admin') {
     alert(t('权限不足，跳转至学员页面', 'Access denied. Redirecting to user page.'));
     window.location.href = 'app.html'; return;
