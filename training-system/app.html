@@ -5,17 +5,47 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>菲利培训系统 | Fonli Training</title>
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css">
+  <!-- Preconnect to speed up Firebase CDN requests -->
+  <link rel="preconnect" href="https://www.gstatic.com">
+  <link rel="preconnect" href="https://firestore.googleapis.com">
+  <link rel="preconnect" href="https://identitytoolkit.googleapis.com">
+  <!-- Inline loading screen styles (shows before any JS/CSS loads) -->
+  <style>
+    #appLoading {
+      position: fixed; inset: 0; background: #fff;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      z-index: 99999; gap: 1.25rem;
+    }
+    #appLoading img { width: 64px; height: 64px; object-fit: contain; }
+    #appLoading .ld-spinner {
+      width: 36px; height: 36px; border-radius: 50%;
+      border: 4px solid #e8edf5;
+      border-top-color: #1a4fa0;
+      animation: ld-spin 0.75s linear infinite;
+    }
+    #appLoading p { color: #888; font-size: .88rem; font-family: sans-serif; margin: 0; }
+    @keyframes ld-spin { to { transform: rotate(360deg); } }
+  </style>
 </head>
 <body>
+
+<!-- Immediate loading screen: shows before JS runs -->
+<div id="appLoading">
+  <img src="LOGO.png" alt="Fonli" onerror="this.src='LOGO-white.png'" style="filter:drop-shadow(0 2px 8px rgba(0,0,0,.15))">
+  <div class="ld-spinner"></div>
+  <p>正在加载… Loading…</p>
+</div>
 
 <!-- Navbar -->
 <nav class="navbar">
   <div class="navbar-inner">
     <div style="display:flex;align-items:center;gap:.75rem;">
-      <button class="hamburger" id="hamburger">☰</button>
+      <button class="hamburger" id="hamburger"><i class="ti ti-menu-2"></i></button>
       <div class="navbar-brand">
         <div class="brand-mark" style="background:transparent;overflow:hidden;">
-          <img src="logo.png" alt="FL" onerror="this.parentElement.style.background='var(--gold)';this.outerHTML='<span>FL</span>'" style="width:36px;height:36px;object-fit:contain;">
+          <img src="LOGO-white.png" alt="FL" onerror="this.outerHTML='<img src=LOGO.png style=width:30px;height:30px;object-fit:contain;filter:brightness(10)>'" style="width:30px;height:30px;object-fit:contain;">
         </div>
         <div>
           <div class="brand-name" data-zh="菲利包装" data-en="Fonli Packaging">菲利包装</div>
@@ -42,25 +72,25 @@
     <div class="sidebar-section"><span class="sidebar-label" data-zh="学习路径" data-en="Learning Path">学习路径</span></div>
     <nav class="sidebar-nav">
       <a href="#" id="nav-dashboard" onclick="navigate('dashboard')">
-        <span class="nav-icon">🏠</span><span data-zh="学习总览" data-en="Dashboard">学习总览</span>
+        <i class="ti ti-home nav-icon"></i><span data-zh="学习总览" data-en="Dashboard">学习总览</span>
       </a>
       <a href="#" id="nav-learn" onclick="navigate('learn')">
-        <span class="nav-icon">📚</span><span data-zh="知识学习" data-en="Knowledge">知识学习</span>
+        <i class="ti ti-book-2 nav-icon"></i><span data-zh="知识学习" data-en="Knowledge">知识学习</span>
       </a>
       <a href="#" id="nav-quiz" onclick="navigate('quiz')">
-        <span class="nav-icon">✏️</span><span data-zh="随堂练习" data-en="Chapter Quiz">随堂练习</span>
+        <i class="ti ti-pencil nav-icon"></i><span data-zh="随堂练习" data-en="Chapter Quiz">随堂练习</span>
       </a>
       <a href="#" id="nav-mock" onclick="navigate('mock')">
-        <span class="nav-icon">🎯</span><span data-zh="模拟测试" data-en="Mock Exam">模拟测试</span>
+        <i class="ti ti-target nav-icon"></i><span data-zh="模拟测试" data-en="Mock Exam">模拟测试</span>
       </a>
       <a href="#" id="nav-exam" onclick="navigate('exam')">
-        <span class="nav-icon">📝</span><span data-zh="正式考试" data-en="Final Exam">正式考试</span>
+        <i class="ti ti-file-certificate nav-icon"></i><span data-zh="正式考试" data-en="Final Exam">正式考试</span>
       </a>
     </nav>
     <div class="sidebar-section" style="margin-top:.5rem;"><span class="sidebar-label" data-zh="我的记录" data-en="My Records">我的记录</span></div>
     <nav class="sidebar-nav">
       <a href="#" id="nav-history" onclick="navigate('history')">
-        <span class="nav-icon">📊</span><span data-zh="考试记录" data-en="Exam History">考试记录</span>
+        <i class="ti ti-history nav-icon"></i><span data-zh="考试记录" data-en="Exam History">考试记录</span>
       </a>
     </nav>
   </aside>
@@ -135,9 +165,9 @@
         <h2 style="margin-bottom:.75rem;" data-zh="模拟测试" data-en="Mock Exam">模拟测试</h2>
         <p style="margin-bottom:1.5rem;" id="mockDesc"></p>
         <div class="exam-meta" style="justify-content:center;margin-bottom:1.5rem;">
-          <span>📊 <span data-zh="30题" data-en="30 questions">30题</span></span>
-          <span>⏱ <span data-zh="35分钟" data-en="35 minutes">35分钟</span></span>
-          <span>🎯 <span data-zh="70分及格" data-en="70 to pass">70分及格</span></span>
+          <span>📊 <span data-zh="20题" data-en="20 questions">20题</span></span>
+          <span>⏱ <span data-zh="30分钟" data-en="30 minutes">30分钟</span></span>
+          <span>🎯 <span data-zh="模拟正式考试环境" data-en="Simulates exam environment">模拟正式考试环境</span></span>
         </div>
         <button class="btn btn-gold btn-lg" id="startMockBtn" onclick="startMock()">
           <span data-zh="开始模拟测试" data-en="Start Mock Exam">开始模拟测试</span>
@@ -189,10 +219,10 @@
           <div style="font-size:3rem;margin-bottom:.75rem;">📝</div>
           <h2 data-zh="正式考试" data-en="Final Exam">正式考试</h2>
           <div class="exam-meta" style="justify-content:center;margin-top:1rem;">
-            <span>📊 50 <span data-zh="题" data-en="questions">题</span></span>
-            <span>⏱ 60 <span data-zh="分钟" data-en="min">分钟</span></span>
-            <span>✅ 80 <span data-zh="分及格" data-en="to pass">分及格</span></span>
-            <span>⭐ 95 <span data-zh="分优秀" data-en="excellent">分优秀</span></span>
+            <span>📊 30 <span data-zh="题" data-en="questions">题</span></span>
+            <span>⏱ 45 <span data-zh="分钟" data-en="min">分钟</span></span>
+            <span>✅ 95 <span data-zh="分及格" data-en="to pass">分及格</span></span>
+            <span>⭐ 99 <span data-zh="分优秀" data-en="excellent">分优秀</span></span>
           </div>
         </div>
         <div id="examLandingContent" style="margin-top:1.5rem;"></div>
@@ -225,7 +255,7 @@
   </div>
 </div>
 
-<!-- Firebase -->
+<!-- Firebase + app scripts -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
