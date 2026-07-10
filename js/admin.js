@@ -75,6 +75,7 @@ function navigate(view) {
   if (view === 'notifications') renderNotifications();
   if (view === 'content')       renderContent();
   if (view === 'settings')      renderSettings();
+  if (view === 'questions')     { loadQuestions().then(() => renderQuestions()); }
 }
 
 function doLogout() {
@@ -1044,4 +1045,356 @@ async function saveExamSettings() {
   } catch(e) {
     errEl.textContent = '保存失败: ' + e.message; errEl.classList.remove('hidden');
   }
+}
+
+// ═══════════════════════════════════════════════════════
+//  QUESTION BANK MANAGEMENT
+// ═══════════════════════════════════════════════════════
+
+let allQuestions   = [];   // loaded from Firestore
+let filteredQs     = [];   // after search/filter
+let currentQPage   = 1;
+const Q_PER_PAGE   = 30;
+let editingQDocId  = null; // Firestore doc id of question being edited
+let deletingQDocId = null;
+
+// ── Load questions from Firestore ─────────────────────
+async function loadQuestions() {
+  try {
+    const snap = await db.collection('examQuestions').orderBy('num').get();
+    allQuestions = snap.docs.map(d => ({ _docId: d.id, ...d.data() }));
+    // Update nav badge
+    const badge = document.getElementById('qBadge');
+    if (badge) {
+      if (allQuestions.length > 0) {
+        badge.textContent = allQuestions.length;
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
+    }
+    return allQuestions;
+  } catch(e) {
+    console.warn('loadQuestions error:', e.message);
+    return [];
+  }
+}
+
+// ── Render question list ──────────────────────────────
+function renderQuestions() {
+  const search  = (document.getElementById('qSearch')?.value || '').toLowerCase();
+  const typeF   = document.getElementById('qFilterType')?.value || 'all';
+  const chapF   = document.getElementById('qFilterChapter')?.value || 'all';
+
+  filteredQs = allQuestions.filter(q => {
+    if (typeF !== 'all' && q.type !== typeF) return false;
+    if (chapF !== 'all' && String(q.chapter) !== chapF) return false;
+    if (search) {
+      const text = (q.textZh || q.text || '').toLowerCase();
+      const blanks = (q.blanks || []).join(' ').toLowerCase();
+      const opts = (q.options || []).join(' ').toLowerCase();
+      if (!text.includes(search) && !blanks.includes(search) && !opts.includes(search)) return false;
+    }
+    return true;
+  });
+
+  // Update chapter filter options
+  const chapSel = document.getElementById('qFilterChapter');
+  if (chapSel && chapSel.options.length <= 1) {
+    const chapters = [...new Set(allQuestions.map(q => q.chapter).filter(Boolean))].sort((a,b)=>a-b);
+    chapters.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c; opt.textContent = `第 ${c} 章`;
+      chapSel.appendChild(opt);
+    });
+  }
+
+  document.getElementById('qCount').textContent = `${filteredQs.length} / ${allQuestions.length} 题`;
+
+  const totalPages = Math.max(1, Math.ceil(filteredQs.length / Q_PER_PAGE));
+  if (currentQPage > totalPages) currentQPage = 1;
+  const pageQs = filteredQs.slice((currentQPage-1)*Q_PER_PAGE, currentQPage*Q_PER_PAGE);
+
+  const container = document.getElementById('questionsContent');
+  if (!container) return;
+
+  if (allQuestions.length === 0) {
+    container.innerHTML = `
+      <div style="text-align:center;padding:3rem 1rem;">
+        <div style="font-size:3rem;margin-bottom:1rem;">📭</div>
+        <h3 style="margin-bottom:.5rem;">题库尚未导入</h3>
+        <p style="color:var(--text-muted);margin-bottom:1.5rem;">点击右上角「从data.js导入题库」一键导入全部 V6 题目</p>
+        <button class="btn btn-primary" onclick="seedQuestions()">
+          <i class="ti ti-database-import"></i> 立即导入题库
+        </button>
+      </div>`;
+    document.getElementById('qPagination').innerHTML = '';
+    return;
+  }
+
+  if (filteredQs.length === 0) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div><p>没有符合条件的题目</p></div>`;
+    document.getElementById('qPagination').innerHTML = '';
+    return;
+  }
+
+  // Table
+  let html = `<div class="table-wrap"><table class="list-table">
+    <thead><tr>
+      <th style="width:50px;">#</th>
+      <th style="width:60px;">类型</th>
+      <th>题目内容</th>
+      <th style="width:60px;">章节</th>
+      <th style="width:80px;">图片</th>
+      <th style="width:70px;">操作</th>
+    </tr></thead><tbody>`;
+
+  pageQs.forEach(q => {
+    const type  = q.type === 'fill' ? '<span class="badge badge-info">填空</span>' : '<span class="badge badge-pending">选择</span>';
+    const text  = (q.textZh || q.text || '').replace(/</g,'&lt;').substring(0, 60) + (((q.textZh||q.text||'').length > 60) ? '…' : '');
+    const hasImg = q.image && (Array.isArray(q.image) ? q.image.length > 0 : true);
+    const imgIcon = hasImg ? '🖼' : '';
+    html += `<tr>
+      <td style="color:var(--text-muted);font-size:.85rem;">Q${q.num}</td>
+      <td>${type}</td>
+      <td style="cursor:pointer;font-size:.9rem;" onclick="showQuestionEditor(${JSON.stringify(q).replace(/"/g,'&quot;')})">${text}</td>
+      <td style="text-align:center;color:var(--text-muted);">Ch${q.chapter||'?'}</td>
+      <td style="text-align:center;">${imgIcon}</td>
+      <td>
+        <button class="btn btn-sm btn-outline" onclick='showQuestionEditor(${JSON.stringify(q).replace(/'/g,"&#39;")})' style="padding:4px 10px;">编辑</button>
+      </td>
+    </tr>`;
+  });
+
+  html += '</tbody></table></div>';
+  container.innerHTML = html;
+
+  // Pagination
+  renderQPagination(totalPages);
+}
+
+function renderQPagination(totalPages) {
+  const pag = document.getElementById('qPagination');
+  if (!pag || totalPages <= 1) { if(pag) pag.innerHTML=''; return; }
+  let html = '';
+  const prev = currentQPage > 1;
+  const next = currentQPage < totalPages;
+  html += `<button class="btn btn-sm btn-outline" ${prev?'':'disabled'} onclick="goQPage(${currentQPage-1})">← 上页</button>`;
+  const start = Math.max(1, currentQPage-2);
+  const end   = Math.min(totalPages, currentQPage+2);
+  for (let i=start; i<=end; i++) {
+    html += `<button class="btn btn-sm ${i===currentQPage?'btn-primary':'btn-outline'}" onclick="goQPage(${i})">${i}</button>`;
+  }
+  html += `<button class="btn btn-sm btn-outline" ${next?'':'disabled'} onclick="goQPage(${currentQPage+1})">下页 →</button>`;
+  html += `<span style="align-self:center;color:var(--text-muted);font-size:.85rem;">${currentQPage}/${totalPages} 页</span>`;
+  pag.innerHTML = html;
+}
+
+function goQPage(p) { currentQPage = p; renderQuestions(); window.scrollTo(0,200); }
+
+// ── Seed questions from data.js → Firestore ───────────
+async function seedQuestions() {
+  const v6 = typeof EXAM_QUESTIONS_V6 !== 'undefined' ? EXAM_QUESTIONS_V6 : [];
+  if (v6.length === 0) { toast('EXAM_QUESTIONS_V6 未找到', 'danger'); return; }
+
+  if (allQuestions.length > 0) {
+    if (!confirm(`题库已有 ${allQuestions.length} 道题。继续将覆盖全部现有题目。确认吗？`)) return;
+  }
+
+  const btn = document.getElementById('seedQBtn');
+  btn.disabled = true; btn.textContent = '导入中…';
+  toast('正在导入题库，请稍候…', 'info', 8000);
+
+  try {
+    // Delete existing docs first (batch)
+    const existing = await db.collection('examQuestions').get();
+    const delBatches = [];
+    let batch = db.batch();
+    let count = 0;
+    existing.docs.forEach(d => {
+      batch.delete(d.ref);
+      count++;
+      if (count % 400 === 0) { delBatches.push(batch.commit()); batch = db.batch(); count = 0; }
+    });
+    if (count > 0) delBatches.push(batch.commit());
+    await Promise.all(delBatches);
+
+    // Write new docs in batches of 400
+    const writeBatches = [];
+    let wb = db.batch(); let wc = 0;
+    v6.forEach(q => {
+      const ref = db.collection('examQuestions').doc(q.id || ('v6q' + String(q.num).padStart(3,'0')));
+      wb.set(ref, q);
+      wc++;
+      if (wc % 400 === 0) { writeBatches.push(wb.commit()); wb = db.batch(); wc = 0; }
+    });
+    if (wc > 0) writeBatches.push(wb.commit());
+    await Promise.all(writeBatches);
+
+    await loadQuestions();
+    renderQuestions();
+    toast(`✅ 成功导入 ${v6.length} 道题目`, 'success');
+  } catch(e) {
+    toast('导入失败: ' + e.message, 'danger');
+  } finally {
+    btn.disabled = false; btn.innerHTML = '<i class="ti ti-database-import"></i> 从data.js导入题库';
+  }
+}
+
+// ── Question Editor ───────────────────────────────────
+function showQuestionEditor(q) {
+  editingQDocId = q ? (q._docId || q.id) : null;
+
+  document.getElementById('qEditorTitle').textContent = q ? `编辑 Q${q.num}` : '新增题目';
+  document.getElementById('qDeleteBtn').style.display = q ? 'inline-flex' : 'none';
+  document.getElementById('qEditorError').classList.add('hidden');
+
+  // Populate fields
+  document.getElementById('qType').value    = q?.type || 'fill';
+  document.getElementById('qChapter').value = q?.chapter || '';
+  document.getElementById('qText').value    = q?.textZh || q?.text || '';
+  document.getElementById('qImage').value   = q?.image ? (Array.isArray(q.image) ? q.image.join(',') : q.image) : '';
+  document.getElementById('qHint').value    = q?.hint || '';
+
+  // Answer
+  if (q?.type === 'single') {
+    const opts = q.options || ['', '', '', ''];
+    ['A','B','C','D'].forEach((l,i) => {
+      document.getElementById('opt'+l).value = opts[i] || '';
+    });
+    const radio = document.querySelector(`input[name="qAnswer"][value="${q.answer ?? 0}"]`);
+    if (radio) radio.checked = true;
+  } else {
+    // Fill blanks
+    renderBlanksEditor(q?.blanks || ['']);
+  }
+
+  updateQEditorFields();
+  showModal('questionEditorModal');
+}
+
+function updateQEditorFields() {
+  const type = document.getElementById('qType').value;
+  document.getElementById('fillFields').style.display   = type === 'fill'   ? '' : 'none';
+  document.getElementById('singleFields').style.display = type === 'single' ? '' : 'none';
+}
+
+function renderBlanksEditor(blanks) {
+  const editor = document.getElementById('blanksEditor');
+  editor.innerHTML = '';
+  blanks.forEach((b, i) => {
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;gap:.5rem;margin-bottom:.4rem;align-items:center;';
+    row.innerHTML = `
+      <span style="min-width:24px;color:var(--text-muted);font-size:.85rem;">第${i+1}空</span>
+      <input class="form-input blank-input" value="${(b||'').replace(/"/g,'&quot;')}"
+        placeholder="答案（多选项用 / 分隔）" style="flex:1;">
+      <button type="button" onclick="removeBlank(this)" style="background:none;border:none;cursor:pointer;color:var(--danger);font-size:1.1rem;">✕</button>`;
+    editor.appendChild(row);
+  });
+}
+
+function addBlank() {
+  const rows = document.querySelectorAll('.blank-input');
+  const blanks = Array.from(rows).map(i => i.value);
+  blanks.push('');
+  renderBlanksEditor(blanks);
+}
+
+function removeBlank(btn) {
+  const rows = document.querySelectorAll('.blank-input');
+  if (rows.length <= 1) return;
+  const blanks = Array.from(rows).map(i => i.value);
+  const idx = Array.from(btn.parentElement.parentElement.children).indexOf(btn.parentElement);
+  blanks.splice(idx, 1);
+  renderBlanksEditor(blanks);
+}
+
+function autoUpdateBlanks() {
+  const type = document.getElementById('qType').value;
+  if (type !== 'fill') return;
+  const text = document.getElementById('qText').value;
+  const count = (text.match(/\(___\)/g) || []).length;
+  if (count === 0) return;
+  const existing = document.querySelectorAll('.blank-input');
+  if (existing.length !== count) {
+    const vals = Array.from(existing).map(i => i.value);
+    const newBlanks = Array.from({length: count}, (_, i) => vals[i] || '');
+    renderBlanksEditor(newBlanks);
+  }
+}
+
+// ── Save question ─────────────────────────────────────
+async function saveQuestion() {
+  const type    = document.getElementById('qType').value;
+  const chapter = parseInt(document.getElementById('qChapter').value) || 1;
+  const text    = document.getElementById('qText').value.trim();
+  const imageRaw = document.getElementById('qImage').value.trim();
+  const hint    = document.getElementById('qHint').value.trim();
+  const errEl   = document.getElementById('qEditorError');
+  errEl.classList.add('hidden');
+
+  if (!text) { errEl.textContent = '请填写题目内容'; errEl.classList.remove('hidden'); return; }
+
+  let data = { type, chapter, textZh: text, text, hint: hint||null,
+    image: imageRaw ? (imageRaw.includes(',') ? imageRaw.split(',').map(s=>s.trim()) : imageRaw) : null,
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
+
+  if (type === 'fill') {
+    const blanks = Array.from(document.querySelectorAll('.blank-input')).map(i => i.value.trim()).filter(Boolean);
+    if (blanks.length === 0) { errEl.textContent = '请至少填写一个空格答案'; errEl.classList.remove('hidden'); return; }
+    data.blanks = blanks;
+    data.blankCount = blanks.length;
+    data.options = null; data.answer = null;
+  } else {
+    const opts = ['A','B','C','D'].map(l => document.getElementById('opt'+l).value.trim());
+    if (opts.some(o => !o)) { errEl.textContent = '请填写全部四个选项'; errEl.classList.remove('hidden'); return; }
+    const ansRadio = document.querySelector('input[name="qAnswer"]:checked');
+    if (!ansRadio) { errEl.textContent = '请选择正确答案'; errEl.classList.remove('hidden'); return; }
+    data.options = opts; data.answer = parseInt(ansRadio.value);
+    data.blanks = null; data.blankCount = 0;
+  }
+
+  try {
+    if (editingQDocId) {
+      // Update existing
+      await db.collection('examQuestions').doc(editingQDocId).update(data);
+      const idx = allQuestions.findIndex(q => q._docId === editingQDocId || q.id === editingQDocId);
+      if (idx >= 0) allQuestions[idx] = { ...allQuestions[idx], ...data };
+      toast('✅ 题目已更新', 'success');
+    } else {
+      // New question — assign next num
+      const maxNum = allQuestions.reduce((m, q) => Math.max(m, q.num||0), 0);
+      data.num = maxNum + 1;
+      data.id  = 'v6q' + String(data.num).padStart(3,'0');
+      data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+      const ref = await db.collection('examQuestions').doc(data.id).set(data);
+      allQuestions.push({ _docId: data.id, ...data });
+      toast('✅ 题目已新增', 'success');
+    }
+    hideModal('questionEditorModal');
+    renderQuestions();
+  } catch(e) {
+    errEl.textContent = '保存失败: ' + e.message; errEl.classList.remove('hidden');
+  }
+}
+
+// ── Delete question ───────────────────────────────────
+function deleteCurrentQuestion() {
+  const q = allQuestions.find(q => q._docId === editingQDocId || q.id === editingQDocId);
+  if (!q) return;
+  deletingQDocId = editingQDocId;
+  document.getElementById('deleteQMsg').textContent = `确认删除 Q${q.num}「${(q.textZh||q.text||'').substring(0,40)}…」？`;
+  document.getElementById('confirmDeleteQBtn').onclick = async () => {
+    try {
+      await db.collection('examQuestions').doc(deletingQDocId).delete();
+      allQuestions = allQuestions.filter(q => (q._docId||q.id) !== deletingQDocId);
+      hideModal('deleteQModal');
+      hideModal('questionEditorModal');
+      renderQuestions();
+      toast('题目已删除', 'info');
+    } catch(e) { toast('删除失败: '+e.message, 'danger'); }
+  };
+  hideModal('questionEditorModal');
+  showModal('deleteQModal');
 }
