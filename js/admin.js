@@ -1178,8 +1178,60 @@ function renderQuestions() {
   html += '</tbody></table>';
   container.innerHTML = html;
 
+  // Hide the seed button when questions already exist — show danger zone instead
+  const seedBtn = document.getElementById('seedQBtn');
+  if (seedBtn) seedBtn.style.display = 'none';
+
+  // Render danger zone below pagination
+  let dz = document.getElementById('qDangerZone');
+  if (!dz) {
+    dz = document.createElement('div');
+    dz.id = 'qDangerZone';
+    document.getElementById('qPagination').insertAdjacentElement('afterend', dz);
+  }
+  dz.innerHTML = `
+    <div style="margin-top:1.5rem;border:1.5px solid #e8b4b8;border-radius:10px;overflow:hidden;">
+      <button onclick="toggleDangerZone()"
+        style="width:100%;padding:.65rem 1rem;background:#fff5f5;border:none;cursor:pointer;display:flex;align-items:center;gap:.5rem;font-size:.85rem;color:#c0392b;font-weight:600;text-align:left;">
+        ⚠️ 危险操作区（点击展开）
+        <span id="dzArrow" style="margin-left:auto;">▶</span>
+      </button>
+      <div id="dzContent" style="display:none;padding:1rem;background:#fff8f8;border-top:1px solid #e8b4b8;">
+        <p style="color:#c0392b;font-size:.88rem;margin-bottom:.75rem;">
+          ⚠️ 以下操作会<b>清空并覆盖</b>现有全部 ${allQuestions.length} 道题目，且不可恢复。
+        </p>
+        <p style="color:var(--text-muted);font-size:.84rem;margin-bottom:1rem;">
+          请在输入框中输入 <b>CONFIRM</b> 后方可点击导入按钮：
+        </p>
+        <div style="display:flex;gap:.75rem;align-items:center;flex-wrap:wrap;">
+          <input id="dangerConfirmInput" type="text" placeholder="输入 CONFIRM"
+            style="padding:.5rem .75rem;border:1.5px solid #e8b4b8;border-radius:6px;font-size:.9rem;width:160px;">
+          <button onclick="confirmSeedQuestions()"
+            style="padding:.5rem 1.25rem;background:#c0392b;color:#fff;border:none;border-radius:6px;font-size:.88rem;font-weight:600;cursor:pointer;">
+            🗑 清空并从 data.js 重新导入
+          </button>
+        </div>
+      </div>
+    </div>`;
+
   // Pagination
   renderQPagination(totalPages);
+}
+
+function toggleDangerZone() {
+  const content = document.getElementById('dzContent');
+  const arrow   = document.getElementById('dzArrow');
+  const isOpen  = content.style.display !== 'none';
+  content.style.display = isOpen ? 'none' : 'block';
+  arrow.textContent = isOpen ? '▶' : '▼';
+}
+
+function confirmSeedQuestions() {
+  const val = (document.getElementById('dangerConfirmInput')?.value || '').trim();
+  if (val !== 'CONFIRM') {
+    toast('请先输入 CONFIRM 确认操作', 'warning'); return;
+  }
+  seedQuestions();
 }
 
 function renderQPagination(totalPages) {
