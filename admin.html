@@ -203,6 +203,9 @@
           <button class="btn btn-outline btn-sm" onclick="seedQuestions()" id="seedQBtn">
             <i class="ti ti-database-import"></i> 从data.js导入题库
           </button>
+          <button class="btn btn-outline btn-sm" onclick="showSyncModal()" style="border-color:var(--success);color:var(--success);">
+            <i class="ti ti-cloud-upload"></i> 同步 → data.js
+          </button>
           <button class="btn btn-primary" onclick="showQuestionEditor(null)">
             <i class="ti ti-plus"></i> 新增题目
           </button>
@@ -397,6 +400,38 @@
     <div class="modal-footer">
       <button class="btn btn-outline" onclick="hideModal('deleteUserModal')" data-zh="取消" data-en="Cancel">取消</button>
       <button class="btn btn-danger" id="confirmDeleteBtn" data-zh="确认删除" data-en="Delete">确认删除</button>
+    </div>
+  </div>
+</div>
+
+<!-- Sync to data.js Modal -->
+<div class="modal-overlay" id="syncDataJsModal">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-header">
+      <h3>☁️ 同步题库 → data.js</h3>
+      <button class="modal-close" onclick="hideModal('syncDataJsModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:.9rem;color:var(--text-muted);margin-bottom:1rem;">
+        将把 Firestore 中当前全部 <b id="syncQCount">--</b> 道题目写回 GitHub 的 <code>js/data.js</code>，作为永久备份。操作完成后，即使有人误点「导入默认题库」，导入的也是最新数据。
+      </p>
+      <div class="form-group">
+        <label class="form-label">GitHub Personal Access Token</label>
+        <input class="form-input" type="password" id="syncGithubToken"
+          placeholder="ghp_xxxx…（只需 repo 写权限）"
+          style="font-family:monospace;">
+        <div class="form-hint">Token 仅在本次操作中使用，不会被保存。</div>
+      </div>
+      <div id="syncProgress" class="hidden" style="margin-top:.75rem;">
+        <div style="background:#f0f4ff;border-radius:8px;padding:.75rem 1rem;font-size:.88rem;font-family:monospace;white-space:pre-wrap;max-height:180px;overflow-y:auto;" id="syncLog"></div>
+      </div>
+      <div class="form-error hidden" id="syncError"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="hideModal('syncDataJsModal')">取消</button>
+      <button class="btn btn-primary" id="syncStartBtn" onclick="startDataJsSync()" style="background:var(--success);border-color:var(--success);">
+        ☁️ 开始同步
+      </button>
     </div>
   </div>
 </div>
