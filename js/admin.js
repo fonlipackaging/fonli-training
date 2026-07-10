@@ -1142,34 +1142,46 @@ function renderQuestions() {
   }
 
   // Table
-  let html = `<div class="table-wrap"><table class="list-table">
-    <thead><tr>
-      <th style="width:50px;">#</th>
-      <th style="width:60px;">类型</th>
-      <th>题目内容</th>
-      <th style="width:60px;">章节</th>
-      <th style="width:80px;">图片</th>
-      <th style="width:70px;">操作</th>
-    </tr></thead><tbody>`;
+  let html = `<table style="width:100%;border-collapse:collapse;">
+    <thead>
+      <tr style="border-bottom:2px solid var(--border);">
+        <th style="padding:.6rem 1rem;text-align:left;font-size:.78rem;font-weight:600;color:var(--text-muted);letter-spacing:.04em;width:52px;">#</th>
+        <th style="padding:.6rem .75rem;text-align:left;font-size:.78rem;font-weight:600;color:var(--text-muted);letter-spacing:.04em;width:68px;">类型</th>
+        <th style="padding:.6rem .75rem;text-align:left;font-size:.78rem;font-weight:600;color:var(--text-muted);letter-spacing:.04em;">题目内容</th>
+        <th style="padding:.6rem .75rem;text-align:center;font-size:.78rem;font-weight:600;color:var(--text-muted);letter-spacing:.04em;width:56px;">章节</th>
+        <th style="padding:.6rem .75rem;text-align:center;font-size:.78rem;font-weight:600;color:var(--text-muted);letter-spacing:.04em;width:52px;">图片</th>
+        <th style="padding:.6rem 1rem;text-align:right;font-size:.78rem;font-weight:600;color:var(--text-muted);letter-spacing:.04em;width:68px;">操作</th>
+      </tr>
+    </thead><tbody>`;
 
-  pageQs.forEach(q => {
-    const type  = q.type === 'fill' ? '<span class="badge badge-info">填空</span>' : '<span class="badge badge-pending">选择</span>';
-    const text  = (q.textZh || q.text || '').replace(/</g,'&lt;').substring(0, 60) + (((q.textZh||q.text||'').length > 60) ? '…' : '');
+  pageQs.forEach((q, idx) => {
+    const isFill = q.type === 'fill';
+    const typeBadge = isFill
+      ? '<span style="display:inline-block;padding:2px 8px;border-radius:20px;font-size:.75rem;font-weight:600;background:#e8f4fd;color:#1a6fa0;border:1px solid #b8dff5;">填空</span>'
+      : '<span style="display:inline-block;padding:2px 8px;border-radius:20px;font-size:.75rem;font-weight:600;background:#fff3e0;color:#b06000;border:1px solid #ffd180;">选择</span>';
+    const rawText = (q.textZh || q.text || '');
+    const displayText = rawText.replace(/</g,'&lt;').substring(0, 72) + (rawText.length > 72 ? '…' : '');
     const hasImg = q.image && (Array.isArray(q.image) ? q.image.length > 0 : true);
-    const imgIcon = hasImg ? '🖼' : '';
-    html += `<tr>
-      <td style="color:var(--text-muted);font-size:.85rem;">Q${q.num}</td>
-      <td>${type}</td>
-      <td style="cursor:pointer;font-size:.9rem;" onclick="showQuestionEditor(${JSON.stringify(q).replace(/"/g,'&quot;')})">${text}</td>
-      <td style="text-align:center;color:var(--text-muted);">Ch${q.chapter||'?'}</td>
-      <td style="text-align:center;">${imgIcon}</td>
-      <td>
-        <button class="btn btn-sm btn-outline" onclick='showQuestionEditor(${JSON.stringify(q).replace(/'/g,"&#39;")})' style="padding:4px 10px;">编辑</button>
+    const rowBg = idx % 2 === 0 ? '' : 'background:rgba(0,0,0,.018)';
+    const qData = JSON.stringify(q).replace(/"/g,'&quot;');
+    html += `<tr style="border-bottom:1px solid var(--border);${rowBg};transition:background .15s;"
+      onmouseover="this.style.background='rgba(26,79,160,.06)'" onmouseout="this.style.background='${idx%2?'rgba(0,0,0,.018)':''}'"
+      onclick="showQuestionEditor(${qData})" style="cursor:pointer;">
+      <td style="padding:.7rem 1rem;color:var(--text-muted);font-size:.8rem;font-weight:500;white-space:nowrap;">Q${q.num}</td>
+      <td style="padding:.7rem .75rem;">${typeBadge}</td>
+      <td style="padding:.7rem .75rem;font-size:.9rem;line-height:1.45;cursor:pointer;">${displayText}</td>
+      <td style="padding:.7rem .75rem;text-align:center;font-size:.8rem;color:var(--text-muted);">Ch${q.chapter||'?'}</td>
+      <td style="padding:.7rem .75rem;text-align:center;font-size:.9rem;">${hasImg ? '🖼' : '<span style="color:var(--border);">—</span>'}</td>
+      <td style="padding:.7rem 1rem;text-align:right;" onclick="event.stopPropagation()">
+        <button onclick="showQuestionEditor(${qData})"
+          style="padding:4px 12px;border-radius:6px;border:1.5px solid var(--primary);background:transparent;color:var(--primary);font-size:.8rem;font-weight:600;cursor:pointer;transition:all .15s;"
+          onmouseover="this.style.background='var(--primary)';this.style.color='#fff'"
+          onmouseout="this.style.background='transparent';this.style.color='var(--primary)'">编辑</button>
       </td>
     </tr>`;
   });
 
-  html += '</tbody></table></div>';
+  html += '</tbody></table>';
   container.innerHTML = html;
 
   // Pagination
