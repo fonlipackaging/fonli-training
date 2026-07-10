@@ -374,7 +374,12 @@ async function renderContent() {
   allChapters = snap.docs.map(d => ({ id: d.id, ...d.data() }));
 
   const listEl = document.getElementById('contentChapterList');
+  const seedBtn = document.getElementById('seedBtn');
+  const syncBtn = document.getElementById('chapterSyncBtn');
+
   if (!allChapters.length) {
+    if (seedBtn) seedBtn.style.display = '';
+    if (syncBtn) syncBtn.style.display = 'none';
     listEl.innerHTML = `
       <div class="card" style="text-align:center;padding:2.5rem 1.5rem;">
         <div style="font-size:3rem;margin-bottom:1rem;">📚</div>
@@ -384,6 +389,10 @@ async function renderContent() {
       </div>`;
     return;
   }
+
+  // Chapters exist — hide direct seed, show sync button
+  if (seedBtn) seedBtn.style.display = 'none';
+  if (syncBtn) syncBtn.style.display = '';
 
   let html = `<div class="card" style="padding:0;overflow:hidden;">
     <div class="table-wrap"><table class="list-table"><thead><tr>
@@ -426,6 +435,33 @@ async function renderContent() {
   });
 
   html += '</tbody></table></div></div>';
+
+  // Add chapter danger zone for accidental-import protection
+  html += `
+    <div style="margin-top:1.5rem;border:1.5px solid #e8b4b8;border-radius:10px;overflow:hidden;" id="chapDangerZone">
+      <button onclick="toggleChapterDangerZone()"
+        style="width:100%;padding:.65rem 1rem;background:#fff5f5;border:none;cursor:pointer;display:flex;align-items:center;gap:.5rem;font-size:.85rem;color:#c0392b;font-weight:600;text-align:left;">
+        ⚠️ 危险操作区（点击展开）
+        <span id="chapDzArrow" style="margin-left:auto;">▶</span>
+      </button>
+      <div id="chapDzContent" style="display:none;padding:1rem;background:#fff8f8;border-top:1px solid #e8b4b8;">
+        <p style="color:#c0392b;font-size:.88rem;margin-bottom:.75rem;">
+          ⚠️ 以下操作会<b>覆盖</b>现有全部 ${allChapters.length} 个章节，且不可撤销。
+        </p>
+        <p style="color:var(--text-muted);font-size:.84rem;margin-bottom:1rem;">
+          请在输入框中输入 <b>CONFIRM</b> 后方可点击导入按钮：
+        </p>
+        <div style="display:flex;gap:.75rem;align-items:center;flex-wrap:wrap;">
+          <input id="chapDangerConfirmInput" type="text" placeholder="输入 CONFIRM"
+            style="padding:.5rem .75rem;border:1.5px solid #e8b4b8;border-radius:6px;font-size:.9rem;width:160px;">
+          <button onclick="confirmSeedChapters()"
+            style="padding:.5rem 1.25rem;background:#c0392b;color:#fff;border:none;border-radius:6px;font-size:.88rem;font-weight:600;cursor:pointer;">
+            🗑 清空并从 data.js 重新导入
+          </button>
+        </div>
+      </div>
+    </div>`;
+
   listEl.innerHTML = html;
 }
 
@@ -986,6 +1022,140 @@ async function seedDefaultChapters() {
       btn.disabled = false;
       btn.innerHTML = `<i class="ti ti-download"></i> ${t('导入默认知识库','Import Default')}`;
     }
+  }
+}
+
+// ── Chapter danger zone ───────────────────────────────
+function toggleChapterDangerZone() {
+  const content = document.getElementById('chapDzContent');
+  const arrow   = document.getElementById('chapDzArrow');
+  if (!content) return;
+  const isOpen = content.style.display !== 'none';
+  content.style.display = isOpen ? 'none' : 'block';
+  arrow.textContent = isOpen ? '▶' : '▼';
+}
+
+function confirmSeedChapters() {
+  const val = (document.getElementById('chapDangerConfirmInput')?.value || '').trim();
+  if (val !== 'CONFIRM') { toast('请先输入 CONFIRM 确认操作', 'warning'); return; }
+  seedDefaultChapters();
+}
+
+// ── Chapter sync to data.js ───────────────────────────
+function showChapterSyncModal() {
+  document.getElementById('syncChapCount').textContent = allChapters.length || '--';
+  document.getElementById('syncChapProgress').classList.add('hidden');
+  document.getElementById('syncChapLog').textContent = '';
+  document.getElementById('syncChapError').classList.add('hidden');
+  document.getElementById('syncChapStartBtn').disabled = false;
+  const cached = sessionStorage.getItem('_gh_sync_token');
+  if (cached) document.getElementById('syncChapToken').value = cached;
+  showModal('syncChaptersModal');
+}
+
+function chapSyncLog(msg) {
+  const el = document.getElementById('syncChapLog');
+  el.textContent += msg + '\n';
+  el.scrollTop = el.scrollHeight;
+}
+
+async function startChapterSync() {
+  const token = document.getElementById('syncChapToken').value.trim();
+  if (!token) {
+    document.getElementById('syncChapError').textContent = '请输入 GitHub Token';
+    document.getElementById('syncChapError').classList.remove('hidden');
+    return;
+  }
+  sessionStorage.setItem('_gh_sync_token', token);
+  document.getElementById('syncChapError').classList.add('hidden');
+  document.getElementById('syncChapProgress').classList.remove('hidden');
+  document.getElementById('syncChapStartBtn').disabled = true;
+  chapSyncLog('① 从 Firestore 加载章节…');
+
+  try {
+    // Step 1: ensure chapters loaded
+    if (!allChapters.length) {
+      const snap = await db.collection('chapters').orderBy('order').get();
+      allChapters = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    }
+    const chapters = allChapters.map(ch => ({
+      id: ch.id,
+      titleZh: ch.titleZh || '',
+      titleEn: ch.titleEn || '',
+      order: ch.order || 1,
+      estimatedMinutes: ch.estimatedMinutes || 10,
+      sections: (ch.sections || []).map(s => ({
+        headingZh: s.headingZh || '',
+        headingEn: s.headingEn || '',
+        contentZh: s.contentZh || '',
+        contentEn: s.contentEn || ''
+      }))
+    }));
+    chapSyncLog(`   已加载 ${chapters.length} 个章节`);
+
+    // Step 2: fetch data.js from GitHub
+    chapSyncLog('② 从 GitHub 读取 data.js…');
+    const getResp = await fetch(
+      `https://api.github.com/repos/${SYNC_REPO}/contents/${SYNC_PATH}?ref=${SYNC_BRANCH}`,
+      { headers: { Authorization: `token ${token}` } }
+    );
+    if (!getResp.ok) {
+      const e = await getResp.json();
+      throw new Error('读取 data.js 失败: ' + (e.message || getResp.status));
+    }
+    const fileData = await getResp.json();
+    const sha = fileData.sha;
+    const original = fromB64(fileData.content);
+    chapSyncLog(`   文件大小: ${(original.length / 1024).toFixed(1)} KB，SHA: ${sha.slice(0,10)}…`);
+
+    // Step 3: find and replace CHAPTERS array using bracket-depth counter
+    chapSyncLog('③ 替换 CHAPTERS 数组…');
+    const marker = 'const CHAPTERS';
+    const si = original.indexOf(marker);
+    if (si === -1) throw new Error('在 data.js 中未找到 CHAPTERS');
+
+    const bi = original.indexOf('[', si);
+    let depth = 0, ei = bi;
+    for (let i = bi; i < original.length; i++) {
+      if (original[i] === '[') depth++;
+      else if (original[i] === ']') { depth--; if (depth === 0) { ei = i; break; } }
+    }
+    let afterEnd = ei + 1;
+    if (original[afterEnd] === ';') afterEnd++;
+
+    const newDecl = `const CHAPTERS = ${JSON.stringify(chapters, null, 2)};`;
+    const updated = original.substring(0, si) + newDecl + original.substring(afterEnd);
+    chapSyncLog(`   替换完成，新文件大小: ${(updated.length / 1024).toFixed(1)} KB`);
+
+    // Step 4: push back to GitHub
+    chapSyncLog('④ 推送到 GitHub…');
+    const pushResp = await fetch(
+      `https://api.github.com/repos/${SYNC_REPO}/contents/${SYNC_PATH}`,
+      {
+        method: 'PUT',
+        headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: `sync: update CHAPTERS from Firestore (${chapters.length} chapters)`,
+          content: toB64(updated),
+          sha: sha,
+          branch: SYNC_BRANCH
+        })
+      }
+    );
+    if (!pushResp.ok) {
+      const e = await pushResp.json();
+      throw new Error('推送失败: ' + (e.message || pushResp.status));
+    }
+    chapSyncLog(`\n✅ 同步成功！data.js 已更新为 ${chapters.length} 个最新章节。`);
+    chapSyncLog('   等约 30 秒 GitHub Pages 刷新后生效。');
+    toast('✅ 知识库已同步到 data.js', 'success');
+
+  } catch(e) {
+    chapSyncLog('\n❌ 失败: ' + e.message);
+    document.getElementById('syncChapError').textContent = e.message;
+    document.getElementById('syncChapError').classList.remove('hidden');
+  } finally {
+    document.getElementById('syncChapStartBtn').disabled = false;
   }
 }
 
