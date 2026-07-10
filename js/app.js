@@ -180,6 +180,7 @@ function navigate(view) {
   if (view === 'mock')       renderMockLanding();
   if (view === 'exam')       renderExamLanding();
   if (view === 'history')    renderHistory();
+  if (view === 'faq')        renderFAQView();
 }
 
 function doLogout() {
@@ -1280,4 +1281,188 @@ async function sendExamNotification(attempt) {
   } catch(e) {
     console.warn('Email notification failed:', e);
   }
+}
+
+// ═══════════════════════════════════════════════════════
+//  FAQ — STUDENT VIEW
+// ═══════════════════════════════════════════════════════
+
+let _faqData         = null;   // null = not loaded, [] = loaded but empty
+let _faqActiveCat    = 'all';  // currently selected category pill
+let _faqOpenId       = null;   // which FAQ item is expanded
+
+// Load FAQs: tries Firestore first, falls back to FAQ_DATA in data.js
+async function loadStudentFAQs() {
+  if (_faqData !== null) return _faqData;
+  try {
+    const snap = await db.collection('faqs').orderBy('num').get();
+    if (!snap.empty) {
+      _faqData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      return _faqData;
+    }
+  } catch(e) {
+    console.warn('[FAQ] Firestore load failed, trying data.js:', e.message);
+  }
+  // Fallback to data.js static array
+  _faqData = (typeof FAQ_DATA !== 'undefined' && Array.isArray(FAQ_DATA)) ? FAQ_DATA : [];
+  return _faqData;
+}
+
+// Called by navigate('faq')
+async function renderFAQView() {
+  const list = document.getElementById('faqStudentList');
+  if (!list) return;
+  list.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-muted);">加载中…</div>';
+
+  await loadStudentFAQs();
+  _renderFAQContent();
+}
+
+// Re-renders without re-fetching (used by search + filter)
+function _renderFAQContent() {
+  const search = ((document.getElementById('faqStudentSearch')?.value) || '').toLowerCase().trim();
+  const faqs   = _faqData || [];
+
+  // Build category pills
+  const cats = ['all', ...[...new Set(faqs.map(f => f.category || '未分类'))].sort()];
+  const pillsEl = document.getElementById('faqCategoryPills');
+  if (pillsEl) {
+    pillsEl.innerHTML = cats.map(c => {
+      const active = c === _faqActiveCat;
+      const label  = c === 'all' ? '全部' : c;
+      return `<button onclick="setFAQCat('${c}')"
+        style="padding:4px 14px;border-radius:20px;border:1.5px solid ${active?'var(--primary)':'var(--border)'};
+        background:${active?'var(--primary)':'#fff'};color:${active?'#fff':'var(--text-muted)'};
+        font-size:.82rem;font-weight:${active?'600':'400'};cursor:pointer;white-space:nowrap;transition:all .15s;">
+        ${label}
+      </button>`;
+    }).join('');
+  }
+
+  // Filter
+  const visible = faqs.filter(f => {
+    if (_faqActiveCat !== 'all' && (f.category || '未分类') !== _faqActiveCat) return false;
+    if (search) {
+      const q = (f.question || '').toLowerCase();
+      const a = (f.answer   || '').toLowerCase();
+      const t = (f.tags     || []).join(' ').toLowerCase();
+      if (!q.includes(search) && !a.includes(search) && !t.includes(search)) return false;
+    }
+    return true;
+  });
+
+  const countEl = document.getElementById('faqResultCount');
+  if (countEl) {
+    countEl.textContent = search
+      ? `找到 ${visible.length} 条结果（共 ${faqs.length} 条）`
+      : `共 ${faqs.length} 条`;
+  }
+
+  const listEl = document.getElementById('faqStudentList');
+  if (!listEl) return;
+
+  if (!faqs.length) {
+    listEl.innerHTML = `
+      <div class="card" style="text-align:center;padding:3rem 1rem;">
+        <div style="font-size:3rem;margin-bottom:1rem;">❓</div>
+        <h3 style="margin-bottom:.5rem;">暂无常见问题</h3>
+        <p style="color:var(--text-muted);">管理员还未添加任何 FAQ，请稍后再来查看。</p>
+      </div>`;
+    return;
+  }
+
+  if (!visible.length) {
+    listEl.innerHTML = `
+      <div style="text-align:center;padding:3rem 1rem;color:var(--text-muted);">
+        <div style="font-size:2.5rem;margin-bottom:.75rem;">🔍</div>
+        <p>没有符合「${search || _faqActiveCat}」的问题，请换个关键词试试。</p>
+      </div>`;
+    return;
+  }
+
+  // Group by category
+  const groups = {};
+  visible.forEach(f => {
+    const cat = f.category || '未分类';
+    if (!groups[cat]) groups[cat] = [];
+    groups[cat].push(f);
+  });
+
+  // Render accordion
+  const showCatHeaders = _faqActiveCat === 'all' && !search;
+  let html = '';
+  Object.keys(groups).sort().forEach(cat => {
+    if (showCatHeaders) {
+      html += `<div style="font-size:.8rem;font-weight:700;color:var(--text-muted);letter-spacing:.06em;
+        text-transform:uppercase;padding:.5rem 0 .35rem;margin-top:.75rem;border-bottom:1px solid var(--border);">${cat}</div>`;
+    }
+    groups[cat].forEach(f => {
+      const fid    = f._docId || f.id || String(f.num);
+      const isOpen = _faqOpenId === fid;
+      const tags   = (f.tags || []).map(t =>
+        `<span style="display:inline-block;padding:1px 8px;border-radius:20px;font-size:.72rem;
+        background:#f0f4ff;color:var(--primary);margin:2px;">${_highlight(t, search)}</span>`
+      ).join('');
+
+      html += `
+        <div style="border:1px solid var(--border);border-radius:10px;margin-bottom:.5rem;overflow:hidden;transition:box-shadow .15s;"
+          ${isOpen ? 'style="box-shadow:0 2px 12px rgba(26,79,160,.12);"' : ''}>
+          <button onclick="toggleFAQItem('${fid}')"
+            style="width:100%;padding:.9rem 1.1rem;background:${isOpen?'#f5f8ff':'#fff'};border:none;cursor:pointer;
+            display:flex;align-items:flex-start;gap:.75rem;text-align:left;transition:background .15s;">
+            <span style="flex-shrink:0;width:24px;height:24px;border-radius:50%;
+              background:${isOpen?'var(--primary)':'#e8edf5'};color:${isOpen?'#fff':'var(--text-muted)'};
+              display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;margin-top:.1rem;">
+              ${isOpen ? '▾' : '▸'}
+            </span>
+            <div style="flex:1;">
+              <div style="font-size:.95rem;font-weight:600;color:var(--dark-blue);line-height:1.4;">
+                ${_highlight(f.question || '', search)}
+              </div>
+              ${tags ? `<div style="margin-top:.4rem;">${tags}</div>` : ''}
+            </div>
+          </button>
+          ${isOpen ? `
+            <div style="padding:.25rem 1.1rem 1.1rem 3.1rem;background:#f5f8ff;border-top:1px solid var(--border);">
+              <div style="font-size:.92rem;line-height:1.75;color:var(--dark-gray);">
+                ${_highlightAnswer(f.answer || '', search)}
+              </div>
+            </div>` : ''}
+        </div>`;
+    });
+  });
+
+  listEl.innerHTML = html;
+}
+
+// Toggle open/close a FAQ item
+function toggleFAQItem(fid) {
+  _faqOpenId = (_faqOpenId === fid) ? null : fid;
+  _renderFAQContent();
+}
+
+// Switch active category
+function setFAQCat(cat) {
+  _faqActiveCat = cat;
+  _faqOpenId = null;
+  _renderFAQContent();
+}
+
+// Highlight search keyword in plain text
+function _highlight(text, keyword) {
+  if (!keyword || !text) return text || '';
+  const safe = text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const re = new RegExp('(' + keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+  return safe.replace(re, '<mark style="background:#fff176;border-radius:3px;padding:0 2px;">$1</mark>');
+}
+
+// Highlight in HTML answer — only highlight text nodes, skip tags
+function _highlightAnswer(html, keyword) {
+  if (!keyword) return html;
+  // Simple approach: highlight in the full HTML string but avoid breaking tags
+  const re = new RegExp('(?<![\\w<])(' + keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')(?![\\w>])', 'gi');
+  return html.replace(/<[^>]*>|([^<]+)/g, (m, text) => {
+    if (!text) return m; // it's a tag, keep as-is
+    return text.replace(re, '<mark style="background:#fff176;border-radius:3px;padding:0 2px;">$1</mark>');
+  });
 }
