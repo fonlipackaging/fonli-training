@@ -785,10 +785,13 @@ function captureFillInputs() {
 // Helper: render image(s) for a question
 function buildImageHtml(images) {
   if (!images || !images.length) return '';
-  var imgBase = 'https://fonlipackaging.github.io/fonli-training/images/';
+  var repoBase = 'https://fonlipackaging.github.io/fonli-training/';
   var html = '<div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:1rem;">';
   images.forEach(function(img) {
-    html += '<img src="' + imgBase + img + '" alt="题目图片" loading="lazy" '
+    var imgPath = /^image\d+\.jpg$/i.test(img)
+      ? repoBase + 'images/exam/' + img
+      : repoBase + 'images/' + img;
+    html += '<img src="' + imgPath + '" alt="题目图片" loading="lazy" '
           + 'style="max-width:280px;max-height:200px;border-radius:8px;border:1px solid var(--border);object-fit:contain;background:#f8f8f8;" '
           + 'onerror="this.style.display=\'none\'">';
   });
