@@ -4,12 +4,13 @@
 // ═══════════════════════════════════════════════════════
 
 const FIREBASE_CONFIG = {
-  apiKey:            "YOUR_API_KEY",
-  authDomain:        "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId:         "YOUR_PROJECT_ID",
-  storageBucket:     "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId:             "YOUR_APP_ID"
+  apiKey:            "AIzaSyDCgY6hGyRjpyq89TQJW4giogds8TDUpJI",
+  authDomain:        "fonli-training.firebaseapp.com",
+  projectId:         "fonli-training",
+  storageBucket:     "fonli-training.firebasestorage.app",
+  messagingSenderId: "876828021650",
+  appId:             "1:876828021650:web:8a0c41e15db19cb5bce74b",
+  measurementId:     "G-HD2XXJLXJE"
 };
 
 // ── EmailJS (for admin email notifications) ──────────
@@ -31,4 +32,23 @@ const APP_CONFIG = {
   appNameEn: "Fonli Packaging Training System",
   defaultLang: "zh",   // "zh" | "en"
   version: "1.0.0"
+};
+
+// ── Exam / Quiz configuration ─────────────────────────
+const EXAM_CONFIG = {
+  quiz: {
+    questionsPerChapter: 5   // max questions shown per chapter quiz
+  },
+  mock: {
+    questionCount: 20,       // total questions in mock test
+    timeMinutes: 30          // time limit
+  },
+  exam: {
+    questionCount: 30,       // total questions in formal exam
+    timeMinutes: 45,         // time limit
+    passingScore: 95,        // minimum passing score (%)
+    excellentScore: 99,      // excellent threshold (%)
+    maxAttempts: 3,          // max exam attempts allowed
+    cooldownHours: 24        // hours between retries after fail
+  }
 };
