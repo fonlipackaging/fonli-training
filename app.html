@@ -93,6 +93,12 @@
         <i class="ti ti-history nav-icon"></i><span data-zh="考试记录" data-en="Exam History">考试记录</span>
       </a>
     </nav>
+    <div class="sidebar-section" style="margin-top:.5rem;"><span class="sidebar-label" data-zh="参考资料" data-en="References">参考资料</span></div>
+    <nav class="sidebar-nav">
+      <a href="#" id="nav-faq" onclick="navigate('faq')">
+        <i class="ti ti-help-circle nav-icon"></i><span data-zh="常见问题" data-en="FAQ">常见问题</span>
+      </a>
+    </nav>
   </aside>
 
   <!-- Main content -->
@@ -233,6 +239,31 @@
     <div class="view hidden" id="view-history">
       <h2 style="margin-bottom:1.25rem;" data-zh="📊 考试记录" data-en="📊 Exam History">📊 考试记录</h2>
       <div id="historyContent"></div>
+    </div>
+
+    <!-- ── FAQ ── -->
+    <div class="view hidden" id="view-faq">
+      <div style="margin-bottom:1.25rem;">
+        <h2 data-zh="❓ 常见问题" data-en="❓ FAQ">❓ 常见问题</h2>
+        <p style="font-size:.88rem;color:var(--text-muted);margin-top:.35rem;" data-zh="搜索关键词快速找到你需要的解答" data-en="Search keywords to find answers quickly">搜索关键词快速找到你需要的解答</p>
+      </div>
+
+      <!-- Search + category filter -->
+      <div style="display:flex;gap:.75rem;margin-bottom:1rem;flex-wrap:wrap;align-items:center;">
+        <div style="position:relative;flex:1;min-width:200px;max-width:420px;">
+          <i class="ti ti-search" style="position:absolute;left:.75rem;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:1rem;pointer-events:none;"></i>
+          <input class="form-input" type="search" id="faqStudentSearch"
+            placeholder="搜索问题或关键词…"
+            oninput="renderFAQView()"
+            style="padding-left:2.25rem;">
+        </div>
+        <div id="faqCategoryPills" style="display:flex;gap:.4rem;flex-wrap:wrap;"></div>
+      </div>
+
+      <div id="faqResultCount" style="font-size:.85rem;color:var(--text-muted);margin-bottom:.75rem;"></div>
+
+      <!-- FAQ accordion list -->
+      <div id="faqStudentList"></div>
     </div>
 
   </main>
