@@ -224,26 +224,25 @@ function normalizeV6Question(q) {
 // Build mock exam — same full question pool as formal exam, shuffled
 // Scoring is always percentage-based (correct/total*100), safe when questions are added
 function buildMockSet() {
-  var v6 = typeof EXAM_QUESTIONS_V6 !== 'undefined' ? EXAM_QUESTIONS_V6 : [];
+  // Use live question bank (Firestore → data.js fallback via getActiveQuestions)
+  var v6 = typeof getActiveQuestions === 'function' ? getActiveQuestions() : [];
+  if (v6.length === 0) v6 = typeof EXAM_QUESTIONS_V6 !== 'undefined' ? EXAM_QUESTIONS_V6 : [];
   if (v6.length === 0) {
-    // Fallback to old questions
     var allQ = typeof QUESTIONS !== 'undefined' ? QUESTIONS : [];
     return shuffle(allQ).map(normalizeQuestion);
   }
-  // All V6 questions, shuffled (same as formal exam)
   return shuffle(v6).map(normalizeV6Question);
 }
 
-// Build formal exam (all 259 V6 questions)
+// Build formal exam — all questions from live question bank, shuffled
 function buildExamSet(config) {
-  var v6 = typeof EXAM_QUESTIONS_V6 !== 'undefined' ? EXAM_QUESTIONS_V6 : [];
+  var v6 = typeof getActiveQuestions === 'function' ? getActiveQuestions() : [];
+  if (v6.length === 0) v6 = typeof EXAM_QUESTIONS_V6 !== 'undefined' ? EXAM_QUESTIONS_V6 : [];
   if (v6.length === 0) {
-    // Fallback to old questions
     var allQ = typeof QUESTIONS !== 'undefined' ? QUESTIONS : [];
     return shuffle(allQ.filter(function(q){ return q.type === 'choice' || q.type === 'single'; }))
       .slice(0, config.questionCount || 50).map(normalizeQuestion);
   }
-  // All V6 questions, shuffled
   return shuffle(v6).map(normalizeV6Question);
 }
 
