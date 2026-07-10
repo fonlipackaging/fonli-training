@@ -82,19 +82,32 @@
   const auth = firebase.auth();
   const db   = firebase.firestore();
 
+  function hideLogin() {
+    document.getElementById('loadingScreen').classList.add('hidden');
+  }
+
+  // Timeout fallback: if Firebase never responds within 8s, show login form
+  const _loginTimeout = setTimeout(hideLogin, 8000);
+
   // Check if already logged in
   auth.onAuthStateChanged(async user => {
-    if (user) {
-      // Get role and redirect
-      const doc = await db.collection('users').doc(user.uid).get();
-      if (doc.exists) {
-        const role = doc.data().role;
-        window.location.href = role === 'admin' ? 'admin.html' : 'app.html';
+    clearTimeout(_loginTimeout);
+    try {
+      if (user) {
+        // Get role and redirect
+        const doc = await db.collection('users').doc(user.uid).get();
+        if (doc.exists) {
+          const role = doc.data().role;
+          window.location.href = role === 'admin' ? 'admin.html' : 'app.html';
+        } else {
+          hideLogin();
+        }
       } else {
-        document.getElementById('loadingScreen').classList.add('hidden');
+        hideLogin();
       }
-    } else {
-      document.getElementById('loadingScreen').classList.add('hidden');
+    } catch(e) {
+      console.error('Auth state error:', e);
+      hideLogin(); // Always show login form even if Firestore fails
     }
   });
 
