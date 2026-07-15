@@ -242,43 +242,50 @@ function renderUsers() {
     return;
   }
 
-  let html = `<div class="table-wrap"><table class="list-table"><thead><tr>
-    <th>${t('姓名','Name')}</th><th>${t('角色','Role')}</th><th>${t('邮箱','Email')}</th>
-    <th>${t('当前密码','Password')}</th><th>${t('进度','Progress')}</th><th>${t('最高分','Best Score')}</th><th>${t('操作','Actions')}</th>
-  </tr></thead><tbody>`;
+  // Card layout — avoids table overflow on long emails
+  let html = '<div style="display:flex;flex-direction:column;gap:.5rem;padding:.75rem;">';
 
   users.forEach(u => {
     const userAtts  = allAttempts.filter(a => a.userId === u.id && a.mode === 'exam');
     const bestScore = userAtts.length ? Math.max(...userAtts.map(a => a.score)) : null;
     const attempts  = userAtts.length;
     const cls       = bestScore !== null ? `badge-${scoreClass(bestScore)}` : 'badge-pending';
-    const scoreTxt  = bestScore !== null ? `${bestScore}${t('分','pts')} (${t('第','#')}${attempts}${t('次','')})` : t('未考试','No exam');
+    const scoreTxt  = bestScore !== null ? `${bestScore}${t('分','pts')}` : t('未考试','—');
 
-    const roleBadgeHtml = u.role === 'editor'
-      ? '<span style="display:inline-block;padding:2px 9px;border-radius:20px;font-size:.73rem;font-weight:700;background:#fff3e0;color:#e65100;border:1px solid #ffcc80;">编辑者</span>'
-      : '<span style="display:inline-block;padding:2px 9px;border-radius:20px;font-size:.73rem;font-weight:700;background:#e8f4fd;color:#1a4fa0;border:1px solid #b8dff5;">学员</span>';
-    html += `<tr>
-      <td><b>${u.name || '--'}</b></td>
-      <td>${roleBadgeHtml}</td>
-      <td style="font-size:.82rem;">${u.email || '--'}</td>
-      <td style="font-family:monospace;font-size:.82rem;">${u.password_plain || '--'}</td>
-      <td><span class="badge badge-pending">${attempts}/${EXAM_CONFIG.exam.maxAttempts} ${t('次','att')}</span></td>
-      <td><span class="badge ${cls}">${scoreTxt}</span></td>
-      <td style="display:flex;gap:.5rem;flex-wrap:wrap;">
-        <button class="btn btn-sm btn-outline" onclick="showEditUser('${u.id}')">
-          ${t('编辑','Edit')}
-        </button>
-        <button class="btn btn-sm btn-outline" onclick="showAdminResetPwd('${u.id}')" style="border-color:var(--warning);color:var(--warning);">
-          ${t('重置密码','Reset Pwd')}
-        </button>
-        <button class="btn btn-sm btn-danger" onclick="confirmDeleteUser('${u.id}','${u.name||u.email}')">
-          ${t('删除','Delete')}
-        </button>
-      </td>
-    </tr>`;
+    const roleMap = {
+      admin:   ['#fdecea','#C0392B','#f5c6c6', t('管理员','Admin')],
+      editor:  ['#fff3e0','#e65100','#ffcc80', t('编辑者','Editor')],
+      user:    ['#e8f4fd','#1a4fa0','#b8dff5', t('学员','User')],
+    };
+    const [bg, fg, bd, roleLabel] = roleMap[u.role] || roleMap.user;
+    const roleBadge = `<span style="padding:2px 9px;border-radius:20px;font-size:.73rem;font-weight:700;background:${bg};color:${fg};border:1px solid ${bd};white-space:nowrap;">${roleLabel}</span>`;
+
+    html += `
+    <div style="display:grid;grid-template-columns:1fr auto;align-items:center;gap:.75rem;
+                padding:.75rem 1rem;border-radius:8px;border:1px solid var(--border);background:#fff;">
+      <!-- Left: user info -->
+      <div style="min-width:0;">
+        <div style="display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin-bottom:.3rem;">
+          <b style="font-size:.95rem;">${u.name || '--'}</b>
+          ${roleBadge}
+          <span class="badge ${cls}" style="font-size:.72rem;">${scoreTxt}</span>
+          <span style="font-size:.72rem;color:var(--text-muted);">${attempts}/${EXAM_CONFIG.exam.maxAttempts}${t('次','att')}</span>
+        </div>
+        <div style="display:flex;gap:1.5rem;flex-wrap:wrap;font-size:.8rem;color:var(--text-muted);">
+          <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:220px;" title="${u.email || ''}">📧 ${u.email || '--'}</span>
+          <span style="font-family:monospace;">🔑 ${u.password_plain || '--'}</span>
+        </div>
+      </div>
+      <!-- Right: actions -->
+      <div style="display:flex;flex-direction:column;gap:.35rem;min-width:80px;">
+        <button class="btn btn-sm btn-outline" style="font-size:.78rem;padding:.25rem .6rem;" onclick="showEditUser('${u.id}')">✏️ ${t('编辑','Edit')}</button>
+        <button class="btn btn-sm btn-outline" style="font-size:.78rem;padding:.25rem .6rem;border-color:var(--warning);color:var(--warning);" onclick="showAdminResetPwd('${u.id}')">🔑 ${t('重置','Pwd')}</button>
+        <button class="btn btn-sm btn-danger"  style="font-size:.78rem;padding:.25rem .6rem;" onclick="confirmDeleteUser('${u.id}','${u.name||u.email}')">🗑 ${t('删除','Del')}</button>
+      </div>
+    </div>`;
   });
 
-  html += '</tbody></table></div>';
+  html += '</div>';
   document.getElementById('userListContent').innerHTML = html;
 }
 
