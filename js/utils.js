@@ -189,22 +189,75 @@ function buildChapterQuizSet(chapterId) {
 
 // ── V6 question helpers ───────────────────────────────
 
+// Strip Chinese/English parenthetical content for lenient matching (handles incomplete brackets too)
+function _stripParens(s) {
+  return s
+    .replace(/（[^）]*）/g, '')   // complete Chinese parens
+    .replace(/（[^）]*$/g, '')    // incomplete Chinese parens e.g. "中套（Collar"
+    .replace(/\([^)]*\)/g, '')   // complete English parens
+    .replace(/\([^)]*$/g, '')    // incomplete English parens
+    .trim().replace(/\s+/g, '');
+}
+
+// Strip trailing units and suffixes already present in the question text
+function _stripUnit(s) {
+  return s
+    .replace(/[\s,，]*(?:ml\/次|mm|cm|ml|pcs|件|个|次|元|%|％|μm|g\/cm[³3]|g\/cm3|g|kg)\s*$/i, '')
+    .replace(/[省市镇县区]\s*$/, '')  // "广东省"→"广东"
+    .replace(/阶段\s*$/, '')          // "打样阶段"→"打样"
+    .replace(/结构\s*$/, '')          // "B 结构"→"B"
+    .replace(/步\s*$/, '')            // "6步"→"6"
+    .trim();
+}
+
 // Check a single blank answer against the expected answer (supports "/" alternatives)
+// 3-level matching: exact → strip parens → strip units
 function checkFillBlank(expected, userInput) {
   if (!userInput || !userInput.trim()) return false;
   var inp = userInput.trim().toLowerCase().replace(/\s+/g, ' ');
-  // Split expected by "/" for alternatives
   var alts = expected.split('/').map(function(a){ return a.trim().toLowerCase().replace(/\s+/g, ' '); });
-  return alts.some(function(alt){ return inp === alt; });
+  return alts.some(function(alt) {
+    // 1. Exact match
+    if (inp === alt) return true;
+    // 2. Match ignoring parenthetical notes
+    var coreAlt = _stripParens(alt);
+    var coreInp = _stripParens(inp);
+    if (coreInp && coreAlt && coreInp === coreAlt) return true;
+    // 3. Match ignoring trailing units/suffixes
+    var unitlessAlt = _stripUnit(coreAlt).replace(/,/g, '');
+    var unitlessInp = _stripUnit(coreInp).replace(/,/g, '');
+    if (unitlessInp && unitlessAlt && unitlessInp === unitlessAlt) return true;
+    return false;
+  });
 }
 
-// Check a V6 fill question answer (array of blank answers)
+// Check a V6 fill question answer — supports ordered AND set-based (order-free) matching
 function checkV6FillAnswer(q, userAns) {
   if (!Array.isArray(userAns) || !Array.isArray(q.blanks) || q.blanks.length === 0) return false;
-  // All blanks must be correct
-  return q.blanks.every(function(expected, i) {
+
+  // 1. Try ordered matching first
+  var orderedOk = q.blanks.every(function(expected, i) {
     return checkFillBlank(expected, userAns[i] || '');
   });
+  if (orderedOk) return true;
+
+  // 2. For multi-blank questions, try set-based (order-free) matching
+  if (q.blanks.length > 1) {
+    var used = new Array(q.blanks.length).fill(false);
+    var allMatched = userAns.every(function(inp) {
+      if (!inp || !inp.trim()) return false;
+      for (var j = 0; j < q.blanks.length; j++) {
+        if (!used[j] && checkFillBlank(q.blanks[j], inp)) {
+          used[j] = true;
+          return true;
+        }
+      }
+      return false;
+    });
+    if (allMatched && used.every(function(u){ return u; })) return true;
+  }
+
+  return false;
 }
 
 // Normalize V6 format question so buildQuestionCard() can render it

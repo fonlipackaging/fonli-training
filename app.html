@@ -99,6 +99,12 @@
         <i class="ti ti-help-circle nav-icon"></i><span data-zh="常见问题" data-en="FAQ">常见问题</span>
       </a>
     </nav>
+    <div class="sidebar-section" style="margin-top:.5rem;"><span class="sidebar-label" data-zh="账号" data-en="Account">账号</span></div>
+    <nav class="sidebar-nav">
+      <a href="#" id="nav-changepwd" onclick="showModal('changePwdModal')">
+        <i class="ti ti-lock nav-icon"></i><span data-zh="修改密码" data-en="Change Password">修改密码</span>
+      </a>
+    </nav>
   </aside>
 
   <!-- Main content -->
@@ -282,6 +288,35 @@
     <div class="modal-footer">
       <button class="btn btn-outline" onclick="hideModal('confirmModal')" data-zh="继续答题" data-en="Continue">继续答题</button>
       <button class="btn btn-primary" onclick="submitExam()" data-zh="确认提交" data-en="Submit Now">确认提交</button>
+    </div>
+  </div>
+</div>
+
+<!-- Change Password Modal -->
+<div class="modal-overlay" id="changePwdModal">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-header">
+      <h3 data-zh="修改密码" data-en="Change Password">修改密码</h3>
+      <button class="modal-close" onclick="hideModal('changePwdModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label" data-zh="当前密码" data-en="Current Password">当前密码</label>
+        <input class="form-input" type="password" id="cpOldPwd" placeholder="当前密码">
+      </div>
+      <div class="form-group">
+        <label class="form-label" data-zh="新密码" data-en="New Password">新密码</label>
+        <input class="form-input" type="password" id="cpNewPwd" placeholder="至少6位">
+      </div>
+      <div class="form-group">
+        <label class="form-label" data-zh="确认新密码" data-en="Confirm New Password">确认新密码</label>
+        <input class="form-input" type="password" id="cpConfirmPwd" placeholder="再次输入新密码">
+      </div>
+      <div class="form-error hidden" id="cpError"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="hideModal('changePwdModal')" data-zh="取消" data-en="Cancel">取消</button>
+      <button class="btn btn-primary" onclick="changePassword()" data-zh="保存" data-en="Save">保存</button>
     </div>
   </div>
 </div>

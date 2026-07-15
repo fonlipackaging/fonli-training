@@ -194,6 +194,49 @@ function doLogout() {
   auth.signOut().then(() => window.location.href = 'index.html');
 }
 
+// ── Change password (Firebase Auth) ──────────────────
+async function changePassword() {
+  var oldPwd     = (document.getElementById('cpOldPwd')?.value     || '').trim();
+  var newPwd     = (document.getElementById('cpNewPwd')?.value     || '');
+  var confirmPwd = (document.getElementById('cpConfirmPwd')?.value || '');
+  var errEl      = document.getElementById('cpError');
+  errEl.classList.add('hidden');
+
+  if (!oldPwd || !newPwd || !confirmPwd) {
+    errEl.textContent = t('请填写所有字段', 'Please fill all fields');
+    errEl.classList.remove('hidden'); return;
+  }
+  if (newPwd.length < 6) {
+    errEl.textContent = t('新密码至少6位', 'New password must be at least 6 characters');
+    errEl.classList.remove('hidden'); return;
+  }
+  if (newPwd !== confirmPwd) {
+    errEl.textContent = t('两次密码不一致', 'Passwords do not match');
+    errEl.classList.remove('hidden'); return;
+  }
+
+  try {
+    var user       = auth.currentUser;
+    var credential = firebase.auth.EmailAuthProvider.credential(user.email, oldPwd);
+    await user.reauthenticateWithCredential(credential);
+    await user.updatePassword(newPwd);
+    hideModal('changePwdModal');
+    // Clear fields
+    document.getElementById('cpOldPwd').value = '';
+    document.getElementById('cpNewPwd').value = '';
+    document.getElementById('cpConfirmPwd').value = '';
+    toast(t('密码已更新', 'Password updated'), 'success');
+  } catch(e) {
+    var msgs = {
+      'auth/wrong-password':        t('当前密码不正确', 'Current password is incorrect'),
+      'auth/too-many-requests':     t('尝试次数过多，请稍后再试', 'Too many attempts, try later'),
+      'auth/requires-recent-login': t('请重新登录后再修改密码', 'Please log in again before changing password'),
+    };
+    errEl.textContent = msgs[e.code] || e.message;
+    errEl.classList.remove('hidden');
+  }
+}
+
 // ── Admin preview mode ────────────────────────────────
 function showAdminPreviewBanner() {
   const BANNER_H = 40; // fixed height in px
@@ -953,25 +996,62 @@ function buildFillCard(q, userAns, showFeedback, alwaysShowExplanation) {
   if (isV6) {
     // V6 fill: show input fields for each blank
     if ((showFeedback && answered) || alwaysShowExplanation) {
-      // Review mode: show correct/wrong per blank
+      // Review mode: set-based matching — order doesn't matter
       html += '<div style="margin-top:1rem;">';
-      blanks.forEach(function(expected, i) {
-        var typed = Array.isArray(userAns) ? (userAns[i] || '') : '';
-        var correct = checkFillBlank(expected, typed);
-        var alts    = expected.split('/').map(function(a){ return a.trim(); }).join(' / ');
-        html += `<div style="margin-bottom:.75rem;">
-          <div style="font-size:.8rem;color:var(--dark-gray);margin-bottom:.3rem;">${t('第','Blank ')}${i+1}${t('空','')}</div>
-          <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;">
-            <div style="flex:1;min-width:160px;padding:.5rem .75rem;border-radius:6px;border:1.5px solid ${correct?'#1E7E45':'#C0392B'};background:${correct?'#e8f5e9':'#fdecea'};">
-              ${typed ? ('你的答案: <strong>' + typed + '</strong>') : t('（未作答）','(not answered)')}
-              <span style="margin-left:.5rem;">${correct?'✅':'❌'}</span>
+      var userAnsArr = Array.isArray(userAns) ? userAns : [];
+      var overallCorrect = checkV6FillAnswer(q, userAnsArr);
+
+      if (overallCorrect) {
+        var inOrder = blanks.every(function(exp, i){ return checkFillBlank(exp, userAnsArr[i] || ''); });
+        userAnsArr.forEach(function(typed, i) {
+          html += `<div style="margin-bottom:.75rem;">
+            <div style="font-size:.8rem;color:var(--dark-gray);margin-bottom:.3rem;">${t('第','Blank ')}${i+1}${t('空','')}</div>
+            <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;">
+              <div style="flex:1;min-width:160px;padding:.5rem .75rem;border-radius:6px;border:1.5px solid #1E7E45;background:#e8f5e9;">
+                ${typed ? ('你的答案: <strong>' + typed + '</strong>') : ''}
+                <span style="margin-left:.5rem;">✅</span>
+              </div>
             </div>
-            ${!correct ? `<div style="padding:.5rem .75rem;border-radius:6px;background:#fff3cd;border:1px solid #f0ad4e;font-size:.85rem;">
-              ${t('参考答案：','Answer:')} <strong>${alts}</strong>
-            </div>` : ''}
-          </div>
-        </div>`;
-      });
+          </div>`;
+        });
+        if (!inOrder) {
+          html += `<div style="font-size:.82rem;color:#1E7E45;margin-top:.25rem;">✓ ${t('顺序不限，回答正确','Correct — order does not matter')}</div>`;
+        }
+      } else {
+        var usedExp = new Array(blanks.length).fill(false);
+        var displayItems = userAnsArr.map(function(typed) {
+          if (!typed || !typed.trim()) return { typed: typed || '', correct: false };
+          for (var j = 0; j < blanks.length; j++) {
+            if (!usedExp[j] && checkFillBlank(blanks[j], typed)) {
+              usedExp[j] = true;
+              return { typed: typed, correct: true };
+            }
+          }
+          return { typed: typed, correct: false };
+        });
+        for (var ki = userAnsArr.length; ki < blanks.length; ki++) {
+          displayItems.push({ typed: '', correct: false });
+        }
+        var unmatchedRef = blanks.filter(function(_, j){ return !usedExp[j]; })
+          .map(function(e){ return e.split('/').map(function(a){ return a.trim(); }).join('/'); });
+
+        displayItems.forEach(function(item, i) {
+          html += `<div style="margin-bottom:.75rem;">
+            <div style="font-size:.8rem;color:var(--dark-gray);margin-bottom:.3rem;">${t('第','Blank ')}${i+1}${t('空','')}</div>
+            <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;">
+              <div style="flex:1;min-width:160px;padding:.5rem .75rem;border-radius:6px;border:1.5px solid ${item.correct?'#1E7E45':'#C0392B'};background:${item.correct?'#e8f5e9':'#fdecea'};">
+                ${item.typed ? ('你的答案: <strong>' + item.typed + '</strong>') : t('（未作答）','(not answered)')}
+                <span style="margin-left:.5rem;">${item.correct?'✅':'❌'}</span>
+              </div>
+            </div>
+          </div>`;
+        });
+        if (unmatchedRef.length > 0) {
+          html += `<div style="padding:.5rem .75rem;border-radius:6px;background:#fff3cd;border:1px solid #f0ad4e;font-size:.85rem;margin-top:.25rem;">
+            ${t('参考答案：','Correct answers:')} <strong>${unmatchedRef.join('、')}</strong>
+          </div>`;
+        }
+      }
       html += '</div>';
       if (q.hint) html += `<div class="explanation-box"><strong>${t('解析：','Explanation:')}</strong> ${q.hint}</div>`;
     } else {

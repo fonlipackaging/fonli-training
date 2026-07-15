@@ -12,6 +12,7 @@ let allUsers     = [];
 let allAttempts  = [];
 let allNotifs    = [];
 let userToDelete = null;
+let userToEdit   = null;
 
 // ── Auth guard ────────────────────────────────────────
 auth.onAuthStateChanged(async user => {
@@ -118,6 +119,18 @@ function navigate(view) {
 
 function doLogout() {
   auth.signOut().then(() => window.location.href = 'index.html');
+}
+
+async function showAdminSelfResetPwd() {
+  // For admin/editor self-service: send password reset email to own email
+  const email = adminUser?.email;
+  if (!email) { toast(t('无法获取当前邮箱', 'Cannot get current email'), 'danger'); return; }
+  try {
+    await auth.sendPasswordResetEmail(email);
+    toast(t(`密码重置邮件已发送至 ${email}`, `Password reset email sent to ${email}`), 'success', 5000);
+  } catch(e) {
+    toast(e.message, 'danger');
+  }
 }
 
 // ── Editor role helpers ──────────────────────────────
@@ -250,7 +263,13 @@ function renderUsers() {
       <td style="font-size:.82rem;">${u.email || '--'}</td>
       <td><span class="badge badge-pending">${attempts}/${EXAM_CONFIG.exam.maxAttempts} ${t('次','att')}</span></td>
       <td><span class="badge ${cls}">${scoreTxt}</span></td>
-      <td>
+      <td style="display:flex;gap:.5rem;flex-wrap:wrap;">
+        <button class="btn btn-sm btn-outline" onclick="showEditUser('${u.id}')">
+          ${t('编辑','Edit')}
+        </button>
+        <button class="btn btn-sm btn-outline" onclick="showAdminResetPwd('${u.id}')" style="border-color:var(--warning);color:var(--warning);">
+          ${t('重置密码','Reset Pwd')}
+        </button>
         <button class="btn btn-sm btn-danger" onclick="confirmDeleteUser('${u.id}','${u.name||u.email}')">
           ${t('删除','Delete')}
         </button>
@@ -338,6 +357,71 @@ async function deleteUser(userId) {
             'User data deleted. Remove Firebase Auth account from console.'), 'warning', 5000);
   } catch(e) {
     toast(t('删除失败: ','Delete failed: ') + e.message, 'danger');
+  }
+}
+
+// ── Edit user ─────────────────────────────────────────
+function showEditUser(userId) {
+  const u = allUsers.find(x => x.id === userId);
+  if (!u) return;
+  userToEdit = userId;
+  document.getElementById('editUserId').value   = userId;
+  document.getElementById('editUserName').value  = u.name  || '';
+  document.getElementById('editUserEmail').value = u.email || '';
+  document.getElementById('editUserRole').value  = u.role  || 'user';
+  document.getElementById('editUserError').classList.add('hidden');
+  showModal('editUserModal');
+}
+
+async function saveEditUser() {
+  const userId = document.getElementById('editUserId').value;
+  const name   = document.getElementById('editUserName').value.trim();
+  const role   = document.getElementById('editUserRole').value;
+  const errEl  = document.getElementById('editUserError');
+  errEl.classList.add('hidden');
+
+  if (!name) {
+    errEl.textContent = t('姓名不能为空', 'Name is required');
+    errEl.classList.remove('hidden'); return;
+  }
+
+  try {
+    await db.collection('users').doc(userId).update({ name, role });
+    const u = allUsers.find(x => x.id === userId);
+    if (u) { u.name = name; u.role = role; }
+    hideModal('editUserModal');
+    toast(t('用户信息已更新', 'User updated'), 'success');
+    renderUsers();
+  } catch(e) {
+    errEl.textContent = e.message;
+    errEl.classList.remove('hidden');
+  }
+}
+
+function showAdminResetPwd(userId) {
+  const u = allUsers.find(x => x.id === userId);
+  if (!u) return;
+  document.getElementById('adminCpUserId').value = userId;
+  document.getElementById('adminCpUserName').textContent = `用户：${u.name || u.email}（${u.email}）`;
+  document.getElementById('adminCpError').classList.add('hidden');
+  showModal('adminChangePwdModal');
+}
+
+async function adminChangePassword() {
+  const userId = document.getElementById('adminCpUserId').value;
+  const errEl  = document.getElementById('adminCpError');
+  errEl.classList.add('hidden');
+
+  const u = allUsers.find(x => x.id === userId);
+  if (!u) { errEl.textContent = '用户不存在'; errEl.classList.remove('hidden'); return; }
+
+  try {
+    await auth.sendPasswordResetEmail(u.email);
+    hideModal('adminChangePwdModal');
+    toast(t(`已向 ${u.email} 发送密码重置邮件`, `Password reset email sent to ${u.email}`), 'success', 5000);
+  } catch(e) {
+    errEl.textContent = e.message;
+    errEl.classList.remove('hidden');
   }
 }
 
