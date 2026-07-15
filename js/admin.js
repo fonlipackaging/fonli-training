@@ -244,7 +244,7 @@ function renderUsers() {
 
   let html = `<div class="table-wrap"><table class="list-table"><thead><tr>
     <th>${t('姓名','Name')}</th><th>${t('角色','Role')}</th><th>${t('邮箱','Email')}</th>
-    <th>${t('进度','Progress')}</th><th>${t('最高分','Best Score')}</th><th>${t('操作','Actions')}</th>
+    <th>${t('当前密码','Password')}</th><th>${t('进度','Progress')}</th><th>${t('最高分','Best Score')}</th><th>${t('操作','Actions')}</th>
   </tr></thead><tbody>`;
 
   users.forEach(u => {
@@ -261,6 +261,7 @@ function renderUsers() {
       <td><b>${u.name || '--'}</b></td>
       <td>${roleBadgeHtml}</td>
       <td style="font-size:.82rem;">${u.email || '--'}</td>
+      <td style="font-family:monospace;font-size:.82rem;">${u.password_plain || '--'}</td>
       <td><span class="badge badge-pending">${attempts}/${EXAM_CONFIG.exam.maxAttempts} ${t('次','att')}</span></td>
       <td><span class="badge ${cls}">${scoreTxt}</span></td>
       <td style="display:flex;gap:.5rem;flex-wrap:wrap;">
@@ -309,14 +310,14 @@ async function addUser() {
     await secondaryAuth.signOut();
     secondaryApp.delete();
 
-    // Save to Firestore
+    // Save to Firestore (include password_plain for admin visibility)
     await db.collection('users').doc(uid).set({
-      name, email, role,
+      name, email, role, password_plain: password,
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       createdBy: adminUser.uid
     });
 
-    allUsers.push({ id: uid, name, email, role });
+    allUsers.push({ id: uid, name, email, role, password_plain: password });
     hideModal('addUserModal');
     toast(t(`用户 ${name} 已创建`, `User ${name} created`), 'success');
     renderUsers();
@@ -324,7 +325,7 @@ async function addUser() {
     // Reset form
     document.getElementById('newName').value = '';
     document.getElementById('newEmail').value = '';
-    document.getElementById('newPassword').value = 'Fonli2024';
+    document.getElementById('newPassword').value = 'fonli2026';
   } catch(e) {
     const msgs = {
       'auth/email-already-in-use': t('该邮箱已被使用', 'Email already in use'),
@@ -402,25 +403,49 @@ function showAdminResetPwd(userId) {
   const u = allUsers.find(x => x.id === userId);
   if (!u) return;
   document.getElementById('adminCpUserId').value = userId;
-  document.getElementById('adminCpUserName').textContent = `用户：${u.name || u.email}（${u.email}）`;
+  document.getElementById('adminCpUserName').textContent = `${u.name || u.email}（${u.email}）`;
+  document.getElementById('adminCpCurPwd').textContent = u.password_plain || '（未记录）';
+  document.getElementById('adminCpNewPwd').value = '';
   document.getElementById('adminCpError').classList.add('hidden');
   showModal('adminChangePwdModal');
 }
 
 async function adminChangePassword() {
   const userId = document.getElementById('adminCpUserId').value;
+  const newPwd = (document.getElementById('adminCpNewPwd').value || '').trim();
   const errEl  = document.getElementById('adminCpError');
   errEl.classList.add('hidden');
+
+  if (!newPwd || newPwd.length < 6) {
+    errEl.textContent = t('新密码至少6位', 'Password must be at least 6 characters');
+    errEl.classList.remove('hidden'); return;
+  }
 
   const u = allUsers.find(x => x.id === userId);
   if (!u) { errEl.textContent = '用户不存在'; errEl.classList.remove('hidden'); return; }
 
   try {
-    await auth.sendPasswordResetEmail(u.email);
+    // Use secondary Firebase app to sign in as the user and update their Auth password
+    if (u.password_plain) {
+      const secondaryApp  = firebase.initializeApp(FIREBASE_CONFIG, 'pwd_reset_' + Date.now());
+      const secondaryAuth = secondaryApp.auth();
+      await secondaryAuth.signInWithEmailAndPassword(u.email, u.password_plain);
+      await secondaryAuth.currentUser.updatePassword(newPwd);
+      await secondaryAuth.signOut();
+      secondaryApp.delete();
+    }
+    // Update Firestore password_plain
+    await db.collection('users').doc(userId).update({ password_plain: newPwd });
+    u.password_plain = newPwd;
     hideModal('adminChangePwdModal');
-    toast(t(`已向 ${u.email} 发送密码重置邮件`, `Password reset email sent to ${u.email}`), 'success', 5000);
+    document.getElementById('adminCpNewPwd').value = '';
+    toast(t('密码已更新', 'Password updated'), 'success');
+    renderUsers();
   } catch(e) {
-    errEl.textContent = e.message;
+    const msgs = {
+      'auth/wrong-password': t('当前密码不正确，无法更新 Firebase 登录密码', 'Current password incorrect — Firebase Auth not updated'),
+    };
+    errEl.textContent = msgs[e.code] || e.message;
     errEl.classList.remove('hidden');
   }
 }

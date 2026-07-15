@@ -427,7 +427,7 @@
       </div>
       <div class="form-group">
         <label class="form-label" data-zh="初始密码" data-en="Initial Password">初始密码</label>
-        <input class="form-input" type="text" id="newPassword" placeholder="至少6位" value="Fonli2024">
+        <input class="form-input" type="text" id="newPassword" placeholder="至少6位" value="fonli2026">
         <div class="form-hint" data-zh="用户首次登录后应修改密码" data-en="User should change password on first login">用户首次登录后应修改密码</div>
       </div>
       <div class="form-group">
@@ -663,23 +663,29 @@
   </div>
 </div>
 
-<!-- Admin Reset Password Modal -->
+<!-- Admin Change Password Modal -->
 <div class="modal-overlay" id="adminChangePwdModal">
   <div class="modal" style="max-width:420px;">
     <div class="modal-header">
-      <h3 data-zh="重置密码" data-en="Reset Password">重置密码</h3>
+      <h3 data-zh="修改密码" data-en="Change Password">修改密码</h3>
       <button class="modal-close" onclick="hideModal('adminChangePwdModal')">✕</button>
     </div>
     <div class="modal-body">
       <input type="hidden" id="adminCpUserId">
-      <p id="adminCpUserName" style="font-size:.9rem;color:var(--text-muted);margin-bottom:.5rem;"></p>
-      <p style="font-size:.88rem;margin-bottom:.75rem;">系统将向该用户的邮箱发送密码重置链接，用户点击链接后可自行设置新密码。</p>
-      <div class="alert alert-warning" style="font-size:.85rem;">⚠️ 重置邮件将发送至用户注册邮箱，请确认邮箱地址正确。</div>
+      <p id="adminCpUserName" style="font-size:.9rem;color:var(--text-muted);margin-bottom:1rem;"></p>
+      <div class="form-group">
+        <label class="form-label" data-zh="当前密码" data-en="Current Password">当前密码</label>
+        <div id="adminCpCurPwd" style="padding:.5rem .75rem;background:#f5f5f5;border-radius:6px;font-family:monospace;font-size:.9rem;border:1px solid #ddd;color:#333;"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" data-zh="新密码" data-en="New Password">新密码</label>
+        <input class="form-input" type="text" id="adminCpNewPwd" placeholder="至少6位">
+      </div>
       <div class="form-error hidden" id="adminCpError"></div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-outline" onclick="hideModal('adminChangePwdModal')" data-zh="取消" data-en="Cancel">取消</button>
-      <button class="btn btn-primary" onclick="adminChangePassword()" data-zh="发送重置邮件" data-en="Send Reset Email">发送重置邮件</button>
+      <button class="btn btn-primary" onclick="adminChangePassword()" data-zh="保存" data-en="Save">保存</button>
     </div>
   </div>
 </div>
