@@ -180,8 +180,23 @@ function normalizeQuestion(q) {
   return n;
 }
 
-// Build question set for a single chapter quiz (in original order, all questions)
+// Build question set for a single chapter quiz — uses V6 questions (same pool as mock/formal exam)
+// so that images, blanks, and content are always in sync across all three modes.
 function buildChapterQuizSet(chapterId) {
+  // Use V6 questions (Firestore or data.js fallback)
+  var v6 = typeof getActiveQuestions === 'function' ? getActiveQuestions() : [];
+  if (!v6.length) v6 = typeof EXAM_QUESTIONS_V6 !== 'undefined' ? EXAM_QUESTIONS_V6 : [];
+
+  if (v6.length > 0) {
+    // Convert chapterId 'ch03' → chapter number 3
+    var chNum = parseInt((chapterId || '').replace(/^ch0*/i, ''), 10);
+    var filtered = v6.filter(function(q) { return q.chapter === chNum; });
+    if (filtered.length > 0) {
+      return filtered.map(normalizeV6Question);
+    }
+  }
+
+  // Legacy fallback (no image data)
   return (typeof QUESTIONS !== 'undefined' ? QUESTIONS : [])
     .filter(function(q){ return q.chapterId === chapterId; })
     .map(normalizeQuestion);
