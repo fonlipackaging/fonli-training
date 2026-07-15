@@ -235,7 +235,7 @@ function renderOverview() {
 
 // ── Users ─────────────────────────────────────────────
 function renderUsers() {
-  const users = allUsers.filter(u => u.role !== 'admin');
+  const users = allUsers.filter(u => u.id !== adminUser?.uid);
   if (!users.length) {
     document.getElementById('userListContent').innerHTML =
       `<div class="empty-state"><div class="empty-icon">👥</div><p>${t('暂无学员','No users yet')}</p></div>`;
@@ -299,38 +299,61 @@ async function addUser() {
     errEl.classList.remove('hidden'); return;
   }
 
-  try {
-    // Create auth user via Firebase Admin REST API (requires Identity Platform or Cloud Functions)
-    // Since we're on free tier without Cloud Functions, we use a workaround:
-    // Create a secondary auth instance to register the user
-    const secondaryApp = firebase.initializeApp(FIREBASE_CONFIG, 'secondary_' + Date.now());
-    const secondaryAuth = secondaryApp.auth();
-    const cred = await secondaryAuth.createUserWithEmailAndPassword(email, password);
-    const uid  = cred.user.uid;
-    await secondaryAuth.signOut();
-    secondaryApp.delete();
-
-    // Save to Firestore (include password_plain for admin visibility)
+  // Helper: save user to Firestore and update local list
+  async function _saveUserRecord(uid) {
     await db.collection('users').doc(uid).set({
       name, email, role, password_plain: password,
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       createdBy: adminUser.uid
     });
-
-    allUsers.push({ id: uid, name, email, role, password_plain: password });
+    const existing = allUsers.findIndex(u => u.id === uid);
+    const record   = { id: uid, name, email, role, password_plain: password };
+    if (existing >= 0) allUsers[existing] = record; else allUsers.push(record);
     hideModal('addUserModal');
     toast(t(`用户 ${name} 已创建`, `User ${name} created`), 'success');
     renderUsers();
-
-    // Reset form
     document.getElementById('newName').value = '';
     document.getElementById('newEmail').value = '';
     document.getElementById('newPassword').value = 'fonli2026';
+  }
+
+  try {
+    // Try to create a new Firebase Auth account via secondary app
+    const secondaryApp  = firebase.initializeApp(FIREBASE_CONFIG, 'secondary_' + Date.now());
+    const secondaryAuth = secondaryApp.auth();
+    try {
+      const cred = await secondaryAuth.createUserWithEmailAndPassword(email, password);
+      const uid  = cred.user.uid;
+      await secondaryAuth.signOut();
+      secondaryApp.delete();
+      await _saveUserRecord(uid);
+    } catch(authErr) {
+      if (authErr.code === 'auth/email-already-in-use') {
+        // Auth account already exists — sign in with the provided password to get the UID
+        try {
+          const signIn = await secondaryAuth.signInWithEmailAndPassword(email, password);
+          const uid    = signIn.user.uid;
+          await secondaryAuth.signOut();
+          secondaryApp.delete();
+          await _saveUserRecord(uid);
+        } catch(signInErr) {
+          await secondaryAuth.signOut().catch(()=>{});
+          secondaryApp.delete();
+          errEl.textContent = t(
+            '该邮箱已在 Firebase 中注册，但密码不匹配。请使用该账号的正确密码，或在 Firebase 控制台重置后再试。',
+            'Email already registered. Password mismatch — use the correct password or reset it in Firebase Console.'
+          );
+          errEl.classList.remove('hidden');
+        }
+      } else {
+        secondaryApp.delete();
+        throw authErr; // re-throw other errors
+      }
+    }
   } catch(e) {
     const msgs = {
-      'auth/email-already-in-use': t('该邮箱已被使用', 'Email already in use'),
-      'auth/invalid-email':        t('邮箱格式不正确', 'Invalid email'),
-      'auth/weak-password':        t('密码强度不足', 'Password too weak')
+      'auth/invalid-email':  t('邮箱格式不正确', 'Invalid email'),
+      'auth/weak-password':  t('密码强度不足', 'Password too weak'),
     };
     errEl.textContent = msgs[e.code] || e.message;
     errEl.classList.remove('hidden');
