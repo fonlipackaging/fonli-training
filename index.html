@@ -86,28 +86,41 @@
     document.getElementById('loadingScreen').classList.add('hidden');
   }
 
-  // Timeout fallback: if Firebase never responds within 8s, show login form
-  const _loginTimeout = setTimeout(hideLogin, 8000);
+  // Timeout fallback: if Firebase never responds within 5s, show login form
+  const _loginTimeout = setTimeout(hideLogin, 5000);
+
+  function roleToPage(role) {
+    return (role === 'admin' || role === 'editor') ? 'admin.html' : 'app.html';
+  }
 
   // Check if already logged in
   auth.onAuthStateChanged(async user => {
     clearTimeout(_loginTimeout);
     try {
       if (user) {
-        // Get role and redirect
+        // Fast path: use cached role to redirect immediately, then verify in background
+        const cachedRole = localStorage.getItem('fonli_role_' + user.uid);
+        if (cachedRole) {
+          window.location.href = roleToPage(cachedRole);
+          return;
+        }
+        // Slow path: fetch role from Firestore
         const doc = await db.collection('users').doc(user.uid).get();
         if (doc.exists) {
           const role = doc.data().role;
-          window.location.href = role === 'admin' ? 'admin.html' : 'app.html';
+          localStorage.setItem('fonli_role_' + user.uid, role); // cache for next time
+          window.location.href = roleToPage(role);
         } else {
           hideLogin();
         }
       } else {
+        // Clear cached roles on logout
+        Object.keys(localStorage).filter(k => k.startsWith('fonli_role_')).forEach(k => localStorage.removeItem(k));
         hideLogin();
       }
     } catch(e) {
       console.error('Auth state error:', e);
-      hideLogin(); // Always show login form even if Firestore fails
+      hideLogin();
     }
   });
 
