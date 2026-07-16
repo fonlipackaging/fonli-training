@@ -579,18 +579,13 @@ let allChapters      = [];
 let editingChapterId = null;
 
 // ── Chapter List ──────────────────────────────────────
-async function renderContent() {
-  document.getElementById('contentChapterList').classList.remove('hidden');
-  document.getElementById('chapterEditorArea').classList.add('hidden');
-
-  const snap = await db.collection('chapters').orderBy('order').get();
-  allChapters = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-
-  const listEl = document.getElementById('contentChapterList');
+function _renderChapterList(chapters) {
+  const listEl  = document.getElementById('contentChapterList');
   const seedBtn = document.getElementById('seedBtn');
   const syncBtn = document.getElementById('chapterSyncBtn');
+  if (!listEl) return;
 
-  if (!allChapters.length) {
+  if (!chapters.length) {
     if (seedBtn) seedBtn.style.display = '';
     if (syncBtn) syncBtn.style.display = 'none';
     listEl.innerHTML = `
@@ -615,7 +610,7 @@ async function renderContent() {
       <th style="width:160px;">${t('操作','Actions')}</th>
     </tr></thead><tbody>`;
 
-  allChapters.forEach((ch, i) => {
+  chapters.forEach((ch, i) => {
     const sectionCount = Array.isArray(ch.sections) ? ch.sections.length : 0;
     html += `<tr>
       <td>
@@ -624,7 +619,7 @@ async function renderContent() {
             onclick="moveChapter('${ch.id}',-1)" ${i===0?'disabled':''}>↑</button>
           <span style="font-size:.8rem;font-weight:600;color:var(--dark-gray);">${ch.order}</span>
           <button class="btn btn-sm btn-outline" style="padding:1px 8px;font-size:.75rem;line-height:1.4;"
-            onclick="moveChapter('${ch.id}',1)" ${i===allChapters.length-1?'disabled':''}>↓</button>
+            onclick="moveChapter('${ch.id}',1)" ${i===chapters.length-1?'disabled':''}>↓</button>
         </div>
       </td>
       <td>
@@ -659,7 +654,7 @@ async function renderContent() {
       </button>
       <div id="chapDzContent" style="display:none;padding:1rem;background:#fff8f8;border-top:1px solid #e8b4b8;">
         <p style="color:#c0392b;font-size:.88rem;margin-bottom:.75rem;">
-          ⚠️ 以下操作会<b>覆盖</b>现有全部 ${allChapters.length} 个章节，且不可撤销。
+          ⚠️ 以下操作会<b>覆盖</b>现有全部 ${chapters.length} 个章节，且不可撤销。
         </p>
         <p style="color:var(--text-muted);font-size:.84rem;margin-bottom:1rem;">
           请在输入框中输入 <b>CONFIRM</b> 后方可点击导入按钮：
@@ -676,6 +671,35 @@ async function renderContent() {
     </div>`;
 
   listEl.innerHTML = html;
+}
+
+async function renderContent() {
+  document.getElementById('contentChapterList').classList.remove('hidden');
+  document.getElementById('chapterEditorArea').classList.add('hidden');
+
+  // Fast path: show cached data immediately so screen never flickers to empty
+  if (allChapters.length > 0) {
+    _renderChapterList(allChapters);
+  }
+
+  // Background refresh from Firestore
+  try {
+    const snap = await db.collection('chapters').orderBy('order').get();
+    const fresh = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+    // Only update display if fresh data is non-empty OR we had nothing before
+    if (fresh.length > 0 || allChapters.length === 0) {
+      allChapters = fresh;
+      _renderChapterList(allChapters);
+    }
+    // If Firestore returns empty but we already have local data — keep showing local data
+  } catch(e) {
+    console.error('renderContent fetch error:', e);
+    // On error, show whatever we have (might already be rendered above)
+    if (allChapters.length === 0) {
+      _renderChapterList([]);
+    }
+  }
 }
 
 // ── Reorder ───────────────────────────────────────────
