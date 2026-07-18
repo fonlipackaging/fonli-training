@@ -13,6 +13,7 @@ let allAttempts  = [];
 let allNotifs    = [];
 let userToDelete = null;
 let userToEdit   = null;
+let currentView  = 'overview';  // tracks active view for post-load refresh
 
 // ── Auth guard ────────────────────────────────────────
 auth.onAuthStateChanged(async user => {
@@ -36,20 +37,22 @@ auth.onAuthStateChanged(async user => {
   const myPendingNav = document.getElementById('nav-my-pending');
   if (reviewNav)    reviewNav.style.display    = role === 'editor' ? 'none' : '';
   if (myPendingNav) myPendingNav.style.display = role === 'editor' ? ''     : 'none';
-  await loadAllData();
+  // Show UI immediately — don't block on data loading
   initSidebar();
   navigate('overview');
   applyI18n();
+  // Load data in background; auto-refresh current view when done
+  loadAllData().catch(e => console.warn('loadAllData error:', e));
 });
 
 async function loadAllData() {
   // Load core data — each in separate try/catch so one failure doesn't block others
   const [usersSnap, attSnap, notifSnap] = await Promise.all([
-    db.collection('users').get(),
+    db.collection('users').get().catch(() => null),
     db.collection('examAttempts').get().catch(() => null),
     db.collection('notifications').get().catch(() => null)
   ]);
-  allUsers    = usersSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+  allUsers    = (usersSnap ? usersSnap.docs : []).map(d => ({ id: d.id, ...d.data() }));
   allAttempts = (attSnap ? attSnap.docs : []).map(d => ({ id: d.id, ...d.data() }))
     .sort((a, b) => {
       const ta = a.createdAt?.toMillis ? a.createdAt.toMillis() : (a.createdAt || 0);
@@ -99,9 +102,19 @@ async function loadAllData() {
       }
     } catch(e) { /* no pending collection yet */ }
   }
+
+  // Auto-refresh current view with fresh data
+  if (currentView) {
+    const v = currentView;
+    if (v === 'overview')      renderOverview();
+    if (v === 'users')         renderUsers();
+    if (v === 'results')       renderResults();
+    if (v === 'notifications') renderNotifications();
+  }
 }
 
 function navigate(view) {
+  currentView = view;
   showView('view-' + view);
   setActiveNav('nav-' + view);
   document.getElementById('sidebar').classList.remove('open');
@@ -121,17 +134,57 @@ function doLogout() {
   auth.signOut().then(() => window.location.href = 'index.html');
 }
 
-async function showAdminSelfResetPwd() {
-  // For admin/editor self-service: send password reset email to own email
-  const email = adminUser?.email;
-  if (!email) { toast(t('无法获取当前邮箱', 'Cannot get current email'), 'danger'); return; }
+function showSelfChangePwd() {
+  document.getElementById('selfOldPwd').value     = '';
+  document.getElementById('selfNewPwd').value     = '';
+  document.getElementById('selfConfirmPwd').value = '';
+  document.getElementById('selfPwdError').classList.add('hidden');
+  document.getElementById('selfSavePwdBtn').disabled = false;
+  document.getElementById('selfSavePwdBtn').textContent = '保存';
+  showModal('selfChangePwdModal');
+}
+
+async function selfChangePassword() {
+  const oldPwd  = document.getElementById('selfOldPwd').value;
+  const newPwd  = document.getElementById('selfNewPwd').value;
+  const confirm = document.getElementById('selfConfirmPwd').value;
+  const errEl   = document.getElementById('selfPwdError');
+  const btn     = document.getElementById('selfSavePwdBtn');
+
+  errEl.classList.add('hidden');
+  if (!oldPwd || !newPwd || !confirm) {
+    errEl.textContent = '请填写全部字段'; errEl.classList.remove('hidden'); return;
+  }
+  if (newPwd.length < 6) {
+    errEl.textContent = '新密码至少6位'; errEl.classList.remove('hidden'); return;
+  }
+  if (newPwd !== confirm) {
+    errEl.textContent = '两次输入的新密码不一致'; errEl.classList.remove('hidden'); return;
+  }
+
+  btn.disabled = true; btn.textContent = '保存中…';
   try {
-    await auth.sendPasswordResetEmail(email);
-    toast(t(`密码重置邮件已发送至 ${email}`, `Password reset email sent to ${email}`), 'success', 5000);
+    const credential = firebase.auth.EmailAuthProvider.credential(adminUser.email, oldPwd);
+    await adminUser.reauthenticateWithCredential(credential);
+    await adminUser.updatePassword(newPwd);
+    // Also update password_plain in Firestore so admin can see it
+    await db.collection('users').doc(adminUser.uid).update({ password_plain: newPwd });
+    hideModal('selfChangePwdModal');
+    toast('密码已更新 ✓', 'success');
   } catch(e) {
-    toast(e.message, 'danger');
+    const msgs = {
+      'auth/wrong-password':       '当前密码错误',
+      'auth/too-many-requests':    '操作太频繁，请稍后再试',
+      'auth/requires-recent-login':'请重新登录后再修改密码',
+    };
+    errEl.textContent = msgs[e.code] || e.message;
+    errEl.classList.remove('hidden');
+    btn.disabled = false; btn.textContent = '保存';
   }
 }
+
+// Keep old name as alias (used nowhere now but safe to keep)
+async function showAdminSelfResetPwd() { showSelfChangePwd(); }
 
 // ── Editor role helpers ──────────────────────────────
 function isEditor() { return adminRole === 'editor'; }

@@ -80,7 +80,7 @@
     <div class="sidebar-section" style="margin-top:.5rem;"><span class="sidebar-label">系统</span></div>
     <nav class="sidebar-nav">
       <a href="#" onclick="enterStudentPreview()"><i class="ti ti-arrows-exchange nav-icon"></i><span data-zh="切换到学员视图" data-en="Switch to User View">切换到学员视图</span></a>
-      <a href="#" onclick="showAdminSelfResetPwd()"><i class="ti ti-lock nav-icon"></i><span data-zh="修改密码" data-en="Change Password">修改密码</span></a>
+      <a href="#" onclick="showSelfChangePwd()"><i class="ti ti-lock nav-icon"></i><span data-zh="修改密码" data-en="Change Password">修改密码</span></a>
     </nav>
   </aside>
 
@@ -664,10 +664,11 @@
 </div>
 
 <!-- Admin Change Password Modal -->
+<!-- 管理员重置他人密码 -->
 <div class="modal-overlay" id="adminChangePwdModal">
   <div class="modal" style="max-width:420px;">
     <div class="modal-header">
-      <h3 data-zh="修改密码" data-en="Change Password">修改密码</h3>
+      <h3 data-zh="重置用户密码" data-en="Reset User Password">重置用户密码</h3>
       <button class="modal-close" onclick="hideModal('adminChangePwdModal')">✕</button>
     </div>
     <div class="modal-body">
@@ -686,6 +687,35 @@
     <div class="modal-footer">
       <button class="btn btn-outline" onclick="hideModal('adminChangePwdModal')" data-zh="取消" data-en="Cancel">取消</button>
       <button class="btn btn-primary" onclick="adminChangePassword()" data-zh="保存" data-en="Save">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 自己修改密码（侧边栏入口） -->
+<div class="modal-overlay" id="selfChangePwdModal">
+  <div class="modal" style="max-width:400px;">
+    <div class="modal-header">
+      <h3>修改我的密码</h3>
+      <button class="modal-close" onclick="hideModal('selfChangePwdModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">当前密码</label>
+        <input class="form-input" type="password" id="selfOldPwd" placeholder="输入当前密码">
+      </div>
+      <div class="form-group">
+        <label class="form-label">新密码</label>
+        <input class="form-input" type="password" id="selfNewPwd" placeholder="至少6位">
+      </div>
+      <div class="form-group">
+        <label class="form-label">确认新密码</label>
+        <input class="form-input" type="password" id="selfConfirmPwd" placeholder="再次输入新密码">
+      </div>
+      <div class="form-error hidden" id="selfPwdError"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="hideModal('selfChangePwdModal')">取消</button>
+      <button class="btn btn-primary" id="selfSavePwdBtn" onclick="selfChangePassword()">保存</button>
     </div>
   </div>
 </div>
