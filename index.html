@@ -86,8 +86,8 @@
     document.getElementById('loadingScreen').classList.add('hidden');
   }
 
-  // Timeout fallback: if Firebase never responds within 5s, show login form
-  const _loginTimeout = setTimeout(hideLogin, 5000);
+  // Timeout fallback: always show login form after 4s no matter what
+  const _loginTimeout = setTimeout(hideLogin, 4000);
 
   function roleToPage(role) {
     return (role === 'admin' || role === 'editor') ? 'admin.html' : 'app.html';
@@ -95,31 +95,39 @@
 
   // Check if already logged in
   auth.onAuthStateChanged(async user => {
-    clearTimeout(_loginTimeout);
+    // NOTE: do NOT clearTimeout here — keep the 4s safety net alive
+    // until we've actually decided what to do (redirect or show login)
     try {
       if (user) {
-        // Fast path: use cached role to redirect immediately, then verify in background
+        // Fast path: cached role → redirect immediately
         const cachedRole = localStorage.getItem('fonli_role_' + user.uid);
         if (cachedRole) {
+          clearTimeout(_loginTimeout);
           window.location.href = roleToPage(cachedRole);
           return;
         }
-        // Slow path: fetch role from Firestore
-        const doc = await db.collection('users').doc(user.uid).get();
+        // Slow path: fetch role from Firestore with 3s timeout
+        const fetchDoc = db.collection('users').doc(user.uid).get();
+        const fetchTimeout = new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 3000));
+        const doc = await Promise.race([fetchDoc, fetchTimeout]);
+        clearTimeout(_loginTimeout);
         if (doc.exists) {
           const role = doc.data().role;
-          localStorage.setItem('fonli_role_' + user.uid, role); // cache for next time
+          localStorage.setItem('fonli_role_' + user.uid, role);
           window.location.href = roleToPage(role);
         } else {
           hideLogin();
         }
       } else {
-        // Clear cached roles on logout
+        // Not logged in — clear caches and show login form
+        clearTimeout(_loginTimeout);
         Object.keys(localStorage).filter(k => k.startsWith('fonli_role_')).forEach(k => localStorage.removeItem(k));
         hideLogin();
       }
     } catch(e) {
-      console.error('Auth state error:', e);
+      // Firestore timeout or permission error → show login form anyway
+      clearTimeout(_loginTimeout);
+      console.warn('Auth state error:', e.message);
       hideLogin();
     }
   });
